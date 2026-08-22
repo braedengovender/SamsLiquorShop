@@ -16,6 +16,27 @@
 
 </head>
 <body>
+    <div id="ageGate" class="age-gate">
+      <div class="glass age-card">
+        <p class="age-eyebrow">Sam's Liquor Shop supports the responsible consumption of alcohol.</p>
+        <p class="age-question">If you are of legal drinking age, please confirm your date of birth to enter.</p>
+
+        <div class="dob-row">
+          <select id="dobDay" class="dob-select"><option value="">Day</option></select>
+          <select id="dobMonth" class="dob-select"><option value="">Month</option></select>
+          <select id="dobYear" class="dob-select"><option value="">Year</option></select>
+        </div>
+
+        <p id="ageError" class="age-error" style="display:none;"></p>
+
+        <div class="age-buttons">
+          <button type="button" class="btn-primary" onclick="verifyAge()">Enter Site</button>
+          <button type="button" class="btn-ghost age-exit" onclick="exitSite()">No, Get Me Out</button>
+        </div>
+
+        <img src="Images/responsible-drinking.jpg" alt="Drink responsibly" class="age-image" />
+      </div>
+    </div>
     <form runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
@@ -36,48 +57,130 @@
             </Scripts>
         </asp:ScriptManager>
 
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand" runat="server" href="~/">Application name</a>
-                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/About">About</a></li>
-                        <li class="nav-item"><a class="nav-link" runat="server" href="~/Contact">Contact</a></li>
-                    </ul>
-                    <asp:LoginView runat="server" ViewStateMode="Disabled">
-                        <AnonymousTemplate>
-                            <ul class="navbar-nav navbar-right">
-                                <li><a runat="server" class="nav-link" href="~/Account/Register">Register</a></li>
-                                <li><a runat="server" class="nav-link" href="~/Account/Login">Log in</a></li>
-                            </ul>
-                        </AnonymousTemplate>
-                        <LoggedInTemplate>
-                            <ul class="navbar-nav navbar-right">
-                                <li><a runat="server" class="nav-link" href="~/Account/Manage" title="Manage your account">Hello, <%: Context.User.Identity.GetUserName()  %> !</a></li>
-                                <li>
-                                    <asp:LoginStatus runat="server" CssClass="nav-link" LogoutAction="Redirect" LogoutText="Log off" LogoutPageUrl="~/" OnLoggingOut="Unnamed_LoggingOut" />
-                                </li>
-                            </ul>
-                        </LoggedInTemplate>
-                    </asp:LoginView>
-                </div>
+        <header class="site-header shell">
+          <nav class="glass nav-bar">
+            <div class="brand">Sam's Liquor Shop</div>
+            <ul class="nav-links">
+              <li><a href="~/Default.aspx" runat="server">Home</a></li>
+              <li><a href="~/Shop.aspx" runat="server">Shop</a></li>
+              <li><a href="~/Specials.aspx" runat="server">Specials</a></li>
+              <li><a href="~/Shipping.aspx" runat="server">Shipping</a></li>
+              <li><a href="~/Rewards.aspx" runat="server">Rewards</a></li>
+              <li><a href="~/About.aspx" runat="server">About Us</a></li>
+              <li><a href="~/Contact.aspx" runat="server">Contact</a></li>
+            </ul>
+            <div class="nav-auth">
+              <a runat="server" href="~/Account/Login" class="btn-ghost">Log in</a>
+              <a runat="server" href="~/Account/Register" class="btn-primary">Register</a>
             </div>
-        </nav>
-        <div class="container body-content">
+          </nav>
+        </header>
+
+        <div class="shell body-content">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
-            <hr />
-            <footer>
-                <p>&copy; <%: DateTime.Now.Year %> - My ASP.NET Application</p>
-            </footer>
         </div>
+
+        <footer class="shell footer-stack">
+          <div class="glass footer-credit">
+            <p>&copy; 2026 Sam's Liquor Shop - All Rights Reserved. Designed by The Byte Club.</p>
+          </div>
+          <div class="glass footer-responsible">
+            <img src="Images/responsible-drinking.jpg" alt="Please drink responsibly" />
+          </div>
+          <div class="glass footer-info">
+            <div class="footer-security">
+              <span class="lock-icon">&#128274;</span>
+              <span>100% Secure Checkout</span>
+            </div>
+            <div class="footer-payments">
+              <span class="payments-label">Approved payment methods</span>
+              <div class="payment-icons">
+                <img src="Images/payments/visa.svg" alt="Visa" />
+                <img src="Images/payments/mastercard.svg" alt="Mastercard" />
+                <img src="Images/payments/debit.svg" alt="Debit Card" />
+              </div>
+            </div>
+            <div class="footer-lang">
+              <span>English</span>
+              <button type="button" id="langToggle" class="lang-toggle" onclick="toggleLang()">
+                <span class="lang-knob"></span>
+              </button>
+              <span>isiZulu</span>
+            </div>
+          </div>
+</footer>
     </form>
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/Scripts/bootstrap.js") %>
-    </asp:PlaceHolder></body>
+    </asp:PlaceHolder>
+    <script>
+        (function populateDobDropdowns() {
+            var daySel = document.getElementById('dobDay');
+            var monthSel = document.getElementById('dobMonth');
+            var yearSel = document.getElementById('dobYear');
+
+            for (var d = 1; d <= 31; d++) {
+                daySel.innerHTML += '<option value="' + d + '">' + d + '</option>';
+            }
+
+            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            for (var m = 0; m < months.length; m++) {
+                monthSel.innerHTML += '<option value="' + (m + 1) + '">' + months[m] + '</option>';
+            }
+
+            var currentYear = new Date().getFullYear();
+            for (var y = currentYear; y >= currentYear - 100; y--) {
+                yearSel.innerHTML += '<option value="' + y + '">' + y + '</option>';
+            }
+        })();
+
+        function verifyAge() {
+            var day = document.getElementById('dobDay').value;
+            var month = document.getElementById('dobMonth').value;
+            var year = document.getElementById('dobYear').value;
+            var errorEl = document.getElementById('ageError');
+
+            if (!day || !month || !year) {
+                errorEl.textContent = "Please select your full date of birth.";
+                errorEl.style.display = "block";
+                return;
+            }
+
+            var dob = new Date(year, month - 1, day);
+            var today = new Date();
+            var age = today.getFullYear() - dob.getFullYear();
+            var m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            if (age < 18) {
+                errorEl.textContent = "You must be 18 or older to enter this site.";
+                errorEl.style.display = "block";
+                return;
+            }
+
+            errorEl.style.display = "none";
+            document.getElementById('ageGate').style.display = "none";
+            sessionStorage.setItem('ageVerified', 'true');
+        }
+
+        function exitSite() {
+            window.location.href = "https://www.google.com";
+        }
+
+        // Skip the gate if already verified this session
+        window.addEventListener('DOMContentLoaded', function () {
+            if (sessionStorage.getItem('ageVerified') === 'true') {
+                document.getElementById('ageGate').style.display = "none";
+            }
+        });
+
+        function toggleLang() {
+            document.getElementById('langToggle').classList.toggle('active');
+            // hook translation logic here later
+        }
+    </script>
+</body>
 </html>

@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SamsLiquorShop {
-    
-    
-    public partial class SiteMaster {
-        
+namespace SamsLiquorShop
+{
+
+
+    public partial class SiteMaster
+    {
+
         /// <summary>
         /// MainContent control.
         /// </summary>
