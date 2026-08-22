@@ -37,6 +37,58 @@
         <img src="Images/responsible-drinking.jpg" alt="Drink responsibly" class="age-image" />
       </div>
     </div>
+
+    <div id="newsletterModal" class="newsletter-overlay" style="display:none;">
+      <div class="glass newsletter-card">
+        <button type="button" class="newsletter-close" onclick="closeNewsletter()" aria-label="Close">&times;</button>
+        <div class="newsletter-content">
+          <h2 class="newsletter-heading">Welcome to Durban's Finest Drinks Selection</h2>
+          <p class="newsletter-sub">From spirits to global wines — your journey starts here. Sign up to join our global community.</p>
+
+          <form id="newsletterForm" class="newsletter-form" onsubmit="return submitNewsletter(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <input type="text" id="nlFirstName" placeholder="First name" />
+                <span class="field-error" id="nlFirstNameError"></span>
+              </div>
+              <div class="form-group">
+                <input type="text" id="nlLastName" placeholder="Last name" />
+                <span class="field-error" id="nlLastNameError"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="email" id="nlEmail" placeholder="Email address" />
+              <span class="field-error" id="nlEmailError"></span>
+            </div>
+            <button type="submit" class="btn-primary newsletter-submit">Sign Up</button>
+            <p class="newsletter-terms">
+              By signing up, you agree to receive marketing emails. View our
+              <a href="PrivacyPolicy.aspx">privacy policy</a> and <a href="TermsOfService.aspx">terms of service</a> for more information.
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="chatbot-widget">
+      <div id="chatbotBubble" class="glass chatbot-bubble" style="display:none;">
+        <p>Cheers for stopping by! 🥂 If you need help finding the perfect bottle, I'm right here.</p>
+      </div>
+      <button type="button" class="chatbot-toggle glass" onclick="toggleChatbot()" aria-label="Chat with us">
+        <span class="chatbot-icon">&#128172;</span>
+      </button>
+    </div>
+
+    <div id="cookieBanner" class="cookie-banner" style="display:none;">
+      <div class="glass cookie-card">
+        <p>We value your privacy. We use cookies to enhance your browsing experience, serve personalised ads or content, and analyse our traffic. By clicking "Accept All", you consent to our use of cookies.</p>
+        <div class="cookie-actions">
+          <button type="button" class="btn-ghost cookie-decline" onclick="dismissCookieBanner()">Decline</button>
+          <button type="button" class="btn-primary" onclick="acceptCookies()">Accept All</button>
+        </div>
+      </div>
+    </div>
+
     <form runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
@@ -164,6 +216,74 @@
             errorEl.style.display = "none";
             document.getElementById('ageGate').style.display = "none";
             sessionStorage.setItem('ageVerified', 'true');
+            showNewsletter();
+        }
+
+        function showNewsletter() {
+            document.getElementById('newsletterModal').style.display = 'flex';
+        }
+
+        function closeNewsletter() {
+            document.getElementById('newsletterModal').style.display = 'none';
+            showCookieBanner();
+        }
+
+        function submitNewsletter(e) {
+            e.preventDefault();
+            var first = document.getElementById('nlFirstName');
+            var last = document.getElementById('nlLastName');
+            var email = document.getElementById('nlEmail');
+            var valid = true;
+
+            document.getElementById('nlFirstNameError').textContent = '';
+            document.getElementById('nlLastNameError').textContent = '';
+            document.getElementById('nlEmailError').textContent = '';
+            first.classList.remove('invalid');
+            last.classList.remove('invalid');
+            email.classList.remove('invalid');
+
+            if (!first.value.trim()) {
+                document.getElementById('nlFirstNameError').textContent = 'Please enter your first name.';
+                first.classList.add('invalid');
+                valid = false;
+            }
+            if (!last.value.trim()) {
+                document.getElementById('nlLastNameError').textContent = 'Please enter your last name.';
+                last.classList.add('invalid');
+                valid = false;
+            }
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email.value.trim())) {
+                document.getElementById('nlEmailError').textContent = 'Please enter a valid email address.';
+                email.classList.add('invalid');
+                valid = false;
+            }
+
+            if (!valid) return false;
+
+            // TODO: wire this to your sign-up endpoint / code-behind method
+            closeNewsletter();
+            return false;
+        }
+
+        function toggleChatbot() {
+            var bubble = document.getElementById('chatbotBubble');
+            bubble.style.display = bubble.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function showCookieBanner() {
+            if (localStorage.getItem('cookieConsent')) return;
+            document.getElementById('cookieBanner').style.display = 'block';
+        }
+
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'accepted');
+            document.getElementById('cookieBanner').style.display = 'none';
+        }
+
+        function dismissCookieBanner() {
+            localStorage.setItem('cookieConsent', 'dismissed');
+            document.getElementById('cookieBanner').style.display = 'none';
         }
 
         function exitSite() {
