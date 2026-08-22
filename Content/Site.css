@@ -655,3 +655,250 @@ body::before {
 .cookie-actions .cookie-decline {
     background: #f2f2f2;
 }
+
+.home-section {
+    margin: 64px auto 0;
+}
+
+.section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.section-subtext {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: -12px 0 20px;
+}
+
+.view-all-link {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.view-all-link:hover {
+    text-decoration: underline;
+}
+
+/* Card surface used by product cards */
+.card-surface {
+    background: #fff;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-surface:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+}
+
+/* Horizontal scrolling ribbon */
+.ribbon {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 10px;
+}
+
+.ribbon::-webkit-scrollbar {
+    height: 6px;
+}
+
+.ribbon::-webkit-scrollbar-thumb {
+    background: #d1d1d6;
+    border-radius: 999px;
+}
+
+.product-card {
+    flex: 0 0 200px;
+    scroll-snap-align: start;
+    padding: 16px;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: block;
+}
+
+.product-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+}
+
+.product-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
+
+.product-price {
+    font-size: 0.88rem;
+    color: var(--accent-amber-dark);
+    font-weight: 700;
+    margin: 0;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 18px;
+}
+
+.category-card {
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-primary);
+    padding: 20px 14px;
+}
+
+.category-card img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: block;
+}
+
+.category-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.guides-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.guide-card {
+    padding: 22px;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.guide-card span.arrow {
+    color: var(--accent);
+    font-size: 1.1rem;
+}
+
+.guide-card p {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.blog-card {
+    flex: 0 0 260px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.blog-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.blog-card-body {
+    padding: 16px;
+}
+
+.blog-card-body p.blog-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0 0 6px;
+}
+
+.blog-card-body p.blog-excerpt {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.review-card {
+    padding: 24px;
+}
+
+.review-stars {
+    color: var(--accent-amber);
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.review-quote {
+    font-size: 0.92rem;
+    color: var(--text-primary);
+    margin: 0 0 14px;
+    line-height: 1.5;
+}
+
+.review-name {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin: 0;
+}
+
+.stats-bar {
+    display: flex;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.stat-item {
+    flex: 1;
+    padding: 0 20px;
+    position: relative;
+}
+
+.stat-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 10%;
+    height: 80%;
+    width: 1px;
+    background: var(--glass-border);
+}
+
+.stat-number {
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent-amber));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0 0 6px;
+}
+
+.stat-label {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
