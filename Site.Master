@@ -6,7 +6,7 @@
 <head runat="server">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%: Page.Title %> - My ASP.NET Application</title>
+    <title><%: Page.Title %> | Sam's Liquor Shop</title>
 
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/bundles/modernizr") %>
@@ -18,6 +18,7 @@
 <body>
     <div id="ageGate" class="age-gate">
       <div class="glass age-card">
+          <img src="Images/logo.png" alt="Sam's Liquor Shop" class="age-card-logo" />
         <p class="age-eyebrow">Sam's Liquor Shop supports the responsible consumption of alcohol.</p>
         <p class="age-question">If you are of legal drinking age, please confirm your date of birth to enter.</p>
 
@@ -42,6 +43,7 @@
       <div class="glass newsletter-card">
         <button type="button" class="newsletter-close" onclick="closeNewsletter()" aria-label="Close">&times;</button>
         <div class="newsletter-content">
+          <p class="newsletter-eyebrow">Sam's Liquor Shop</p>
           <h2 class="newsletter-heading">Welcome to Durban's Finest Drinks Selection</h2>
           <p class="newsletter-sub">From spirits to global wines — your journey starts here. Sign up to join our global community.</p>
 
@@ -71,11 +73,21 @@
     </div>
 
     <div class="chatbot-widget">
-      <div id="chatbotBubble" class="glass chatbot-bubble" style="display:none;">
-        <p>Cheers for stopping by! 🥂 If you need help finding the perfect bottle, I'm right here.</p>
+      <div id="chatbotPanel" class="glass chatbot-panel" style="display:none;">
+        <div class="chatbot-header">
+          <img src="Images/logo.png" alt="Sam's Liquor Shop" class="chatbot-header-logo" />
+          <span>Sam's Assistant</span>
+        </div>
+        <div id="chatbotMessages" class="chatbot-messages">
+          <div class="chatbot-msg bot">Cheers for stopping by! 🥂 Ask me anything and I'll do my best to help.</div>
+        </div>
+        <form class="chatbot-input-row" onsubmit="return sendChatMessage(event)">
+          <input type="text" id="chatbotInput" placeholder="Type a message..." />
+          <button type="submit">&rarr;</button>
+        </form>
       </div>
       <button type="button" class="chatbot-toggle glass" onclick="toggleChatbot()" aria-label="Chat with us">
-        <span class="chatbot-icon">&#128172;</span>
+        <img src="Images/logo-icon.png" alt="Chat" class="chatbot-toggle-logo" />
       </button>
     </div>
 
@@ -132,6 +144,88 @@
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
         </div>
+
+        <section class="shell site-footer-main">
+          <div class="footer-top">
+            <div class="footer-brand">
+              <img src="Images/logo.png" alt="Sam's Liquor Shop" class="footer-logo" />
+              <p class="footer-tagline">Durban's trusted liquor store — spirits, wine and more, delivered right.</p>
+              <address>
+                21 Coronation Road<br />
+                Tongaat, Durban, 4399<br />
+                KwaZulu-Natal
+              </address>
+              <p><a href="tel:+27824055932">082 405 5932</a></p>
+              <p><a href="mailto:info@samsliquorshop.co.za">info@samsliquorshop.co.za</a></p>
+              <div class="footer-map">
+                <iframe
+                  src="https://www.google.com/maps?q=21+Coronation+Road,+Tongaat,+4399&output=embed"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              </div>
+            </div>
+
+            <div class="footer-col">
+              <h3>Helpful Links</h3>
+              <ul>
+                <li><a href="Loyalty.aspx">Loyalty &amp; Rewards</a></li>
+                <li><a href="Loyalty.aspx#card">Get the Loyalty Card</a></li>
+                <li><a href="WishList.aspx">Wish List</a></li>
+                <li><a href="Account/Profile.aspx">My Profile</a></li>
+                <li><a href="Account/Orders.aspx">My Orders</a></li>
+                <li><a href="Account/Settings.aspx">Settings</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-col">
+              <h3>Policies</h3>
+              <ul>
+                <li><a href="DeliveryPolicy.aspx">Delivery Policy</a></li>
+                <li><a href="ReturnPolicy.aspx">Return Policy</a></li>
+                <li><a href="PrivacyPolicy.aspx">Privacy Policy</a></li>
+                <li><a href="CookiesPolicy.aspx">Cookies Policy</a></li>
+                <li><a href="Terms.aspx">Terms &amp; Conditions</a></li>
+                <li><a href="WebsiteTerms.aspx">Website Terms of Use</a></li>
+                <li><a href="FAQ.aspx">FAQ</a></li>
+              </ul>
+            </div>
+
+            <div class="footer-col">
+              <h3>Trading Hours</h3>
+              <ul class="hours-list">
+                <li><span>Mon – Thu</span><span>09:00 – 18:00</span></li>
+                <li><span>Fri – Sat</span><span>09:00 – 20:00</span></li>
+                <li><span>Sunday</span><span>10:00 – 15:00</span></li>
+                <li><span>Public Holidays</span><span>10:00 – 15:00</span></li>
+              </ul>
+              <p class="hours-note">Trading hours may vary in accordance with liquor licensing regulations.</p>
+            </div>
+          </div>
+
+          <div class="footer-newsletter-band">
+            <div class="newsletter-band-text">
+              <h3>Be the first to know!</h3>
+              <p>Sign up for our newsletter for the latest deals and what's new.</p>
+            </div>
+            <form class="footer-newsletter-form" onsubmit="return submitFooterNewsletter(event)">
+              <div class="footer-field">
+                <input type="text" placeholder="First name" id="footerFirstName" class="footer-input" />
+                <span class="field-error" id="footerFirstNameError"></span>
+              </div>
+              <div class="footer-field">
+                <input type="text" placeholder="Last name" id="footerLastName" class="footer-input" />
+                <span class="field-error" id="footerLastNameError"></span>
+              </div>
+              <div class="footer-field">
+                <input type="email" placeholder="Email address" id="footerEmail" class="footer-input" />
+                <span class="field-error" id="footerEmailError"></span>
+              </div>
+              <button type="submit" class="btn-primary">Sign Up</button>
+            </form>
+            <p class="footer-newsletter-privacy">How do we use your information? Read our <a href="PrivacyPolicy.aspx">privacy policy</a>.</p>
+          </div>
+        </section>
 
         <footer class="shell footer-stack">
           <div class="glass footer-credit">
@@ -267,8 +361,33 @@
         }
 
         function toggleChatbot() {
-            var bubble = document.getElementById('chatbotBubble');
-            bubble.style.display = bubble.style.display === 'none' ? 'block' : 'none';
+            var panel = document.getElementById('chatbotPanel');
+            panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function sendChatMessage(e) {
+            e.preventDefault();
+            var input = document.getElementById('chatbotInput');
+            var messages = document.getElementById('chatbotMessages');
+            if (!input.value.trim()) return false;
+
+            var userMsg = document.createElement('div');
+            userMsg.className = 'chatbot-msg user';
+            userMsg.textContent = input.value;
+            messages.appendChild(userMsg);
+
+            input.value = '';
+
+            setTimeout(function () {
+                var botMsg = document.createElement('div');
+                botMsg.className = 'chatbot-msg bot';
+                botMsg.textContent = "Thanks for your message! One of our team will get back to you shortly — in the meantime, feel free to browse our Specials page.";
+                messages.appendChild(botMsg);
+                messages.scrollTop = messages.scrollHeight;
+            }, 500);
+
+            messages.scrollTop = messages.scrollHeight;
+            return false;
         }
 
         function showCookieBanner() {
@@ -301,6 +420,43 @@
             document.getElementById('langToggle').classList.toggle('active');
             // hook translation logic here later
         }
+
+        function submitFooterNewsletter(e) {
+            e.preventDefault();
+            var first = document.getElementById('footerFirstName');
+            var last = document.getElementById('footerLastName');
+            var email = document.getElementById('footerEmail');
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            var valid = true;
+
+            document.getElementById('footerFirstNameError').textContent = '';
+            document.getElementById('footerLastNameError').textContent = '';
+            document.getElementById('footerEmailError').textContent = '';
+            first.classList.remove('invalid');
+            last.classList.remove('invalid');
+            email.classList.remove('invalid');
+
+            if (!first.value.trim()) {
+                document.getElementById('footerFirstNameError').textContent = 'Required.';
+                first.classList.add('invalid');
+                valid = false;
+            }
+            if (!last.value.trim()) {
+                document.getElementById('footerLastNameError').textContent = 'Required.';
+                last.classList.add('invalid');
+                valid = false;
+            }
+            if (!emailPattern.test(email.value.trim())) {
+                document.getElementById('footerEmailError').textContent = 'Enter a valid email.';
+                email.classList.add('invalid');
+                valid = false;
+            }
+            if (!valid) return false;
+
+            first.value = ''; last.value = ''; email.value = '';
+            return false;
+        }
+
     </script>
 </body>
 </html>
