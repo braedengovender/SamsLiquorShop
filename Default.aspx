@@ -26,29 +26,29 @@
       </div>
       <div class="ribbon">
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/product1.jpg" alt="Johnnie Walker Black Label" />
-          <p class="product-name">Johnnie Walker Black Label</p>
-          <p class="product-price">R449.99</p>
+          <img src="Images/products/product1.jpg" alt="Johnnie Walker Black Label 12yo Whisky 750ml" />
+          <p class="product-name">Johnnie Walker Black Label 12yo Whisky 750ml</p>
+          <p class="product-price">R419.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/product2.jpg" alt="Ciroc Vodka" />
-          <p class="product-name">Ciroc Vodka</p>
-          <p class="product-price">R589.99</p>
+          <img src="Images/products/product2.jpg" alt="Ciroc Vodka 750ml" />
+          <p class="product-name">Ciroc Vodka 750m</p>
+          <p class="product-price">R399.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/product3.jpg" alt="Grey Goose Vodka" />
-          <p class="product-name">Grey Goose Vodka</p>
+          <img src="Images/products/product3.jpg" alt="Grey Goose Vodka 750ml" />
+          <p class="product-name">Grey Goose Vodka 750ml</p>
           <p class="product-price">R699.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/product4.jpg" alt="Moet & Chandon" />
-          <p class="product-name">Moët & Chandon</p>
-          <p class="product-price">R799.99</p>
+          <img src="Images/products/product4.jpg" alt="Moet & Chandon Brut Imperial Champagne 750ml" />
+          <p class="product-name">Moet & Chandon Brut Imperial Champagne 750ml</p>
+          <p class="product-price">R749.95</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/product5.jpg" alt="Hendrick's Gin" />
-          <p class="product-name">Hendrick's Gin</p>
-          <p class="product-price">R459.99</p>
+          <img src="Images/products/product5.jpg" alt="Hendricks Gin 750ml" />
+          <p class="product-name">Hendricks Gin 750ml</p>
+          <p class="product-price">R499.99</p>
         </a>
       </div>
     </section>
@@ -61,24 +61,63 @@
       <p class="section-subtext">Priced to leave our stores. Here while stocks last.</p>
       <div class="ribbon">
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo1.jpg" alt="Jack Daniel's" />
-          <p class="product-name">Jack Daniel's Old No. 7</p>
+          <img src="Images/products/promo1.jpg" alt="Jack Daniel's Whiskey 750ml" />
+          <p class="product-name">Jack Daniel's Whiskey 750ml</p>
           <p class="product-price">R329.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo2.jpg" alt="Amarula Cream" />
-          <p class="product-name">Amarula Cream</p>
-          <p class="product-price">R199.99</p>
+          <img src="Images/products/promo2.jpg" alt="Amarula Cream Liqueur 750ml" />
+          <p class="product-name">Amarula Cream Liqueur 750ml</p>
+          <p class="product-price">R184.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo3.jpg" alt="Savanna Dry 6-Pack" />
-          <p class="product-name">Savanna Dry 6-Pack</p>
+          <img src="Images/products/promo3.jpg" alt="Savanna Dry NRB 6 x 330ml" />
+          <p class="product-name">Savanna Dry NRB 6 x 330ml</p>
           <p class="product-price">R89.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo4.jpg" alt="Four Cousins" />
-          <p class="product-name">Four Cousins Sweet Red</p>
+          <img src="Images/products/promo4.jpg" alt="Four Cousins Natural Sweet Rose 750ml" />
+          <p class="product-name">Four Cousins Natural Sweet Rose 750ml</p>
           <p class="product-price">R69.99</p>
+        </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/promo5.jpg" alt="Nederburg Baronne 750ml" />
+          <p class="product-name">Nederburg Baronne 750ml</p>
+          <p class="product-price">R79.99</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="shell home-section">
+      <div class="section-header">
+        <h2>Non-Alcoholic Favourites</h2>
+        <a href="Shop.aspx?cat=non-alcoholic" class="view-all-link">View all &rarr;</a>
+      </div>
+      <div class="ribbon">
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/na1.jpg" alt="Heineken Lager 0.0% Non-Alcoholic 6 x 330ml" />
+          <p class="product-name">Heineken Lager 0.0% Non-Alcoholic 6 x 330ml</p>
+          <p class="product-price">R109.99</p>
+        </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/na2.jpg" alt="Brutal Fruit Ruby Apple 0% Can 6 x 300ml" />
+          <p class="product-name">Brutal Fruit Ruby Apple 0% Can 6 x 300ml</p>
+          <p class="product-price">R94.99</p>
+        </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/na3.jpg" alt="Fruit Lagoon Pina Colada Cocktail Base 750ml" />
+          <p class="product-name">Fruit Lagoon Pina Colada Cocktail Base 750ml</p>
+          <p class="product-price">R109.99</p>
+        </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/na4.jpg" alt="JC Le Roux Le Domaine Non-Alcoholic 750ml" />
+          <p class="product-name">JC Le Roux Le Domaine Non-Alcoholic 750ml</p>
+          <p class="product-price">R109.99</p>
+        </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/na5.jpg" alt="Ice Tropez 0% Grape Cooler Nrb 275ml" />
+          <p class="product-name">Ice Tropez 0% Grape Cooler Nrb 275ml</p>
+          <p class="product-price">R84.99</p>
         </a>
       </div>
     </section>
@@ -90,24 +129,29 @@
       </div>
       <div class="ribbon">
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift1.jpg" alt="Whiskey Gift Set" />
-          <p class="product-name">Whiskey Glass Gift Set</p>
-          <p class="product-price">R349.99</p>
+          <img src="Images/products/gift1.jpg" alt="DAY Champagne Glass 250ml 4 Piece" />
+          <p class="product-name">DAY Champagne Glass 250ml 4 Piece</p>
+          <p class="product-price">R149.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift2.jpg" alt="Hip Flask" />
-          <p class="product-name">Leather Hip Flask</p>
-          <p class="product-price">R249.99</p>
+          <img src="Images/products/gift2.jpg" alt="Prestige Wing Type Corkscrew" />
+          <p class="product-name">Prestige Wing Type Corkscrew</p>
+          <p class="product-price">R89.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift3.jpg" alt="Cocktail Shaker Set" />
-          <p class="product-name">Cocktail Shaker Set</p>
-          <p class="product-price">R429.99</p>
+          <img src="Images/products/gift4.jpg" alt="Kitchen Inspire Stainless Steel Ice Tong" />
+          <p class="product-name">Kitchen Inspire Stainless Steel Ice Tong</p>
+          <p class="product-price">R149.99</p>
         </a>
         <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift4.jpg" alt="Whiskey Stones" />
-          <p class="product-name">Whiskey Stones Set</p>
-          <p class="product-price">R179.99</p>
+          <img src="Images/products/gift5.jpg" alt="Ethnix Ice Cube Trays 3 Pack" />
+          <p class="product-name">Ethnix Ice Cube Trays 3 Pack</p>
+          <p class="product-price">R69.99</p>
+        </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/gift3.jpg" alt="Outfit Freezer Pack 1kg" />
+          <p class="product-name">Outfit Freezer Pack 1kg</p>
+          <p class="product-price">R39.99</p>
         </a>
       </div>
     </section>
@@ -123,24 +167,16 @@
           <p>Whiskey</p>
         </a>
         <a href="#" class="card-surface category-card">
-          <img src="Images/categories/wine.jpg" alt="Wine" />
-          <p>Wine</p>
+          <img src="Images/categories/spirits.jpg" alt="Spirits" />
+          <p>Spirits</p>
         </a>
         <a href="#" class="card-surface category-card">
           <img src="Images/categories/beer.jpg" alt="Beer" />
           <p>Beer</p>
         </a>
         <a href="#" class="card-surface category-card">
-          <img src="Images/categories/vodka.jpg" alt="Vodka" />
-          <p>Vodka</p>
-        </a>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/gin.jpg" alt="Gin" />
+          <img src="Images/categories/wine.jpg" alt="Wine" />
           <p>Gin</p>
-        </a>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/rtd.jpg" alt="Ready to Drink" />
-          <p>RTDs</p>
         </a>
       </div>
     </section>
@@ -155,30 +191,6 @@
         <a href="#" class="card-surface guide-card"><p>Complete Cocktails Guide</p><span class="arrow">&rarr;</span></a>
         <a href="#" class="card-surface guide-card"><p>Find Your Dream Alcohol Quiz</p><span class="arrow">&rarr;</span></a>
         <a href="#" class="card-surface guide-card"><p>Alcohol Calculator</p><span class="arrow">&rarr;</span></a>
-      </div>
-    </section>
-
-    <section class="shell home-section">
-      <div class="section-header">
-        <h2>Non-Alcoholic Favourites</h2>
-        <a href="Shop.aspx?cat=non-alcoholic" class="view-all-link">View all &rarr;</a>
-      </div>
-      <div class="ribbon">
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na1.jpg" alt="Seedlip Spice" />
-          <p class="product-name">Seedlip Spice 94</p>
-          <p class="product-price">R429.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na2.jpg" alt="Heineken 0.0" />
-          <p class="product-name">Heineken 0.0</p>
-          <p class="product-price">R99.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na3.jpg" alt="Sparkling Grape Juice" />
-          <p class="product-name">Sparkling Grape Juice</p>
-          <p class="product-price">R59.99</p>
-        </a>
       </div>
     </section>
 
