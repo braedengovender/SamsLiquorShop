@@ -163,6 +163,14 @@
       </div>
       <div class="category-grid">
         <a href="#" class="card-surface category-card">
+          <img src="Images/categories/beer.jpg" alt="Beer & Ciders" />
+          <p>Beer & Ciders</p>
+        </a>
+        <a href="#" class="card-surface category-card">
+          <img src="Images/categories/wine.jpg" alt="Wine" />
+          <p>Wine</p>
+        </a>
+        <a href="#" class="card-surface category-card">
           <img src="Images/categories/whiskey.jpg" alt="Whiskey" />
           <p>Whiskey</p>
         </a>
@@ -170,14 +178,27 @@
           <img src="Images/categories/spirits.jpg" alt="Spirits" />
           <p>Spirits</p>
         </a>
+        <%--<a href="#" class="card-surface category-card">
+          <img src="Images/categories/rtdandpremix.jpg" alt="Ready-to-Drink (RTD) & Premix" />
+          <p>Ready-to-Drink (RTD) & Premix</p>
+        </a>--%>
         <a href="#" class="card-surface category-card">
-          <img src="Images/categories/beer.jpg" alt="Beer" />
-          <p>Beer</p>
+          <img src="Images/categories/nonalcoholic.png" alt="Non-Alcoholic Beverages" />
+          <p>Non-Alcoholic Beverages</p>
         </a>
         <a href="#" class="card-surface category-card">
-          <img src="Images/categories/wine.jpg" alt="Wine" />
-          <p>Gin</p>
+          <img src="Images/categories/accessories.jpg" alt="'Accessories & Barware'" />
+          <p>Accessories & Barware</p>
         </a>
+        <a href="#" class="card-surface category-card">
+          <img src="Images/categories/snacks.jpg" alt="Snacks & Food" />
+          <p>Snacks & Food</p>
+        </a>
+        <%--<a href="#" class="card-surface category-card">
+          <img src="Images/categories/tobaccoandvape.jpg" alt="Tobacco & Vaping" />
+          <p>Tobacco & Vaping</p>
+        </a>--%>
+        
       </div>
     </section>
 
@@ -186,11 +207,42 @@
         <h2>Expert Guides & Resources</h2>
       </div>
       <div class="guides-grid">
-        <a href="#" class="card-surface guide-card"><p>Best Whiskeys Under R500</p><span class="arrow">&rarr;</span></a>
-        <a href="#" class="card-surface guide-card"><p>Ultimate Braai Guide</p><span class="arrow">&rarr;</span></a>
-        <a href="#" class="card-surface guide-card"><p>Complete Cocktails Guide</p><span class="arrow">&rarr;</span></a>
-        <a href="#" class="card-surface guide-card"><p>Find Your Dream Alcohol Quiz</p><span class="arrow">&rarr;</span></a>
-        <a href="#" class="card-surface guide-card"><p>Alcohol Calculator</p><span class="arrow">&rarr;</span></a>
+        <a href="https://winefolly.com/tips/host-wine-tasting-party/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>How to Host a Wine Tasting Party</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://www.jamesonwhiskey.com/en/whiskey-guide/how-is-whiskey-made/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>How Whiskey Is Made</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://www.theguardian.com/food/2026/aug/23/quench-your-thirst-20-perfect-spritzes-and-shandies-to-try-now-from-kumquat-to-portergaff/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>20 Perfect Spritzes & Shandies to Try Now</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://www.acouplecooks.com/summer-cocktails/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>The Ultimate Summer Cocktails Guide</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://www.pnpwineandfoodfestival.co.za/events/durban/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>PnP Wine & Food Festival — Durban</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://www.worlddrinksawards.com/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>World Drinks Awards</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://www.internationalspiritsandwinefestival.com/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>International Spirits & Wine Festival</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://www.slightlypretentious.co/great-cocktails/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>A Guide to Great Cocktails</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <%--<a href="https://www.midnightblueelephant.com/wine-farms-in-constantia-cape-town/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>Best Wine Farms in Constantia, Cape Town</p>
+          <span class="arrow">&rarr;</span>
+        </a>--%>
       </div>
     </section>
 
@@ -204,21 +256,28 @@
           <img src="Images/blog/post1.jpg" alt="Blog post" />
           <div class="blog-card-body">
             <p class="blog-title">5 Wines to Try This Summer</p>
-            <p class="blog-excerpt">Our top picks for warm Durban evenings.</p>
+            <p class="blog-excerpt">Our top picks for warm Durban evenings, from crisp whites to light rosés.</p>
           </div>
         </a>
         <a href="#" class="card-surface blog-card">
           <img src="Images/blog/post2.jpg" alt="Blog post" />
           <div class="blog-card-body">
             <p class="blog-title">How to Host the Perfect Braai</p>
-            <p class="blog-excerpt">Drinks pairings, timing, and playlist tips.</p>
+            <p class="blog-excerpt">Drinks pairings, timing tips, and a playlist to keep the evening going.</p>
           </div>
         </a>
         <a href="#" class="card-surface blog-card">
           <img src="Images/blog/post3.jpg" alt="Blog post" />
           <div class="blog-card-body">
-            <p class="blog-title">Newsletter: August Picks</p>
-            <p class="blog-excerpt">What our team is drinking this month.</p>
+            <p class="blog-title">Behind the Bar: Meet Our Spirits Buyer</p>
+            <p class="blog-excerpt">We sat down with our head buyer to talk rare finds and what's coming next.</p>
+          </div>
+        </a>
+        <a href="#" class="card-surface blog-card">
+          <img src="Images/blog/post4.jpg" alt="Blog post" />
+          <div class="blog-card-body">
+            <p class="blog-title">Gin 101: A Beginner's Guide</p>
+            <p class="blog-excerpt">Botanicals, styles, and how to build your first proper gin and tonic.</p>
           </div>
         </a>
       </div>
