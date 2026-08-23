@@ -24,7 +24,7 @@
 <body>
     <div id="ageGate" class="age-gate">
       <div class="glass age-card">
-          <img src="Images/logo.png" alt="Sam's Liquor Shop" class="age-card-logo" />
+          <img src="Images/logo-cropped.png" alt="Sam's Liquor Shop" class="age-card-logo" />
         <p class="age-eyebrow">Sam's Liquor Shop supports the responsible consumption of alcohol.</p>
         <p class="age-question">If you are of legal drinking age, please confirm your date of birth to enter.</p>
 
@@ -85,7 +85,13 @@
           <span>Sam's Assistant</span>
         </div>
         <div id="chatbotMessages" class="chatbot-messages">
-          <div class="chatbot-msg bot">Cheers for stopping by! 🥂 Ask me anything and I'll do my best to help.</div>
+          <div class="chatbot-msg bot">Cheers for stopping by! 🥂 Ask me anything, or tap a question below.</div>
+          <div class="chatbot-quick-replies">
+            <button type="button" class="quick-reply" onclick="askQuick('hours')">What are your trading hours?</button>
+            <button type="button" class="quick-reply" onclick="askQuick('location')">Where are you located?</button>
+            <button type="button" class="quick-reply" onclick="askQuick('delivery')">Do you deliver?</button>
+            <button type="button" class="quick-reply" onclick="askQuick('loyalty')">How does the loyalty card work?</button>
+          </div>
         </div>
         <div class="chatbot-input-row">
           <input type="text" id="chatbotInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter'){sendChatMessage(event);}" />
@@ -129,30 +135,67 @@
 
         <header class="site-header shell">
           <nav class="glass nav-bar">
-            <div class="brand">Sam's Liquor Shop</div>
+            <a href="~/Default.aspx" runat="server" class="brand-logo-link">
+              <img src="Images/logo.png" alt="Sam's Liquor Shop" class="brand-logo" />
+            </a>
             <ul class="nav-links">
-              <li><a href="~/Default.aspx" runat="server">Home</a></li>
-              <li><a href="~/Shop.aspx" runat="server">Shop</a></li>
+              <li class="has-dropdown">
+                <a href="~/Shop.aspx" runat="server">Shop</a>
+                <div class="dropdown-menu">
+                  <a href="Shop.aspx?cat=beer">Beer</a>
+                  <a href="Shop.aspx?cat=spirits">Spirits</a>
+                  <a href="Shop.aspx?cat=wine">Wine</a>
+                  <a href="Shop.aspx?cat=cider-rtd">Cider & RTDs</a>
+                  <a href="Shop.aspx?cat=non-alcoholic">Non-Alcoholic</a>
+                  <a href="Shop.aspx?cat=gifts">Gift Sets</a>
+                </div>
+              </li>
               <li><a href="~/Specials.aspx" runat="server">Specials</a></li>
               <li><a href="~/Shipping.aspx" runat="server">Shipping</a></li>
               <li><a href="~/Rewards.aspx" runat="server">Rewards</a></li>
-              <li><a href="~/About.aspx" runat="server">About Us</a></li>
+              <li class="has-dropdown">
+                <a href="~/About.aspx" runat="server">About Us</a>
+                <div class="dropdown-menu">
+                  <a href="About.aspx">Our Story</a>
+                  <a href="Blog.aspx">Blog & Newsletter</a>
+                  <a href="Sustainability.aspx">Sustainability</a>
+                  <a href="Gallery.aspx">Gallery</a>
+                </div>
+              </li>
+              <li class="has-dropdown">
+                  <a href="~/AdviceAndHelp.aspx" runat="server">Advice & Help</a>
+                  <div class="dropdown-menu">
+                  <a href="ResponsibleDrinking.aspx">Responsible Drinking Support</a>
+                  <a href="FAQ.aspx">FAQ</a>
+                  <a href="Shipping.aspx">Shipping & Delivery Info</a>
+                  <a href="ReturnPolicy.aspx">Returns & Refunds</a>
+                  <a href="Contact.aspx">Contact Us</a>
+                </div>
+              </li>
               <li><a href="~/Contact.aspx" runat="server">Contact</a></li>
             </ul>
             <div class="nav-auth">
-              <button type="button" id="themeToggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
-                <span id="themeIcon">&#9789;</span>
-              </button>
+              <button type="button" class="icon-btn" onclick="toggleSearch()" aria-label="Search">&#128269;</button>
+              <a href="Cart.aspx" class="icon-btn" aria-label="Cart">&#128722;</a>
+
               <asp:PlaceHolder runat="server" ID="phLoggedOut">
                 <a runat="server" href="~/Login.aspx" class="btn-ghost">Log in</a>
                 <a runat="server" href="~/Account/Register" class="btn-primary">Register</a>
               </asp:PlaceHolder>
+
               <asp:PlaceHolder runat="server" ID="phLoggedIn" Visible="false">
-                <span class="nav-hello">Hello, <asp:Literal runat="server" ID="litUserName" /></span>
+                <a href="Account/Profile.aspx" class="icon-btn" aria-label="My Profile">&#128100;</a>
                 <asp:LinkButton runat="server" ID="btnLogout" CssClass="btn-ghost" OnClick="btnLogout_Click">Log out</asp:LinkButton>
               </asp:PlaceHolder>
+
+              <button type="button" id="themeToggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                <span id="themeIcon">&#9789;</span>
+              </button>
             </div>
           </nav>
+            <div id="searchBar" class="search-bar" style="display:none;">
+              <input type="text" placeholder="Search for products..." />
+            </div>
         </header>
 
         <div class="shell body-content">
@@ -162,61 +205,81 @@
 
         <section class="shell site-footer-main">
           <div class="footer-top">
-            <div class="footer-brand">
-              <img src="Images/logo.png" alt="Sam's Liquor Shop" class="footer-logo" />
-              <p class="footer-tagline">Durban's trusted liquor store — spirits, wine and more, delivered right.</p>
-              <address>
-                21 Coronation Road<br />
-                Tongaat, Durban, 4399<br />
-                KwaZulu-Natal
-              </address>
-              <p><a href="tel:+27824055932">082 405 5932</a></p>
-              <p><a href="mailto:info@samsliquorshop.co.za">info@samsliquorshop.co.za</a></p>
-              <div class="footer-map">
-                <iframe
-                  src="https://www.google.com/maps?q=21+Coronation+Road,+Tongaat,+4399&output=embed"
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+              <div class="footer-brand">
+                <img src="Images/logo-cropped.png" alt="Sam's Liquor Shop" class="footer-logo" />
+                <p class="footer-tagline">Durban's trusted liquor store — spirits, wine and more, delivered right.</p>
+                <address>
+                  21 Coronation Road<br />
+                  Tongaat, Durban, 4399<br />
+                  KwaZulu-Natal
+                </address>
+                <p><a href="tel:+27824055932">082 405 5932</a></p>
+                <p><a href="mailto:info@samsliquorshop.co.za">info@samsliquorshop.co.za</a></p>
+
+                <div class="footer-social">
+                  <a href="#" aria-label="Facebook"><img src="Images/social/facebook.png" alt="Facebook" /></a>
+                  <a href="#" aria-label="Instagram"><img src="Images/social/instagram.png" alt="Instagram" /></a>
+                  <a href="#" aria-label="X"><img src="Images/social/x.png" alt="Twitter" /></a>
+                  <a href="#" aria-label="YouTube"><img src="Images/social/youtube.png" alt="YouTube" /></a>
+                  <a href="#" aria-label="TikTok"><img src="Images/social/tiktok.png" alt="TikTok" /></a>
+                </div>
+
+                <div class="footer-map">
+                  <iframe
+                    src="https://www.google.com/maps?q=21+Coronation+Road,+Tongaat,+4399&output=embed"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                  </iframe>
+                </div>
+              </div>
+
+              <div class="footer-col">
+                <h3>Shop</h3>
+                <ul>
+                  <li><a href="Shop.aspx">All Products</a></li>
+                  <li><a href="Specials.aspx">Specials</a></li>
+                  <li><a href="Shop.aspx?cat=gifts">Gift Ideas & Accessories</a></li>
+                  <li><a href="About.aspx">About Us</a></li>
+                  <li><a href="Contact.aspx">Contact</a></li>
+                </ul>
+              </div>
+
+              <div class="footer-col">
+                <h3>Your Account</h3>
+                <ul>
+                  <li><a href="Account/Profile.aspx">My Profile</a></li>
+                  <li><a href="Account/Orders.aspx">My Orders</a></li>
+                  <li><a href="WishList.aspx">Wish List</a></li>
+                  <li><a href="Account/Settings.aspx">Settings</a></li>
+                  <li><a href="Loyalty.aspx">Loyalty & Rewards</a></li>
+                  <li><a href="Loyalty.aspx#card">Get the Loyalty Card</a></li>
+                </ul>
+              </div>
+
+              <div class="footer-col">
+                <h3>Support</h3>
+                <ul>
+                  <li><a href="FAQ.aspx">FAQ</a></li>
+                  <li><a href="DeliveryPolicy.aspx">Delivery Policy</a></li>
+                  <li><a href="ReturnPolicy.aspx">Return Policy</a></li>
+                  <li><a href="PrivacyPolicy.aspx">Privacy Policy</a></li>
+                  <li><a href="CookiesPolicy.aspx">Cookies Policy</a></li>
+                  <li><a href="Terms.aspx">Terms & Conditions</a></li>
+                  <li><a href="WebsiteTerms.aspx">Website Terms of Use</a></li>
+                </ul>
+              </div>
+
+              <div class="footer-col">
+                <h3>Trading Hours</h3>
+                <ul class="hours-list">
+                  <li><span>Mon – Thu</span><span>09:00 – 18:00</span></li>
+                  <li><span>Fri – Sat</span><span>09:00 – 20:00</span></li>
+                  <li><span>Sunday</span><span>10:00 – 15:00</span></li>
+                  <li><span>Public Holidays</span><span>10:00 – 15:00</span></li>
+                </ul>
+                <p class="hours-note">Trading hours may vary in accordance with liquor licensing regulations.</p>
               </div>
             </div>
-
-            <div class="footer-col">
-              <h3>Helpful Links</h3>
-              <ul>
-                <li><a href="Loyalty.aspx">Loyalty &amp; Rewards</a></li>
-                <li><a href="Loyalty.aspx#card">Get the Loyalty Card</a></li>
-                <li><a href="WishList.aspx">Wish List</a></li>
-                <li><a href="Account/Profile.aspx">My Profile</a></li>
-                <li><a href="Account/Orders.aspx">My Orders</a></li>
-                <li><a href="Account/Settings.aspx">Settings</a></li>
-              </ul>
-            </div>
-
-            <div class="footer-col">
-              <h3>Policies</h3>
-              <ul>
-                <li><a href="DeliveryPolicy.aspx">Delivery Policy</a></li>
-                <li><a href="ReturnPolicy.aspx">Return Policy</a></li>
-                <li><a href="PrivacyPolicy.aspx">Privacy Policy</a></li>
-                <li><a href="CookiesPolicy.aspx">Cookies Policy</a></li>
-                <li><a href="Terms.aspx">Terms &amp; Conditions</a></li>
-                <li><a href="WebsiteTerms.aspx">Website Terms of Use</a></li>
-                <li><a href="FAQ.aspx">FAQ</a></li>
-              </ul>
-            </div>
-
-            <div class="footer-col">
-              <h3>Trading Hours</h3>
-              <ul class="hours-list">
-                <li><span>Mon – Thu</span><span>09:00 – 18:00</span></li>
-                <li><span>Fri – Sat</span><span>09:00 – 20:00</span></li>
-                <li><span>Sunday</span><span>10:00 – 15:00</span></li>
-                <li><span>Public Holidays</span><span>10:00 – 15:00</span></li>
-              </ul>
-              <p class="hours-note">Trading hours may vary in accordance with liquor licensing regulations.</p>
-            </div>
-          </div>
 
           <div class="footer-newsletter-band">
             <div class="newsletter-band-text">
@@ -282,6 +345,15 @@
             document.documentElement.setAttribute('data-theme', next);
             document.getElementById('themeIcon').innerHTML = next === 'dark' ? '&#9728;' : '&#9789;';
             localStorage.setItem('theme', next);
+        }
+
+        function toggleSearch() {
+            var bar = document.getElementById('searchBar');
+            var isHidden = bar.style.display === 'none';
+            bar.style.display = isHidden ? 'block' : 'none';
+            if (isHidden) {
+                bar.querySelector('input').focus();
+            }
         }
 
         // Set the correct icon on load based on saved preference
@@ -394,6 +466,33 @@
             panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
         }
 
+        var chatAnswers = {
+            hours: "We're open Mon–Thu 09:00–18:00, Fri–Sat 09:00–20:00, and Sun 10:00–15:00 (same on public holidays).",
+            location: "You'll find us at 21 Coronation Road, Tongaat, Durban. There's a map in our footer!",
+            delivery: "Yes! We offer same-day delivery in the Durban area on orders placed before 2pm.",
+            loyalty: "Every purchase earns you points automatically once you're signed in — head to the Rewards page to see your balance and redeem discounts."
+        };
+
+        function askQuick(key) {
+            var messages = document.getElementById('chatbotMessages');
+            var questionText = document.querySelector('[onclick="askQuick(\'' + key + '\')"]').textContent;
+
+            var userMsg = document.createElement('div');
+            userMsg.className = 'chatbot-msg user';
+            userMsg.textContent = questionText;
+            messages.appendChild(userMsg);
+
+            setTimeout(function () {
+                var botMsg = document.createElement('div');
+                botMsg.className = 'chatbot-msg bot';
+                botMsg.textContent = chatAnswers[key];
+                messages.appendChild(botMsg);
+                messages.scrollTop = messages.scrollHeight;
+            }, 400);
+
+            messages.scrollTop = messages.scrollHeight;
+        }
+
         function sendChatMessage(e) {
             e.preventDefault();
             var input = document.getElementById('chatbotInput');
@@ -408,9 +507,16 @@
             input.value = '';
 
             setTimeout(function () {
+                var text = userMsg.textContent.toLowerCase();
+                var reply = "Thanks for your message! One of our team will get back to you shortly.";
+                if (text.indexOf('hour') !== -1 || text.indexOf('open') !== -1) reply = chatAnswers.hours;
+                else if (text.indexOf('where') !== -1 || text.indexOf('locat') !== -1 || text.indexOf('address') !== -1) reply = chatAnswers.location;
+                else if (text.indexOf('deliver') !== -1) reply = chatAnswers.delivery;
+                else if (text.indexOf('loyal') !== -1 || text.indexOf('reward') !== -1) reply = chatAnswers.loyalty;
+
                 var botMsg = document.createElement('div');
                 botMsg.className = 'chatbot-msg bot';
-                botMsg.textContent = "Thanks for your message! One of our team will get back to you shortly — in the meantime, feel free to browse our Specials page.";
+                botMsg.textContent = reply;
                 messages.appendChild(botMsg);
                 messages.scrollTop = messages.scrollHeight;
             }, 500);

@@ -199,6 +199,7 @@
     <Content Include="Images\categories\wine.jpg" />
     <Content Include="Images\chatbot-icon.png" />
     <Content Include="Images\hero-drink.jpg" />
+    <Content Include="Images\logo-cropped.png" />
     <Content Include="Images\logo.png" />
     <Content Include="Images\products\gift1.jpg" />
     <Content Include="Images\products\gift2.jpg" />
@@ -221,6 +222,11 @@
     <Content Include="Images\products\promo4.jpg" />
     <Content Include="Images\products\promo5.jpg" />
     <Content Include="Images\responsible-drinking.jpg" />
+    <Content Include="Images\social\facebook.png" />
+    <Content Include="Images\social\instagram.png" />
+    <Content Include="Images\social\tiktok.png" />
+    <Content Include="Images\social\x.png" />
+    <Content Include="Images\social\youtube.png" />
     <Content Include="Login.aspx" />
     <Content Include="Manager\Dashboard.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />

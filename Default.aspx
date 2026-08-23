@@ -19,6 +19,37 @@
       </div>
     </section>
 
+    <section class="shell home-section about-section">
+      <div class="section-header">
+        <h2>Get to Know Us</h2>
+      </div>
+      <p class="section-subtext">Discover Sam's World</p>
+
+      <div class="about-grid">
+          <div class="card-surface about-card">
+            <img src="Images/about/store-history.jpg" alt="Sam's Liquor Shop storefront" />
+            <div class="about-card-body">
+              <h3>21 Years in Tongaat</h3>
+              <p>From a corner shop to Durban's trusted name in spirits, wine and more.</p>
+            </div>
+          </div>
+          <div class="card-surface about-card">
+            <img src="Images/about/loyalty-card.jpg" alt="Sam's Liquor Shop loyalty card" />
+            <div class="about-card-body">
+              <h3>Loyalty That Pays</h3>
+              <p>Earn points on every order and unlock extra discounts along the way.</p>
+            </div>
+          </div>
+          <div class="card-surface about-card">
+            <img src="Images/about/store-location.jpg" alt="Sam's Liquor Shop location" />
+            <div class="about-card-body">
+              <h3>21 Coronation Road</h3>
+              <p>Drop by for expert recommendations and same-day collection.</p>
+            </div>
+          </div>
+    </div>
+    </section>
+
     <section class="shell home-section">
       <div class="section-header">
         <h2>Featured at Sam's</h2>
@@ -194,10 +225,10 @@
           <img src="Images/categories/snacks.jpg" alt="Snacks & Food" />
           <p>Snacks & Food</p>
         </a>
-        <%--<a href="#" class="card-surface category-card">
+        <a href="#" class="card-surface category-card">
           <img src="Images/categories/tobaccoandvape.jpg" alt="Tobacco & Vaping" />
           <p>Tobacco & Vaping</p>
-        </a>--%>
+        </a>
         
       </div>
     </section>
@@ -317,11 +348,10 @@
           <p class="stat-label">Sales made</p>
         </div>
         <div class="stat-item">
-          <p class="stat-number">200+</p>
+          <p class="stat-number">2000+</p>
           <p class="stat-label">Subscribed newsletter customers</p>
         </div>
       </div>
     </section>
-
 
 </asp:Content>
