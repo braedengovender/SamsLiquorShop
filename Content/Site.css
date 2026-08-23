@@ -1189,3 +1189,53 @@ body::before {
         align-items: flex-start;
     }
 }
+
+.nav-hello {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-right: 4px;
+}
+
+.login-wrap {
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 44px 40px;
+    text-align: left;
+}
+
+.login-eyebrow {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin: 0 0 8px;
+}
+
+.login-heading {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0 0 28px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 13px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--glass-border);
+    font-size: 0.95rem;
+    background: #fff;
+}
+
+.login-submit {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    cursor: pointer;
+    margin-top: 8px;
+}

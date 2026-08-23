@@ -47,7 +47,7 @@
           <h2 class="newsletter-heading">Welcome to Durban's Finest Drinks Selection</h2>
           <p class="newsletter-sub">From spirits to global wines — your journey starts here. Sign up to join our global community.</p>
 
-          <form id="newsletterForm" class="newsletter-form" onsubmit="return submitNewsletter(event)">
+          <div id="newsletterForm" class="newsletter-form">
             <div class="form-row">
               <div class="form-group">
                 <input type="text" id="nlFirstName" placeholder="First name" />
@@ -62,12 +62,12 @@
               <input type="email" id="nlEmail" placeholder="Email address" />
               <span class="field-error" id="nlEmailError"></span>
             </div>
-            <button type="submit" class="btn-primary newsletter-submit">Sign Up</button>
+            <button type="button" class="btn-primary newsletter-submit" onclick="submitNewsletter(event)">Sign Up</button>
             <p class="newsletter-terms">
               By signing up, you agree to receive marketing emails. View our
               <a href="PrivacyPolicy.aspx">privacy policy</a> and <a href="TermsOfService.aspx">terms of service</a> for more information.
             </p>
-          </form>
+          </div>
         </div>
       </div>
     </div>
@@ -81,10 +81,10 @@
         <div id="chatbotMessages" class="chatbot-messages">
           <div class="chatbot-msg bot">Cheers for stopping by! 🥂 Ask me anything and I'll do my best to help.</div>
         </div>
-        <form class="chatbot-input-row" onsubmit="return sendChatMessage(event)">
-          <input type="text" id="chatbotInput" placeholder="Type a message..." />
-          <button type="submit">&rarr;</button>
-        </form>
+        <div class="chatbot-input-row">
+          <input type="text" id="chatbotInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter'){sendChatMessage(event);}" />
+          <button type="button" onclick="sendChatMessage(event)">&rarr;</button>
+        </div>
       </div>
       <button type="button" class="chatbot-toggle glass" onclick="toggleChatbot()" aria-label="Chat with us">
         <img src="Images/logo-icon.png" alt="Chat" class="chatbot-toggle-logo" />
@@ -134,8 +134,14 @@
               <li><a href="~/Contact.aspx" runat="server">Contact</a></li>
             </ul>
             <div class="nav-auth">
-              <a runat="server" href="~/Account/Login" class="btn-ghost">Log in</a>
-              <a runat="server" href="~/Account/Register" class="btn-primary">Register</a>
+              <asp:PlaceHolder runat="server" ID="phLoggedOut">
+                <a runat="server" href="~/Login.aspx" class="btn-ghost">Log in</a>
+                <a runat="server" href="~/Account/Register" class="btn-primary">Register</a>
+              </asp:PlaceHolder>
+              <asp:PlaceHolder runat="server" ID="phLoggedIn" Visible="false">
+                <span class="nav-hello">Hello, <asp:Literal runat="server" ID="litUserName" /></span>
+                <asp:LinkButton runat="server" ID="btnLogout" CssClass="btn-ghost" OnClick="btnLogout_Click">Log out</asp:LinkButton>
+              </asp:PlaceHolder>
             </div>
           </nav>
         </header>
@@ -208,7 +214,7 @@
               <h3>Be the first to know!</h3>
               <p>Sign up for our newsletter for the latest deals and what's new.</p>
             </div>
-            <form class="footer-newsletter-form" onsubmit="return submitFooterNewsletter(event)">
+            <div class="footer-newsletter-form">
               <div class="footer-field">
                 <input type="text" placeholder="First name" id="footerFirstName" class="footer-input" />
                 <span class="field-error" id="footerFirstNameError"></span>
@@ -221,8 +227,8 @@
                 <input type="email" placeholder="Email address" id="footerEmail" class="footer-input" />
                 <span class="field-error" id="footerEmailError"></span>
               </div>
-              <button type="submit" class="btn-primary">Sign Up</button>
-            </form>
+              <button type="button" class="btn-primary" onclick="submitFooterNewsletter(event)">Sign Up</button>
+            </div>
             <p class="footer-newsletter-privacy">How do we use your information? Read our <a href="PrivacyPolicy.aspx">privacy policy</a>.</p>
           </div>
         </section>

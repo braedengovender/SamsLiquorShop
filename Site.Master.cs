@@ -69,7 +69,18 @@ namespace SamsLiquorShop
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["UserRole"] != null)
+            {
+                phLoggedOut.Visible = false;
+                phLoggedIn.Visible = true;
+                litUserName.Text = Server.HtmlEncode(Session["UserName"].ToString());
+            }
+        }
 
+        protected void btnLogout_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Response.Redirect("~/Default.aspx");
         }
 
         protected void Unnamed_LoggingOut(object sender, LoginCancelEventArgs e)
