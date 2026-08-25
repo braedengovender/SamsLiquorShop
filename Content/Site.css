@@ -1742,3 +1742,213 @@ body::before {
 [data-theme="dark"] .footer-social img {
     filter: invert(1);
 }
+
+/* --- How it works: numbered steps --- */
+.ship-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+}
+
+.ship-step {
+    padding: 26px 22px;
+}
+
+.ship-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-tint-amber);
+    color: var(--accent-amber-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+}
+
+.ship-step h3 {
+    font-size: 1.05rem;
+    margin: 0 0 8px;
+}
+
+.ship-step p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+
+/* --- Areas & costs table --- */
+.ship-table-wrap {
+    padding: 0;
+    overflow-x: auto; /* keeps the table usable on phones */
+}
+
+.ship-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+}
+
+    .ship-table th,
+    .ship-table td {
+        text-align: left;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--glass-border);
+        vertical-align: top;
+        font-size: 0.9rem;
+    }
+
+    .ship-table thead th {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-secondary);
+        font-weight: 600;
+        background: var(--bg-tint-blue);
+    }
+
+    .ship-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .ship-table td:last-child {
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+.ship-table-note {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* --- 18+ notice --- */
+.ship-notice {
+    display: flex;
+    gap: 22px;
+    align-items: flex-start;
+    padding: 28px;
+    border-left: 4px solid var(--accent-amber);
+}
+
+.ship-notice-icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--bg-tint-amber);
+    color: var(--accent-amber-dark);
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.ship-notice h3 {
+    margin: 0 0 10px;
+    font-size: 1.15rem;
+}
+
+.ship-notice p {
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.ship-notice-links a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+    .ship-notice-links a:hover {
+        text-decoration: underline;
+    }
+
+/* --- Two-column panels (cut-offs, tracking) --- */
+.ship-two-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.ship-panel {
+    padding: 26px;
+}
+
+    .ship-panel h3 {
+        margin: 0 0 14px;
+        font-size: 1.1rem;
+    }
+
+    .ship-panel p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .ship-panel .hours-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 12px;
+    }
+
+        .ship-panel .hours-list li {
+            padding: 7px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+            .ship-panel .hours-list li:last-child {
+                border-bottom: none;
+            }
+
+/* --- Closing CTA --- */
+.ship-cta {
+    padding: 40px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+}
+
+    .ship-cta h3 {
+        margin: 0 0 8px;
+        font-size: 1.3rem;
+    }
+
+    .ship-cta p {
+        margin: 0 0 20px;
+        color: var(--text-secondary);
+    }
+
+    .ship-cta .hero-buttons {
+        justify-content: center;
+    }
+
+/* --- Mobile --- */
+@media screen and (max-width: 768px) {
+    .ship-notice {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .ship-cta {
+        padding: 28px 20px;
+    }
+}
+
+/* --- Dark mode --- */
+[data-theme="dark"] .ship-table thead th {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .ship-step-num,
+[data-theme="dark"] .ship-notice-icon {
+    background: rgba(201, 162, 75, 0.16);
+    color: var(--accent-amber);
+}
