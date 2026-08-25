@@ -77,6 +77,11 @@
           <p class="product-price">R749.95</p>
         </a>
         <a href="#" class="card-surface product-card">
+          <img src="Images/products/product6.jpg" alt="Amarula Cream Liqueur 750ml" />
+          <p class="product-name">Amarula Cream Liqueur 750ml</p>
+          <p class="product-price">R184.99</p>
+        </a>
+        <a href="#" class="card-surface product-card">
           <img src="Images/products/product5.jpg" alt="Hendricks Gin 750ml" />
           <p class="product-name">Hendricks Gin 750ml</p>
           <p class="product-price">R499.99</p>
@@ -116,6 +121,11 @@
           <p class="product-name">Nederburg Baronne 750ml</p>
           <p class="product-price">R79.99</p>
         </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/promo6.jpg" alt="Carling Black Label Local Beer 6 x 500ml" />
+          <p class="product-name">Carling Black Label Local Beer 6 x 500ml</p>
+          <p class="product-price">R84.99</p>
+        </a>
       </div>
     </section>
 
@@ -150,6 +160,11 @@
           <p class="product-name">Ice Tropez 0% Grape Cooler Nrb 275ml</p>
           <p class="product-price">R84.99</p>
         </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/na6.jpg" alt="Savanna Alcoholic Free Lemon NRB 330ml" />
+          <p class="product-name">Savanna Alcoholic Free Lemon NRB 330ml</p>
+          <p class="product-price">R24.99</p>
+        </a>
       </div>
     </section>
 
@@ -183,6 +198,11 @@
           <img src="Images/products/gift3.jpg" alt="Outfit Freezer Pack 1kg" />
           <p class="product-name">Outfit Freezer Pack 1kg</p>
           <p class="product-price">R39.99</p>
+        </a>
+        <a href="#" class="card-surface product-card">
+          <img src="Images/products/gift6.jpg" alt="Kitchen Inspire Stainless Steel Ice Tong" />
+          <p class="product-name">Kitchen Inspire Stainless Steel Ice Tong</p>
+          <p class="product-price">R149.99</p>
         </a>
       </div>
     </section>
@@ -270,10 +290,18 @@
           <p>A Guide to Great Cocktails</p>
           <span class="arrow">&rarr;</span>
         </a>
-        <%--<a href="https://www.midnightblueelephant.com/wine-farms-in-constantia-cape-town/" target="_blank" rel="noopener" class="card-surface guide-card">
+        <a href="https://www.midnightblueelephant.com/wine-farms-in-constantia-cape-town/" target="_blank" rel="noopener" class="card-surface guide-card">
           <p>Best Wine Farms in Constantia, Cape Town</p>
           <span class="arrow">&rarr;</span>
-        </a>--%>
+        </a>
+        <a href="https://www.wineenthusiast.com/culture/industry-news/drinks-trends-2026/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>What's on the Drinks Menu for 2026</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="https://www.tastingtable.com/2082831/cocktail-trends-expected-2026/" target="_blank" rel="noopener" class="card-surface guide-card">
+          <p>8 Cocktail Trends to Look Forward to in 2026</p>
+          <span class="arrow">&rarr;</span>
+        </a>
       </div>
     </section>
 
@@ -309,6 +337,13 @@
           <div class="blog-card-body">
             <p class="blog-title">Gin 101: A Beginner's Guide</p>
             <p class="blog-excerpt">Botanicals, styles, and how to build your first proper gin and tonic.</p>
+          </div>
+        </a>
+        <a href="#" class="card-surface blog-card">
+          <img src="Images/blog/post5.jpg" alt="Blog post" />
+          <div class="blog-card-body">
+            <p class="blog-title">Low & No: Our Favourite Alcohol-Free Picks</p>
+            <p class="blog-excerpt">Great taste doesn't need proof — our top zero-proof serves for any occasion.</p>
           </div>
         </a>
       </div>

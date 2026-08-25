@@ -30,6 +30,13 @@ namespace SamsLiquorShop
                     Session["UserRole"] = account.Role;
                     Session["UserName"] = account.Username;
 
+                    if (RememberMe.Checked)
+                    {
+                        HttpCookie rememberCookie = new HttpCookie("SamsRememberedUser", account.Username);
+                        rememberCookie.Expires = DateTime.Now.AddDays(30);
+                        Response.Cookies.Add(rememberCookie);
+                    }
+
                     switch (account.Role)
                     {
                         case "Customer":
@@ -46,7 +53,7 @@ namespace SamsLiquorShop
                 }
             }
 
-            lblError.Text = "Invalid username or password.";
+            lblError.Text = "Invalid email/username or password.";
             lblError.Visible = true;
         }
     }

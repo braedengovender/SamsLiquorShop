@@ -45,13 +45,34 @@
       </div>
     </div>
 
-    <div id="newsletterModal" class="newsletter-overlay" style="display:none;">
+    <div id="newsletterModal" class="newsletter-overlay">
       <div class="glass newsletter-card">
         <button type="button" class="newsletter-close" onclick="closeNewsletter()" aria-label="Close">&times;</button>
-        <div class="newsletter-content">
-          <p class="newsletter-eyebrow">Sam's Liquor Shop</p>
-          <h2 class="newsletter-heading">Welcome to Durban's Finest Drinks Selection</h2>
-          <p class="newsletter-sub">From spirits to global wines — your journey starts here. Sign up to join our global community.</p>
+
+        <div class="newsletter-visual">
+          <svg class="newsletter-decor" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85">
+              <path d="M 130 30 L 130 60 Q 130 68 120 76 Q 100 92 100 118 L 100 340 Q 100 358 118 358 L 182 358 Q 200 358 200 340 L 200 118 Q 200 92 180 76 Q 170 68 170 60 L 170 30 Z" />
+              <rect x="126" y="14" width="48" height="18" rx="4" />
+              <line x1="100" y1="180" x2="200" y2="180" stroke-width="1.2" opacity="0.5" />
+            </g>
+            <g clip-path="url(#nlBottleClip)">
+              <rect x="100" y="358" width="100" height="140" fill="var(--accent-amber)" opacity="0.4" />
+            </g>
+            <defs>
+              <clipPath id="nlBottleClip">
+                <path d="M 100 180 L 100 340 Q 100 358 118 358 L 182 358 Q 200 358 200 340 L 200 180 Z" />
+              </clipPath>
+            </defs>
+          </svg>
+          <p class="newsletter-visual-tag">Sam's Liquor Shop</p>
+          <h2 class="newsletter-visual-heading">Welcome to Durban's Finest Drinks Selection</h2>
+          <p class="newsletter-visual-sub">From spirits to global wines — your journey starts here.</p>
+        </div>
+
+        <div class="newsletter-form-side">
+          <p class="newsletter-form-eyebrow">Join Our Community</p>
+          <p class="newsletter-form-lead">Sign up and be the first to hear about new arrivals, tastings, and exclusive offers.</p>
 
           <div id="newsletterForm" class="newsletter-form">
             <div class="form-row">
@@ -71,7 +92,7 @@
             <button type="button" class="btn-primary newsletter-submit" onclick="submitNewsletter(event)">Sign Up</button>
             <p class="newsletter-terms">
               By signing up, you agree to receive marketing emails. View our
-              <a href="PrivacyPolicy.aspx">privacy policy</a> and <a href="TermsOfService.aspx">terms of service</a> for more information.
+              <a href="PrivacyPolicy.aspx">privacy policy</a> and <a href="TermsOfService.aspx">terms of service</a>.
             </p>
           </div>
         </div>
@@ -136,7 +157,7 @@
         <header class="site-header shell">
           <nav class="glass nav-bar">
             <a href="~/Default.aspx" runat="server" class="brand-logo-link">
-              <img src="Images/logo.png" alt="Sam's Liquor Shop" class="brand-logo" />
+              <img src="Images/logo-spaced.png" alt="Sam's Liquor Shop" class="brand-logo" />
             </a>
             <ul class="nav-links">
               <li class="has-dropdown">
@@ -415,11 +436,11 @@
         }
 
         function showNewsletter() {
-            document.getElementById('newsletterModal').style.display = 'flex';
+            document.getElementById('newsletterModal').classList.add('is-open');
         }
 
         function closeNewsletter() {
-            document.getElementById('newsletterModal').style.display = 'none';
+            document.getElementById('newsletterModal').classList.remove('is-open');
             showCookieBanner();
         }
 
@@ -590,6 +611,44 @@
 
             first.value = ''; last.value = ''; email.value = '';
             return false;
+        }
+
+        function togglePasswordVisibility() {
+            var pwd = document.getElementById('txtPassword');
+            var icon = document.getElementById('eyeIcon');
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                icon.innerHTML = '&#128584;';
+            } else {
+                pwd.type = 'password';
+                icon.innerHTML = '&#128065;';
+            }
+        }
+
+        function validateLoginForm() {
+            var username = document.getElementById('txtUsername');
+            var password = document.getElementById('txtPassword');
+            var usernameError = document.getElementById('usernameError');
+            var passwordError = document.getElementById('passwordError');
+            var valid = true;
+
+            usernameError.textContent = '';
+            passwordError.textContent = '';
+            username.classList.remove('invalid');
+            password.classList.remove('invalid');
+
+            if (!username.value.trim()) {
+                usernameError.textContent = 'Email or username is required.';
+                username.classList.add('invalid');
+                valid = false;
+            }
+            if (!password.value.trim()) {
+                passwordError.textContent = 'Password is required.';
+                password.classList.add('invalid');
+                valid = false;
+            }
+
+            return valid;
         }
 
     </script>
