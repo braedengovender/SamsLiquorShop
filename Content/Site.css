@@ -2234,6 +2234,161 @@ body {
         }
 }
 
+/* --- Rewards --- */
+.card-surface.no-lift:hover {
+    transform: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+/* --- Balance panel --- */
+.rw-balance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding: 36px 40px;
+    border-radius: var(--radius-lg);
+}
+
+.rw-balance-main {
+    flex: 1 1 320px;
+}
+
+.rw-balance-eyebrow {
+    margin: 0 0 6px;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+}
+
+.rw-balance h3 {
+    margin: 0 0 8px;
+    font-size: 1.35rem;
+}
+
+.rw-balance-value {
+    margin: 0 0 8px;
+    font-size: 2.6rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--accent-amber-dark);
+}
+
+    .rw-balance-value span {
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--text-secondary);
+    }
+
+.rw-balance p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* --- How it works steps --- */
+.rw-step {
+    padding: 26px 22px;
+}
+
+.rw-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--bg-tint-amber);
+    color: var(--accent-amber-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+}
+
+.rw-step h3 {
+    font-size: 1.05rem;
+    margin: 0 0 8px;
+}
+
+.rw-step p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+
+/* --- Loyalty card section --- */
+.rw-card-section {
+    display: grid;
+    grid-template-columns: minmax(240px, 40%) 1fr;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+    .rw-card-section img {
+        width: 100%;
+        height: 100%;
+        min-height: 260px;
+        object-fit: cover;
+        display: block;
+    }
+
+.rw-card-body {
+    padding: 32px;
+}
+
+    .rw-card-body h3 {
+        margin: 0 0 12px;
+        font-size: 1.2rem;
+    }
+
+    .rw-card-body p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin: 0 0 12px;
+    }
+
+/* --- Mobile --- */
+@media screen and (max-width: 768px) {
+    .rw-balance {
+        padding: 26px 22px;
+    }
+
+    .rw-balance-value {
+        font-size: 2.1rem;
+    }
+
+    .rw-card-section {
+        grid-template-columns: 1fr;
+    }
+
+        .rw-card-section img {
+            min-height: 200px;
+        }
+
+    .rw-card-body {
+        padding: 24px;
+    }
+}
+
+/* --- Dark mode --- */
+[data-theme="dark"] .rw-step-num {
+    background: rgba(201, 162, 75, 0.16);
+    color: var(--accent-amber);
+}
+
+[data-theme="dark"] .rw-balance-value {
+    color: var(--accent-amber);
+}
+
+[data-theme="dark"] .card-surface.no-lift:hover {
+    box-shadow: none;
+}
+
 /* --- Dark mode --- */
 [data-theme="dark"] .timeline-year,
 [data-theme="dark"] .topic-tag {

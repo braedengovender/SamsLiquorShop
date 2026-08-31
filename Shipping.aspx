@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Shipping & Delivery" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Shipping.aspx.cs" Inherits="SamsLiquorShop.Shipping" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
- 
+
     <%-- ============ PAGE HEADER ============ --%>
     <section class="shell home-section">
       <div class="section-header">
@@ -9,7 +9,7 @@
       </div>
       <p class="section-subtext">Getting your order to your door, safely and on time.</p>
     </section>
- 
+
     <%-- ============ OPTIONS AT A GLANCE ============ --%>
     <section class="shell home-section">
       <div class="glass stats-bar">
@@ -29,38 +29,38 @@
         </div>
       </div>
     </section>
- 
+
     <%-- ============ HOW IT WORKS ============ --%>
     <section class="shell home-section">
       <div class="section-header">
         <h2>How It Works</h2>
       </div>
       <p class="section-subtext">From checkout to your doorstep in four steps.</p>
- 
+
       <div class="ship-steps">
-        <div class="card-surface ship-step">
+        <div class="card-surface no-lift ship-step">
           <span class="ship-step-num">1</span>
           <h3>Place your order</h3>
           <p>Shop online and check out. You'll get an email confirmation with your order number straight away.</p>
         </div>
-        <div class="card-surface ship-step">
+        <div class="card-surface no-lift ship-step">
           <span class="ship-step-num">2</span>
           <h3>We pack it</h3>
           <p>Our team picks and packs your order in store, with bottles wrapped and boxed to survive the trip.</p>
         </div>
-        <div class="card-surface ship-step">
+        <div class="card-surface no-lift ship-step">
           <span class="ship-step-num">3</span>
           <h3>Out for delivery</h3>
           <p>You'll receive a tracking link by SMS and email as soon as your order leaves our store.</p>
         </div>
-        <div class="card-surface ship-step">
+        <div class="card-surface no-lift ship-step">
           <span class="ship-step-num">4</span>
           <h3>ID on arrival</h3>
           <p>Have your ID ready. Our driver must verify you're 18 or older before handing over any alcohol.</p>
         </div>
       </div>
     </section>
- 
+
     <%-- ============ AREAS & COSTS ============ --%>
     <section class="shell home-section">
       <div class="section-header">
@@ -68,8 +68,8 @@
       </div>
       <%-- [CONFIRM] All fees, thresholds and lead times below are placeholders --%>
       <p class="section-subtext">Free delivery on all orders over R750.</p>
- 
-      <div class="card-surface ship-table-wrap">
+
+      <div class="card-surface no-lift ship-table-wrap">
         <table class="ship-table">
           <thead>
             <tr>
@@ -114,16 +114,16 @@
           </tbody>
         </table>
       </div>
- 
+
       <p class="hours-note">
         Minimum order value for delivery is R250. We currently deliver within South Africa only &mdash;
         we cannot ship alcohol across international borders.
       </p>
     </section>
- 
+
     <%-- ============ AGE VERIFICATION ============ --%>
     <section class="shell home-section">
-      <div class="card-surface ship-notice">
+      <div class="card-surface no-lift ship-notice">
         <span class="ship-notice-icon">18+</span>
         <div>
           <h3>We check ID at the door. Every time.</h3>
@@ -144,16 +144,16 @@
         </div>
       </div>
     </section>
- 
+
     <%-- ============ CUT-OFFS & WINDOWS ============ --%>
     <section class="shell home-section">
       <div class="section-header">
         <h2>Cut-Off Times &amp; Delivery Windows</h2>
       </div>
       <p class="section-subtext">When to order, and when to expect us.</p>
- 
+
       <div class="ship-two-col">
-        <div class="card-surface ship-panel">
+        <div class="card-surface no-lift ship-panel">
           <h3>Same-day cut-off</h3>
           <ul class="hours-list">
             <li><span>Mon &ndash; Sat</span><span>Order before 2pm</span></li>
@@ -162,8 +162,8 @@
           </ul>
           <p class="hours-note">Orders placed after cut-off go out on the next trading day.</p>
         </div>
- 
-        <div class="card-surface ship-panel">
+
+        <div class="card-surface no-lift ship-panel">
           <h3>Delivery windows</h3>
           <%-- [CONFIRM] Windows chosen to sit inside footer trading hours --%>
           <ul class="hours-list">
@@ -176,24 +176,27 @@
         </div>
       </div>
     </section>
- 
+
     <%-- ============ TRACKING & MISSED DELIVERY ============ --%>
     <section class="shell home-section">
       <div class="section-header">
         <h2>Tracking Your Order</h2>
       </div>
- 
+
       <div class="ship-two-col">
-        <div class="card-surface ship-panel">
+        <div class="card-surface no-lift ship-panel">
           <h3>Where's my order?</h3>
+          <%-- [CONFIRM] No SMS or email service is wired up yet - this describes
+               intended behaviour, not something the site currently does --%>
           <p>
             Every order gets a tracking link by SMS and email once it leaves our store. You can also
-            see the live status of any order in your account.
+            see the live status of any order once you're signed in.
           </p>
-          <p><a href="Account/Orders.aspx" class="btn-primary">View my orders</a></p>
+          <%-- Account/Orders.aspx is not built yet - pointing at Login.aspx until it exists --%>
+          <p><a href="Login.aspx" class="btn-primary">Sign in to track</a></p>
         </div>
- 
-        <div class="card-surface ship-panel">
+
+        <div class="card-surface no-lift ship-panel">
           <h3>Missed your delivery?</h3>
           <p>
             Our driver will call you on the number from your order. If we can't reach you, the order
@@ -204,7 +207,7 @@
         </div>
       </div>
     </section>
- 
+
     <%-- ============ RELATED ============ --%>
     <section class="shell home-section">
       <div class="section-header">
@@ -225,7 +228,7 @@
         </a>
       </div>
     </section>
- 
+
     <%-- ============ HELP CTA ============ --%>
     <section class="shell home-section">
       <div class="glass ship-cta">
@@ -237,5 +240,5 @@
         </div>
       </div>
     </section>
- 
+
 </asp:Content>

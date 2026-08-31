@@ -240,6 +240,7 @@
     <Content Include="Images\social\youtube.png" />
     <Content Include="Login.aspx" />
     <Content Include="Manager\Dashboard.aspx" />
+    <Content Include="Rewards.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -484,6 +485,13 @@
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rewards.aspx.cs">
+      <DependentUpon>Rewards.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Rewards.aspx.designer.cs">
+      <DependentUpon>Rewards.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Shipping.aspx.cs">
       <DependentUpon>Shipping.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
