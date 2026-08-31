@@ -298,6 +298,8 @@
     <Content Include="Scripts\WebForms\WebForms.js" />
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
+    <Content Include="AdviceAndHelp.aspx" />
+    <Content Include="ResponsibleDrinking.aspx" />
     <Content Include="Shipping.aspx" />
     <Content Include="Site.Master" />
     <Content Include="Sustainability.aspx" />
@@ -491,6 +493,20 @@
     </Compile>
     <Compile Include="Rewards.aspx.designer.cs">
       <DependentUpon>Rewards.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AdviceAndHelp.aspx.cs">
+      <DependentUpon>AdviceAndHelp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AdviceAndHelp.aspx.designer.cs">
+      <DependentUpon>AdviceAndHelp.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ResponsibleDrinking.aspx.cs">
+      <DependentUpon>ResponsibleDrinking.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ResponsibleDrinking.aspx.designer.cs">
+      <DependentUpon>ResponsibleDrinking.aspx</DependentUpon>
     </Compile>
     <Compile Include="Shipping.aspx.cs">
       <DependentUpon>Shipping.aspx</DependentUpon>

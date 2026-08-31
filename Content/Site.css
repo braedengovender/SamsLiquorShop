@@ -2399,3 +2399,315 @@ body {
 [data-theme="dark"] .value-icon {
     background: rgba(90, 200, 250, 0.14);
 }
+/* =========================================================
+   Advice & Help section — hub, Responsible Drinking, FAQ,
+   Returns & Refunds, Contact
+   ========================================================= */
+
+/* --- Hub tiles (AdviceAndHelp.aspx) --- */
+.advice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.advice-tile {
+    padding: 30px 26px;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: block;
+}
+
+    .advice-tile h3 {
+        margin: 14px 0 8px;
+        font-size: 1.1rem;
+    }
+
+    .advice-tile p {
+        margin: 0 0 14px;
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        line-height: 1.55;
+    }
+
+    .advice-tile .arrow {
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+/* --- FAQ accordion --- */
+.faq-group {
+    margin-bottom: 36px;
+}
+
+    .faq-group h3 {
+        font-size: 1.05rem;
+        margin: 0 0 14px;
+        color: var(--accent-amber-dark);
+    }
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.faq-item {
+    padding: 4px 24px;
+}
+
+    .faq-item summary {
+        list-style: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 0;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+        .faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .faq-item summary::after {
+            content: "+";
+            flex: 0 0 auto;
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: var(--accent);
+            transition: transform 0.2s ease;
+        }
+
+    .faq-item[open] summary::after {
+        transform: rotate(45deg);
+    }
+
+    .faq-item p {
+        margin: 0 0 18px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+/* --- Responsible drinking: standard drink cards --- */
+.rd-units-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.rd-unit-card {
+    padding: 26px 22px;
+    text-align: center;
+}
+
+    .rd-unit-card h3 {
+        margin: 14px 0 6px;
+        font-size: 1rem;
+    }
+
+    .rd-unit-card p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+/* --- Responsible drinking: helpline / resource cards --- */
+.rd-resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.rd-resource-card {
+    padding: 24px;
+}
+
+    .rd-resource-card h3 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+    }
+
+    .rd-resource-card p {
+        margin: 0 0 12px;
+        font-size: 0.86rem;
+        color: var(--text-secondary);
+        line-height: 1.55;
+    }
+
+    .rd-resource-card a {
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+        .rd-resource-card a:hover {
+            text-decoration: underline;
+        }
+
+/* --- Contact page --- */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+@media screen and (max-width: 900px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.contact-form-card,
+.contact-info-card {
+    padding: 32px;
+}
+
+    .contact-form-card h3,
+    .contact-info-card h3 {
+        margin: 0 0 6px;
+        font-size: 1.2rem;
+    }
+
+    .contact-form-card > p.contact-lead,
+    .contact-info-card > p.contact-lead {
+        margin: 0 0 24px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+.form-group textarea,
+.form-group select {
+    padding: 13px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--glass-border);
+    background: #fff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: vertical;
+}
+
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 1px;
+    }
+
+.contact-info-list {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+    .contact-info-list li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+    }
+
+.contact-info-icon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--bg-tint-blue);
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+.contact-info-list strong {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+.contact-info-list span,
+.contact-info-list a {
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    line-height: 1.5;
+}
+
+    .contact-info-list a:hover {
+        color: var(--accent);
+    }
+
+.contact-map {
+    margin: 20px 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+}
+
+    .contact-map iframe {
+        width: 100%;
+        height: 220px;
+        border: 0;
+        display: block;
+        filter: grayscale(15%);
+    }
+
+.contact-social {
+    display: flex;
+    gap: 12px;
+}
+
+    .contact-social img {
+        width: 20px;
+        height: 20px;
+        opacity: 0.7;
+        transition: opacity 0.2s ease;
+    }
+
+    .contact-social a:hover img {
+        opacity: 1;
+    }
+
+.form-success {
+    display: none;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-tint-blue);
+    color: var(--accent);
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+    .form-success.is-visible {
+        display: block;
+    }
+
+/* --- Dark mode --- */
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .form-group select {
+    background: #10131c;
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .contact-social img {
+    filter: invert(1);
+}
+
+/* --- Mobile --- */
+@media screen and (max-width: 768px) {
+    .contact-form-card,
+    .contact-info-card {
+        padding: 24px 20px;
+    }
+}
