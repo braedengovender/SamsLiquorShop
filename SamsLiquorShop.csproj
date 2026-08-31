@@ -301,6 +301,7 @@
     <Content Include="AdviceAndHelp.aspx" />
     <Content Include="ResponsibleDrinking.aspx" />
     <Content Include="FAQ.aspx" />
+    <Content Include="ReturnPolicy.aspx" />
     <Content Include="Shipping.aspx" />
     <Content Include="Site.Master" />
     <Content Include="Sustainability.aspx" />
@@ -515,6 +516,13 @@
     </Compile>
     <Compile Include="FAQ.aspx.designer.cs">
       <DependentUpon>FAQ.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReturnPolicy.aspx.cs">
+      <DependentUpon>ReturnPolicy.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReturnPolicy.aspx.designer.cs">
+      <DependentUpon>ReturnPolicy.aspx</DependentUpon>
     </Compile>
     <Compile Include="Shipping.aspx.cs">
       <DependentUpon>Shipping.aspx</DependentUpon>
