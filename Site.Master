@@ -95,7 +95,14 @@
               <a href="PrivacyPolicy.aspx">privacy policy</a> and <a href="TermsOfService.aspx">terms of service</a>.
             </p>
           </div>
+          <div id="newsletterSuccess" class="newsletter-success" style="display:none;">
+            <div class="newsletter-success-icon">&#10003;</div>
+            <h3>You're in!</h3>
+            <p>Thanks for signing up - keep an eye on your inbox for new arrivals, tastings, and exclusive offers.</p>
+            <button type="button" class="btn-primary" onclick="closeNewsletter()">Continue Browsing</button>
+          </div>
         </div>
+
       </div>
     </div>
 
@@ -307,7 +314,7 @@
               <h3>Be the first to know!</h3>
               <p>Sign up for our newsletter for the latest deals and what's new.</p>
             </div>
-            <div class="footer-newsletter-form">
+            <div class="footer-newsletter-form" id="footerNewsletterForm">
               <div class="footer-field">
                 <input type="text" placeholder="First name" id="footerFirstName" class="footer-input" />
                 <span class="field-error" id="footerFirstNameError"></span>
@@ -316,12 +323,13 @@
                 <input type="text" placeholder="Last name" id="footerLastName" class="footer-input" />
                 <span class="field-error" id="footerLastNameError"></span>
               </div>
-              <div class="footer-field">
+              <div class="footer-field footer-field-email">
                 <input type="email" placeholder="Email address" id="footerEmail" class="footer-input" />
                 <span class="field-error" id="footerEmailError"></span>
-              </div>
+               </div>
               <button type="button" class="btn-primary" onclick="submitFooterNewsletter(event)">Sign Up</button>
             </div>
+            <p id="footerNewsletterSuccess" class="footer-newsletter-success" style="display:none;">&#10003; You're subscribed — thanks for joining!</p>
             <p class="footer-newsletter-privacy">How do we use your information? Read our <a href="PrivacyPolicy.aspx">privacy policy</a>.</p>
           </div>
         </section>
@@ -441,6 +449,11 @@
 
         function closeNewsletter() {
             document.getElementById('newsletterModal').classList.remove('is-open');
+            document.getElementById('newsletterForm').style.display = 'block';
+            document.getElementById('newsletterSuccess').style.display = 'none';
+            document.getElementById('nlFirstName').value = '';
+            document.getElementById('nlLastName').value = '';
+            document.getElementById('nlEmail').value = '';
             showCookieBanner();
         }
 
@@ -478,7 +491,8 @@
             if (!valid) return false;
 
             // TODO: wire this to your sign-up endpoint / code-behind method
-            closeNewsletter();
+            document.getElementById('newsletterForm').style.display = 'none';
+            document.getElementById('newsletterSuccess').style.display = 'block';
             return false;
         }
 
@@ -610,6 +624,10 @@
             if (!valid) return false;
 
             first.value = ''; last.value = ''; email.value = '';
+            document.getElementById('footerNewsletterSuccess').style.display = 'block';
+            setTimeout(function () {
+                document.getElementById('footerNewsletterSuccess').style.display = 'none';
+            }, 5000);
             return false;
         }
 
