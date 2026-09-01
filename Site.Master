@@ -197,7 +197,7 @@
                   <a href="FAQ.aspx">FAQ</a>
                   <a href="Shipping.aspx">Shipping & Delivery Info</a>
                   <a href="ReturnPolicy.aspx">Returns & Refunds</a>
-                  <a href="Contact.aspx">Contact Us</a>
+                
                 </div>
               </li>
               <li><a href="~/Contact.aspx" runat="server">Contact</a></li>

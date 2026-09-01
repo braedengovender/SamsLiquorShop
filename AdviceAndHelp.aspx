@@ -41,12 +41,6 @@
           <span class="arrow">Learn more &rarr;</span>
         </a>
 
-        <a href="Contact.aspx" class="card-surface advice-tile">
-          <span class="ship-notice-icon">&#9993;</span>
-          <h3>Contact Us</h3>
-          <p>Get in touch with our team directly &mdash; by phone, email, or the form on our contact page.</p>
-          <span class="arrow">Learn more &rarr;</span>
-        </a>
       </div>
     </section>
 
