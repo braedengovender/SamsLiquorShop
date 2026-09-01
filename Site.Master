@@ -22,7 +22,7 @@
 
 </head>
 <body>
-    <div id="ageGate" class="age-gate">
+    <div id="ageGate" class="age-gate" style="display:none;">
       <div class="glass age-card">
           <img src="Images/logo-cropped.png" alt="Sam's Liquor Shop" class="age-card-logo" />
         <p class="age-eyebrow">Sam's Liquor Shop supports the responsible consumption of alcohol.</p>
@@ -44,6 +44,11 @@
         <img src="Images/responsible-drinking.jpg" alt="Drink responsibly" class="age-image" />
       </div>
     </div>
+    <script>
+        if (sessionStorage.getItem('ageVerified') !== 'true') {
+            document.getElementById('ageGate').style.display = 'flex';
+        }
+    </script>
 
     <div id="newsletterModal" class="newsletter-overlay">
       <div class="glass newsletter-card">
