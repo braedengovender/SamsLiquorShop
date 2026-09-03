@@ -24,7 +24,7 @@
 <body>
     <div id="ageGate" class="age-gate" style="display:none;">
       <div class="glass age-card">
-          <img src="Images/logo-cropped.png" alt="Sam's Liquor Shop" class="age-card-logo" />
+          <img src="/Images/logo-cropped.png" alt="Sam's Liquor Shop" class="age-card-logo" />
         <p class="age-eyebrow">Sam's Liquor Shop supports the responsible consumption of alcohol.</p>
         <p class="age-question">If you are of legal drinking age, please confirm your date of birth to enter.</p>
 
@@ -41,7 +41,7 @@
           <button type="button" class="btn-ghost age-exit" onclick="exitSite()">No, Get Me Out</button>
         </div>
 
-        <img src="Images/responsible-drinking.jpg" alt="Drink responsibly" class="age-image" />
+        <img src="/Images/responsible-drinking.jpg" alt="Drink responsibly" class="age-image" />
       </div>
     </div>
     <script>
@@ -114,7 +114,7 @@
     <div class="chatbot-widget">
       <div id="chatbotPanel" class="glass chatbot-panel" style="display:none;">
         <div class="chatbot-header">
-          <img src="Images/cartIcon.png" alt="Sam's Liquor Shop" class="chatbot-header-logo" />
+          <img src="/Images/cartIcon.png" alt="Sam's Liquor Shop" class="chatbot-header-logo" />
           <span>Sam's Assistant</span>
         </div>
         <div id="chatbotMessages" class="chatbot-messages">
@@ -132,7 +132,7 @@
         </div>
       </div>
       <button type="button" class="chatbot-toggle glass" onclick="toggleChatbot()" aria-label="Chat with us">
-        <img src="Images/chatbot-icon.png" alt="Chat" class="chatbot-toggle-logo" />
+        <img src="/Images/chatbot-icon.png" alt="Chat" class="chatbot-toggle-logo" />
       </button>
     </div>
 
@@ -169,7 +169,7 @@
         <header class="site-header shell">
           <nav class="glass nav-bar">
             <a href="~/Default.aspx" runat="server" class="brand-logo-link">
-              <img src="Images/logo-spaced.png" alt="Sam's Liquor Shop" class="brand-logo" />
+              <img src="/Images/logo-spaced.png" alt="Sam's Liquor Shop" class="brand-logo" />
             </a>
             <ul class="nav-links">
               <li class="has-dropdown">
@@ -240,7 +240,7 @@
         <section class="shell site-footer-main">
           <div class="footer-top">
               <div class="footer-brand">
-                <img src="Images/logo-cropped.png" alt="Sam's Liquor Shop" class="footer-logo" />
+                <img src="/Images/logo-cropped.png" alt="Sam's Liquor Shop" class="footer-logo" />
                 <p class="footer-tagline">Durban's trusted liquor store — spirits, wine and more, delivered right.</p>
                 <address>
                   21 Coronation Road<br />
@@ -251,11 +251,11 @@
                 <p><a href="mailto:info@samsliquorshop.co.za">info@samsliquorshop.co.za</a></p>
 
                 <div class="footer-social">
-                  <a href="#" aria-label="Facebook"><img src="Images/social/facebook.png" alt="Facebook" /></a>
-                  <a href="#" aria-label="Instagram"><img src="Images/social/instagram.png" alt="Instagram" /></a>
-                  <a href="#" aria-label="X"><img src="Images/social/x.png" alt="Twitter" /></a>
-                  <a href="#" aria-label="YouTube"><img src="Images/social/youtube.png" alt="YouTube" /></a>
-                  <a href="#" aria-label="TikTok"><img src="Images/social/tiktok.png" alt="TikTok" /></a>
+                  <a href="#" aria-label="Facebook"><img src="/Images/social/facebook.png" alt="Facebook" /></a>
+                  <a href="#" aria-label="Instagram"><img src="/Images/social/instagram.png" alt="Instagram" /></a>
+                  <a href="#" aria-label="X"><img src="/Images/social/x.png" alt="Twitter" /></a>
+                  <a href="#" aria-label="YouTube"><img src="/Images/social/youtube.png" alt="YouTube" /></a>
+                  <a href="#" aria-label="TikTok"><img src="/Images/social/tiktok.png" alt="TikTok" /></a>
                 </div>
 
                 <div class="footer-map">
@@ -345,7 +345,7 @@
             <p>&copy; 2026 Sam's Liquor Shop - All Rights Reserved. Designed by The Byte Club.</p>
           </div>
           <div class="glass footer-responsible">
-            <img src="Images/responsible-drinking.jpg" alt="Please drink responsibly" />
+            <img src="/Images/responsible-drinking.jpg" alt="Please drink responsibly" />
           </div>
           <div class="glass footer-info">
             <div class="footer-security">
@@ -355,9 +355,9 @@
             <div class="footer-payments">
               <span class="payments-label">Approved payment methods</span>
               <div class="payment-icons">
-                <img src="Images/payments/visa.svg" alt="Visa" />
-                <img src="Images/payments/mastercard.svg" alt="Mastercard" />
-                <img src="Images/payments/debit.svg" alt="Debit Card" />
+                <img src="/Images/payments/visa.svg" alt="Visa" />
+                <img src="/Images/payments/mastercard.svg" alt="Mastercard" />
+                <img src="/Images/payments/debit.svg" alt="Debit Card" />
               </div>
             </div>
             <div class="footer-lang">
