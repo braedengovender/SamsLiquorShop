@@ -11,7 +11,7 @@ namespace SamsLiquorShop.Employee
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!AuthHelper.RequireRole(this, "Employee")) return;
+            if (!AuthHelper.RequireRole(this, "Cashier")) return;
 
             litGreeting.Text = "Hello " + Server.HtmlEncode(Session["UserName"].ToString())
                 + ", role: " + Server.HtmlEncode(Session["UserRole"].ToString());
