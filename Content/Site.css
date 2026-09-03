@@ -3065,6 +3065,7 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
         border-color: var(--accent);
         color: #fff;
     }
+
 .products-grid .product-card img {
     box-sizing: border-box;
     object-fit: contain;
