@@ -151,18 +151,18 @@ body {
     color: var(--text-primary);
 }
 
-    .btn-ghost:hover {
-        color: var(--accent);
-    }
+.btn-ghost:hover {
+    color: var(--accent);
+}
 
 .btn-primary {
     background: var(--accent);
     color: #fff;
 }
 
-    .btn-primary:hover {
-        background: #006edb;
-    }
+.btn-primary:hover {
+    background: #006edb;
+}
 
 .age-gate {
     position: fixed;
@@ -486,6 +486,21 @@ body {
     margin-top: 4px;
     min-height: 14px;
 }
+
+.field-hint {
+    display: block;
+    font-size: 0.78rem;
+    margin-top: 4px;
+    color: var(--text-secondary);
+}
+
+    .field-hint.valid {
+        color: var(--accent);
+    }
+
+    .field-hint.invalid {
+        color: #d70015;
+    }
 
 .chatbot-widget {
     position: fixed;
@@ -1231,15 +1246,30 @@ body {
     border-color: #d70015;
 }
 
+/* Hide Microsoft Edge's built-in password reveal button */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none !important;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-contacts-auto-fill-button {
+    display: none !important;
+}
+
 .login-password-wrap {
     position: relative;
+    width: 100%;
 }
 
-.login-password-wrap .login-input {
-    padding-right: 44px;
-}
+    .login-password-wrap .login-input {
+        width: 100%;
+        padding-right: 50px;
+        box-sizing: border-box;
+    }
 
-.login-eye-btn {
+
+/*.login-eye-btn {
     position: absolute;
     right: 12px;
     top: 50%;
@@ -1249,6 +1279,57 @@ body {
     cursor: pointer;
     font-size: 1rem;
     opacity: 0.6;
+}*/
+
+/* Password textbox + eye button */
+.password-input-wrap {
+    position: relative;
+    width: 100%;
+}
+
+    .password-input-wrap .login-input {
+        width: 100%;
+        padding-right: 48px;
+    }
+
+.login-eye-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    z-index: 10;
+    color: #718093;
+    font-size: 18px;
+    line-height: 1;
+}
+
+    .login-eye-btn:hover {
+        color: #0097e6;
+    }
+
+    .login-eye-btn:focus {
+        outline: none;
+    }
+
+.eye-icon {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
 }
 
 .login-eye-btn:hover {
@@ -2730,4 +2811,203 @@ body {
     .contact-info-card {
         padding: 24px 20px;
     }
+}
+
+.register-checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+}
+
+.register-checkbox-row input[type="checkbox"] {
+    margin-top: 3px;
+}
+
+.register-checkbox-row a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.register-checkbox-row a:hover {
+    text-decoration: underline;
+}
+
+.login-card.wide-card {
+    max-width: var(--shell-width);
+    width: 100%;
+}
+
+.centered-fields .login-field,
+.centered-fields .form-row,
+.centered-fields .login-register-text,
+.centered-fields .login-server-error,
+.centered-fields .login-remember-row,
+.centered-fields .login-divider,
+.centered-fields .login-google-btn {
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.centered-fields .login-submit {
+    max-width: 440px;
+    display: block;
+    margin: 4px auto 0;
+}
+
+/* Register page has enough fields to actually use the extra width */
+.register-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.register-section {
+    margin-bottom: 32px;
+}
+
+.register-section-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.register-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
+}
+
+.register-optional {
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.register-static-field {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    padding: 13px 18px;
+    border-radius: 14px;
+    border: 1px dashed var(--glass-border);
+    background: rgba(0,0,0,0.02);
+    margin: 0 0 14px;
+}
+
+[data-theme="dark"] .register-static-field {
+    background: rgba(255,255,255,0.03);
+}
+
+@media (max-width: 700px) {
+    .register-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.register-terms-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+/* =========================
+   PASSWORD STRENGTH
+   ========================= */
+
+.password-strength {
+    margin-top: 10px;
+}
+
+.password-strength-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(127, 143, 166, 0.18);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#passwordStrengthFill {
+    height: 100%;
+    width: 0%;
+    background: #e74c3c;
+    border-radius: 10px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength-text {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #718093;
+}
+
+.password-requirements {
+    margin-top: 10px;
+    display: grid;
+    gap: 5px;
+}
+
+.password-requirement {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: #718093;
+    transition: color 0.2s ease;
+}
+
+.requirement-icon {
+    width: 15px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.password-requirement.valid {
+    color: #27ae60;
+}
+
+    .password-requirement.valid .requirement-icon {
+        color: #27ae60;
+        font-size: 0;
+    }
+
+        .password-requirement.valid .requirement-icon::after {
+            content: "✓";
+            font-size: 14px;
+        }
+
+
+/* Password strength colours */
+
+#passwordStrengthFill.strength-weak {
+    background-color: #e74c3c;
+}
+
+#passwordStrengthFill.strength-medium {
+    background-color: #f39c12;
+}
+
+#passwordStrengthFill.strength-strong {
+    background-color: #27ae60;
+}
+
+#passwordStrengthText.strength-weak {
+    color: #e74c3c;
+}
+
+#passwordStrengthText.strength-medium {
+    color: #f39c12;
+}
+
+#passwordStrengthText.strength-strong {
+    color: #27ae60;
 }

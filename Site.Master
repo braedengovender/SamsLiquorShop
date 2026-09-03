@@ -114,7 +114,7 @@
     <div class="chatbot-widget">
       <div id="chatbotPanel" class="glass chatbot-panel" style="display:none;">
         <div class="chatbot-header">
-          <img src="Images/logo.png" alt="Sam's Liquor Shop" class="chatbot-header-logo" />
+          <img src="Images/cartIcon.png" alt="Sam's Liquor Shop" class="chatbot-header-logo" />
           <span>Sam's Assistant</span>
         </div>
         <div id="chatbotMessages" class="chatbot-messages">
@@ -213,7 +213,8 @@
 
               <asp:PlaceHolder runat="server" ID="phLoggedOut">
                 <a runat="server" href="~/Login.aspx" class="btn-ghost">Log in</a>
-                <a runat="server" href="~/Account/Register" class="btn-primary">Register</a>
+                <%--<a runat="server" href="~/Account/Register" class="btn-primary">Register</a>--%>
+                <a runat="server" href="~/Register.aspx" class="btn-primary">Register</a>
               </asp:PlaceHolder>
 
               <asp:PlaceHolder runat="server" ID="phLoggedIn" Visible="false">

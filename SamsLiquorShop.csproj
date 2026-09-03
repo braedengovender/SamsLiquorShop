@@ -194,6 +194,7 @@
     <Content Include="Images\blog\post3.jpg" />
     <Content Include="Images\blog\post4.jpg" />
     <Content Include="Images\blog\post5.jpg" />
+    <Content Include="Images\cartIcon.png" />
     <Content Include="Images\categories\accessories.jpg" />
     <Content Include="Images\categories\beer.jpg" />
     <Content Include="Images\categories\nonalcoholic.png" />
@@ -240,6 +241,7 @@
     <Content Include="Images\social\youtube.png" />
     <Content Include="Login.aspx" />
     <Content Include="Manager\Dashboard.aspx" />
+    <Content Include="Register.aspx" />
     <Content Include="Rewards.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -270,6 +272,7 @@
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="Account\Web.config" />
+    <Content Include="EmailSecrets.config" />
     <None Include="Properties\PublishProfiles\IST-WST-Group-15 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
@@ -489,6 +492,13 @@
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Register.aspx.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Register.aspx.designer.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Rewards.aspx.cs">
       <DependentUpon>Rewards.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
