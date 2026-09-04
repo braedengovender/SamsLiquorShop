@@ -60,5 +60,79 @@ namespace SamsLiquorShop.Helpers
             else
                 wishlist.Add(productId);
         }
+
+        public static void UpdateQuantity(System.Web.SessionState.HttpSessionState session, int productId, int quantity)
+        {
+            var cart = GetCart(session);
+            var item = cart.FirstOrDefault(c => c.ProductId == productId);
+            if (item == null) return;
+
+            if (quantity <= 0)
+                cart.Remove(item);
+            else
+                item.Quantity = quantity;
+        }
+
+        public static void RemoveFromCart(System.Web.SessionState.HttpSessionState session, int productId)
+        {
+            var cart = GetCart(session);
+            var item = cart.FirstOrDefault(c => c.ProductId == productId);
+            if (item != null) cart.Remove(item);
+        }
+
+        public static void ClearCart(System.Web.SessionState.HttpSessionState session)
+        {
+            session[CartSessionKey] = new List<CartItem>();
+        }
+
+        public static int GetCartCount(System.Web.SessionState.HttpSessionState session) =>
+            GetCart(session).Sum(c => c.Quantity);
+
+        public static decimal GetCartTotal(System.Web.SessionState.HttpSessionState session) =>
+            GetCart(session).Sum(c => c.UnitPrice * c.Quantity);
+
+        private const string SavedForLaterSessionKey = "SavedForLater";
+
+        public static List<CartItem> GetSavedForLater(System.Web.SessionState.HttpSessionState session)
+        {
+            if (session[SavedForLaterSessionKey] == null)
+            {
+                session[SavedForLaterSessionKey] = new List<CartItem>();
+            }
+            return (List<CartItem>)session[SavedForLaterSessionKey];
+        }
+
+        public static void MoveToSavedForLater(System.Web.SessionState.HttpSessionState session, int productId)
+        {
+            var cart = GetCart(session);
+            var item = cart.FirstOrDefault(c => c.ProductId == productId);
+            if (item == null) return;
+
+            cart.Remove(item);
+
+            var saved = GetSavedForLater(session);
+            var existing = saved.FirstOrDefault(c => c.ProductId == productId);
+            if (existing != null)
+                existing.Quantity += item.Quantity;
+            else
+                saved.Add(item);
+        }
+
+        public static void MoveToCart(System.Web.SessionState.HttpSessionState session, int productId)
+        {
+            var saved = GetSavedForLater(session);
+            var item = saved.FirstOrDefault(c => c.ProductId == productId);
+            if (item == null) return;
+
+            saved.Remove(item);
+            AddToCart(session, item.ProductId, item.ProductName, item.UnitPrice, item.Quantity);
+        }
+
+        public static void RemoveFromSavedForLater(System.Web.SessionState.HttpSessionState session, int productId)
+        {
+            var saved = GetSavedForLater(session);
+            var item = saved.FirstOrDefault(c => c.ProductId == productId);
+            if (item != null) saved.Remove(item);
+        }
     }
 }

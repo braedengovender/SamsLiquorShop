@@ -2,13 +2,16 @@
 using SamsLiquorShop.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Linq;
 
 namespace SamsLiquorShop
 {
@@ -17,7 +20,7 @@ namespace SamsLiquorShop
         private const string AntiXsrfTokenKey = "__AntiXsrfToken";
         private const string AntiXsrfUserNameKey = "__AntiXsrfUserName";
         private string _antiXsrfTokenValue;
-
+        private string ConnStr => ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
         protected void Page_Init(object sender, EventArgs e)
         {
             // The code below helps to protect against XSRF attacks
@@ -77,13 +80,33 @@ namespace SamsLiquorShop
                 phLoggedIn.Visible = true;
             }
 
-            var cart = CartHelper.GetCart(Session);
-            int itemCount = cart.Sum(c => c.Quantity);
-
-            if (itemCount > 0)
+            if (!IsPostBack)
             {
-                litCartCount.Text = "<span class='cart-count-badge'>" + itemCount + "</span>";
+                LoadNavCategories();
             }
+        }
+
+        private void LoadNavCategories()
+        {
+            string query = "SELECT Category_ID, Category_Name FROM Category ORDER BY Category_Name";
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlDataAdapter da = new SqlDataAdapter(query, conn))
+            {
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                rptNavCategories.DataSource = dt;
+                rptNavCategories.DataBind();
+            }
+        }
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            int cartCount = CartHelper.GetCartCount(Session);
+            litCartCount.Text = cartCount > 0
+                ? "<span class='cart-count-badge'>" + cartCount + "</span>"
+                : "";
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

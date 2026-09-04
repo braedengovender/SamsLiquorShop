@@ -146,6 +146,11 @@
       </div>
     </div>
 
+    <div id="pageLoader" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Loading&hellip;</p>
+    </div>
+
     <form runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
@@ -175,12 +180,12 @@
               <li class="has-dropdown">
                 <a href="~/Shop.aspx" runat="server">Shop</a>
                 <div class="dropdown-menu">
-                  <a href="Shop.aspx?cat=beer">Beer</a>
-                  <a href="Shop.aspx?cat=spirits">Spirits</a>
-                  <a href="Shop.aspx?cat=wine">Wine</a>
-                  <a href="Shop.aspx?cat=cider-rtd">Cider & RTDs</a>
-                  <a href="Shop.aspx?cat=non-alcoholic">Non-Alcoholic</a>
-                  <a href="Shop.aspx?cat=gifts">Gift Sets</a>
+                    <asp:Repeater ID="rptNavCategories" runat="server">
+                        <ItemTemplate>
+                            <a href='<%# "Shop.aspx?cat=" + Eval("Category_ID") %>'><%# Eval("Category_Name") %></a>
+                        </ItemTemplate>
+                    </asp:Repeater>
+                    <a href="Shop.aspx" class="dropdown-view-all">View All Products</a>
                 </div>
               </li>
               <li><a href="~/Specials.aspx" runat="server">Specials</a></li>
@@ -210,7 +215,11 @@
             <div class="nav-auth">
               <button type="button" class="icon-btn" onclick="toggleSearch()" aria-label="Search">&#128269;</button>
                 <a href="Cart.aspx" class="icon-btn cart-icon-wrap" aria-label="Cart">&#128722;
-                   <asp:Literal runat="server" ID="litCartCount" />
+                   <asp:UpdatePanel ID="upnlCartBadge" runat="server" UpdateMode="Always" RenderMode="Inline">
+                       <ContentTemplate>
+                           <asp:Literal runat="server" ID="litCartCount" />
+                       </ContentTemplate>
+                   </asp:UpdatePanel>
                 </a>
 
               <asp:PlaceHolder runat="server" ID="phLoggedOut">
@@ -677,6 +686,31 @@
             return valid;
         }
 
+        function showPageLoader() {
+            document.getElementById('pageLoader').style.display = 'flex';
+        }
+
+        function hidePageLoader() {
+            document.getElementById('pageLoader').style.display = 'none';
+        }
+
+        // Show the loader the moment someone clicks a real navigation link
+        // in the main nav or its dropdowns (category links, About Us submenu, etc.)
+        document.querySelectorAll('.nav-links a, .dropdown-menu a').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                var href = this.getAttribute('href');
+                if (href && href.indexOf('#') !== 0 && href.indexOf('javascript:') !== 0) {
+                    showPageLoader();
+                }
+            });
+        });
+
+        // Safety net: if the user navigates back via the browser's
+        // back/forward cache, the old page (with loader still visible)
+        // can be restored instantly — make sure it's hidden again.
+        window.addEventListener('pageshow', function () {
+            hidePageLoader();
+        });
     </script>
 </body>
 </html>
