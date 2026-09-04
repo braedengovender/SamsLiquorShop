@@ -239,7 +239,12 @@
             </div>
           </nav>
             <div id="searchBar" class="search-bar" style="display:none;">
-              <input type="text" placeholder="Search for products..." />
+                <div class="search-bar-inner glass">
+                    <span class="search-bar-icon">&#128269;</span>
+                    <input type="text" id="headerSearchInput" placeholder="Search for products..." autocomplete="off" />
+                    <button type="button" class="search-bar-clear" id="searchClearBtn" onclick="clearHeaderSearch()" aria-label="Clear search" style="display:none;">&times;</button>
+                </div>
+                <div id="searchSuggestions" class="search-suggestions glass" style="display:none;"></div>
             </div>
         </header>
 
@@ -398,9 +403,104 @@
             var isHidden = bar.style.display === 'none';
             bar.style.display = isHidden ? 'block' : 'none';
             if (isHidden) {
-                bar.querySelector('input').focus();
+                document.getElementById('headerSearchInput').focus();
+            } else {
+                document.getElementById('searchSuggestions').style.display = 'none';
             }
         }
+
+        function clearHeaderSearch() {
+            var input = document.getElementById('headerSearchInput');
+            input.value = '';
+            input.focus();
+            document.getElementById('searchClearBtn').style.display = 'none';
+            document.getElementById('searchSuggestions').style.display = 'none';
+        }
+
+        (function () {
+            var input = document.getElementById('headerSearchInput');
+            var box = document.getElementById('searchSuggestions');
+            var clearBtn = document.getElementById('searchClearBtn');
+            var debounceTimer = null;
+            var activeIndex = -1;
+
+            function escapeHtml(str) {
+                var div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            function goToSearch(term) {
+                showPageLoader();
+                window.location.href = 'Shop.aspx?search=' + encodeURIComponent(term);
+            }
+
+            function render(items) {
+                if (!items || items.length === 0) {
+                    box.innerHTML = '<div class="search-suggestion-empty">No matching products</div>';
+                    box.style.display = 'block';
+                    activeIndex = -1;
+                    return;
+                }
+
+                box.innerHTML = items.map(function (item) {
+                    return '<a href="Shop.aspx?search=' + encodeURIComponent(item.name) + '" class="search-suggestion-item">' + escapeHtml(item.name) + '</a>';
+                }).join('');
+                box.style.display = 'block';
+                activeIndex = -1;
+
+                box.querySelectorAll('.search-suggestion-item').forEach(function (link) {
+                    link.addEventListener('click', function () { showPageLoader(); });
+                });
+            }
+
+            input.addEventListener('input', function () {
+                var term = input.value.trim();
+                clearBtn.style.display = term.length > 0 ? 'flex' : 'none';
+                clearTimeout(debounceTimer);
+
+                if (term.length < 2) {
+                    box.style.display = 'none';
+                    return;
+                }
+
+                debounceTimer = setTimeout(function () {
+                    fetch('SearchSuggestions.ashx?term=' + encodeURIComponent(term))
+                        .then(function (res) { return res.json(); })
+                        .then(render)
+                        .catch(function () { box.style.display = 'none'; });
+                }, 250);
+            });
+
+            input.addEventListener('keydown', function (e) {
+                var items = box.querySelectorAll('.search-suggestion-item');
+
+                if (e.key === 'ArrowDown' && items.length > 0) {
+                    e.preventDefault();
+                    activeIndex = Math.min(activeIndex + 1, items.length - 1);
+                    items.forEach(function (it, i) { it.classList.toggle('is-active', i === activeIndex); });
+                } else if (e.key === 'ArrowUp' && items.length > 0) {
+                    e.preventDefault();
+                    activeIndex = Math.max(activeIndex - 1, 0);
+                    items.forEach(function (it, i) { it.classList.toggle('is-active', i === activeIndex); });
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (activeIndex >= 0 && items[activeIndex]) {
+                        goToSearch(items[activeIndex].textContent);
+                    } else if (input.value.trim().length > 0) {
+                        goToSearch(input.value.trim());
+                    }
+                } else if (e.key === 'Escape') {
+                    box.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.search-bar')) {
+                    box.style.display = 'none';
+                }
+            });
+        })();
 
         // Set the correct icon on load based on saved preference
         window.addEventListener('DOMContentLoaded', function () {

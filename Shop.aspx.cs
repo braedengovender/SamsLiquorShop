@@ -22,7 +22,6 @@ namespace SamsLiquorShop
             {
                 LoadCategories();
 
-                // Support the old ?cat= query string temporarily by matching category ID directly
                 string catParam = Request.QueryString["cat"];
                 if (!string.IsNullOrEmpty(catParam) && int.TryParse(catParam, out int catId))
                 {
@@ -33,6 +32,12 @@ namespace SamsLiquorShop
                             item.Selected = true;
                         }
                     }
+                }
+
+                string searchParam = Request.QueryString["search"];
+                if (!string.IsNullOrEmpty(searchParam))
+                {
+                    txtSearch.Text = searchParam;
                 }
 
                 LoadProducts();
