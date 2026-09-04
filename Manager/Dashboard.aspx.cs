@@ -303,6 +303,7 @@ namespace SamsLiquorShop.Manager
                 FROM Sale s
                 INNER JOIN Customer c ON s.Customer_ID = c.Customer_ID
                 WHERE s.Sale_DateTime >= @Cutoff
+                  AND s.Customer_ID <> 999999
                 GROUP BY c.Customer_FirstName, c.Customer_LastName
                 ORDER BY TotalSpent DESC";
 

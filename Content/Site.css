@@ -3332,3 +3332,17 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     color: #fff !important;
     text-decoration: underline;
 }
+
+.cash-lowstock-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cash-lowstock-thumb {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}

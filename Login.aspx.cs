@@ -54,7 +54,7 @@ namespace SamsLiquorShop
                 if (role == null)
                 {
                     string employeeQuery = @"
-                        SELECT Employee_Username, Employee_Role 
+                        SELECT Employee_ID, Employee_Username, Employee_Role 
                         FROM Employee 
                         WHERE (Employee_Username = @Login OR Employee_EmailAddress = @Login) 
                           AND Employee_Password = @Password 
@@ -71,6 +71,7 @@ namespace SamsLiquorShop
                             {
                                 role = reader["Employee_Role"].ToString().Trim();
                                 displayName = reader["Employee_Username"].ToString();
+                                Session["EmployeeID"] = reader["Employee_ID"];
                             }
                         }
                     }
