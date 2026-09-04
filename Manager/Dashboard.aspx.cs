@@ -8,12 +8,12 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.Script.Serialization;
 
 namespace SamsLiquorShop.Manager
 {
     public partial class Dashboard : System.Web.UI.Page
     {
-        // Change this if you need a wider/narrower window later
         protected const int MonthsBack = 3;
 
         protected string RevenueChartJson = "{}";
@@ -22,6 +22,13 @@ namespace SamsLiquorShop.Manager
         protected string PaymentChartJson = "{}";
 
         private string ConnStr => ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
+
+        // Simple holder used only to serialize chart data safely
+        private class ChartData
+        {
+            public string[] labels { get; set; }
+            public decimal[] values { get; set; }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -40,6 +47,7 @@ namespace SamsLiquorShop.Manager
                 LoadPaymentChart(cutoff);
                 LoadRecentSales();
                 LoadTopCustomers(cutoff);
+                LoadBestCustomerSpotlight(cutoff);
                 LoadActiveDiscounts();
             }
         }
@@ -94,9 +102,8 @@ namespace SamsLiquorShop.Manager
 
         private void LoadRevenueChart(DateTime cutoff)
         {
-            var labels = new StringBuilder();
-            var values = new StringBuilder();
-            bool first = true;
+            var labels = new System.Collections.Generic.List<string>();
+            var values = new System.Collections.Generic.List<decimal>();
 
             string query = @"
                 SELECT 
@@ -118,22 +125,20 @@ namespace SamsLiquorShop.Manager
                 {
                     while (reader.Read())
                     {
-                        if (!first) { labels.Append(","); values.Append(","); }
-                        labels.Append("\"" + reader["MonthLabel"] + "\"");
-                        values.Append(reader["Revenue"]);
-                        first = false;
+                        labels.Add(reader["MonthLabel"].ToString());
+                        values.Add(Convert.ToDecimal(reader["Revenue"]));
                     }
                 }
             }
 
-            RevenueChartJson = "{\"labels\":[" + labels + "],\"values\":[" + values + "]}";
+            var serializer = new JavaScriptSerializer();
+            RevenueChartJson = serializer.Serialize(new ChartData { labels = labels.ToArray(), values = values.ToArray() });
         }
 
         private void LoadTopProductsChart(DateTime cutoff)
         {
-            var labels = new StringBuilder();
-            var values = new StringBuilder();
-            bool first = true;
+            var labels = new System.Collections.Generic.List<string>();
+            var values = new System.Collections.Generic.List<decimal>();
 
             string query = @"
                 SELECT TOP 5 
@@ -155,22 +160,20 @@ namespace SamsLiquorShop.Manager
                 {
                     while (reader.Read())
                     {
-                        if (!first) { labels.Append(","); values.Append(","); }
-                        labels.Append("\"" + reader["Product_Name"].ToString().Replace("\"", "'") + "\"");
-                        values.Append(reader["UnitsSold"]);
-                        first = false;
+                        labels.Add(reader["Product_Name"].ToString());
+                        values.Add(Convert.ToDecimal(reader["UnitsSold"]));
                     }
                 }
             }
 
-            TopProductsChartJson = "{\"labels\":[" + labels + "],\"values\":[" + values + "]}";
+            var serializer = new JavaScriptSerializer();
+            TopProductsChartJson = serializer.Serialize(new ChartData { labels = labels.ToArray(), values = values.ToArray() });
         }
 
         private void LoadCategoryChart(DateTime cutoff)
         {
-            var labels = new StringBuilder();
-            var values = new StringBuilder();
-            bool first = true;
+            var labels = new System.Collections.Generic.List<string>();
+            var values = new System.Collections.Generic.List<decimal>();
 
             string query = @"
                 SELECT 
@@ -193,22 +196,20 @@ namespace SamsLiquorShop.Manager
                 {
                     while (reader.Read())
                     {
-                        if (!first) { labels.Append(","); values.Append(","); }
-                        labels.Append("\"" + reader["Category_Name"].ToString().Replace("\"", "'") + "\"");
-                        values.Append(reader["CategoryRevenue"]);
-                        first = false;
+                        labels.Add(reader["Category_Name"].ToString());
+                        values.Add(Convert.ToDecimal(reader["CategoryRevenue"]));
                     }
                 }
             }
 
-            CategoryChartJson = "{\"labels\":[" + labels + "],\"values\":[" + values + "]}";
+            var serializer = new JavaScriptSerializer();
+            CategoryChartJson = serializer.Serialize(new ChartData { labels = labels.ToArray(), values = values.ToArray() });
         }
 
         private void LoadPaymentChart(DateTime cutoff)
         {
-            var labels = new StringBuilder();
-            var values = new StringBuilder();
-            bool first = true;
+            var labels = new System.Collections.Generic.List<string>();
+            var values = new System.Collections.Generic.List<decimal>();
 
             string query = @"
                 SELECT 
@@ -230,15 +231,14 @@ namespace SamsLiquorShop.Manager
                 {
                     while (reader.Read())
                     {
-                        if (!first) { labels.Append(","); values.Append(","); }
-                        labels.Append("\"" + reader["PaymentMethod_Name"].ToString().Replace("\"", "'") + "\"");
-                        values.Append(reader["TotalPaid"]);
-                        first = false;
+                        labels.Add(reader["PaymentMethod_Name"].ToString());
+                        values.Add(Convert.ToDecimal(reader["TotalPaid"]));
                     }
                 }
             }
 
-            PaymentChartJson = "{\"labels\":[" + labels + "],\"values\":[" + values + "]}";
+            var serializer = new JavaScriptSerializer();
+            PaymentChartJson = serializer.Serialize(new ChartData { labels = labels.ToArray(), values = values.ToArray() });
         }
 
         private void LoadRecentSales()
@@ -247,7 +247,7 @@ namespace SamsLiquorShop.Manager
                 SELECT TOP 15
                     s.Sale_ID,
                     s.Sale_DateTime,
-                    CONCAT(c.Customer_FirstName, ' ', c.Customer_LastName) AS CustomerName,
+                    ISNULL(CONCAT(c.Customer_FirstName, ' ', c.Customer_LastName), 'Walk-in Customer') AS CustomerName,
                     CONCAT(e.Employee_FirstName, ' ', e.Employee_LastName) AS EmployeeName,
                     s.Sale_TotalAmount
                 FROM Sale s
@@ -293,12 +293,48 @@ namespace SamsLiquorShop.Manager
             }
         }
 
+        private void LoadBestCustomerSpotlight(DateTime cutoff)
+        {
+            string query = @"
+                SELECT TOP 1
+                    CONCAT(c.Customer_FirstName, ' ', c.Customer_LastName) AS CustomerName,
+                    SUM(s.Sale_TotalAmount) AS TotalSpent,
+                    COUNT(s.Sale_ID) AS OrderCount
+                FROM Sale s
+                INNER JOIN Customer c ON s.Customer_ID = c.Customer_ID
+                WHERE s.Sale_DateTime >= @Cutoff
+                GROUP BY c.Customer_FirstName, c.Customer_LastName
+                ORDER BY TotalSpent DESC";
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@Cutoff", cutoff);
+                conn.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        litBestCustomerName.Text = Server.HtmlEncode(reader["CustomerName"].ToString());
+                        litBestCustomerSpend.Text = Convert.ToDecimal(reader["TotalSpent"]).ToString("C");
+                        litBestCustomerOrders.Text = reader["OrderCount"].ToString();
+                    }
+                    else
+                    {
+                        litBestCustomerName.Text = "No customer activity yet";
+                        litBestCustomerSpend.Text = "R0.00";
+                        litBestCustomerOrders.Text = "0";
+                    }
+                }
+            }
+        }
+
         private void LoadActiveDiscounts()
         {
             string query = @"
                 SELECT Discount_Name, Discount_Type, Discount_Value, Discount_EndDate
                 FROM Discount
-                WHERE Discount_Status = 'Active'
+                WHERE Discount_Status = 1
                   AND Discount_StartDate <= GETDATE()
                   AND Discount_EndDate >= GETDATE()
                 ORDER BY Discount_EndDate ASC";

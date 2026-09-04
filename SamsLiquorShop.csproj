@@ -241,6 +241,7 @@
     <Content Include="Images\social\youtube.png" />
     <Content Include="Login.aspx" />
     <Content Include="Manager\Dashboard.aspx" />
+    <Content Include="Manager\ManagerNav.ascx" />
     <Content Include="Register.aspx" />
     <Content Include="Rewards.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -275,6 +276,7 @@
     <Content Include="EmailSecrets.config" />
     <None Include="Properties\PublishProfiles\IST-WST-Group-15 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
+    <Content Include="Scripts\chart.umd.min.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -489,6 +491,13 @@
     </Compile>
     <Compile Include="Manager\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Manager\ManagerNav.ascx.cs">
+      <DependentUpon>ManagerNav.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\ManagerNav.ascx.designer.cs">
+      <DependentUpon>ManagerNav.ascx</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

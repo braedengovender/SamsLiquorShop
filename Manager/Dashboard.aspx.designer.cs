@@ -60,6 +60,33 @@ namespace SamsLiquorShop.Manager
         protected global::System.Web.UI.WebControls.Literal litLowStock;
 
         /// <summary>
+        /// litBestCustomerName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litBestCustomerName;
+
+        /// <summary>
+        /// litBestCustomerSpend control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litBestCustomerSpend;
+
+        /// <summary>
+        /// litBestCustomerOrders control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litBestCustomerOrders;
+
+        /// <summary>
         /// gvRecentSales control.
         /// </summary>
         /// <remarks>
