@@ -309,6 +309,7 @@
     <Content Include="ResponsibleDrinking.aspx" />
     <Content Include="FAQ.aspx" />
     <Content Include="ReturnPolicy.aspx" />
+    <Content Include="Shop.aspx" />
     <Content Include="Specials.aspx" />
     <Content Include="Shipping.aspx" />
     <Content Include="Site.Master" />
@@ -495,6 +496,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AuthHelper.cs" />
+    <Compile Include="Helpers\CartHelper.cs" />
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -562,6 +564,13 @@
     </Compile>
     <Compile Include="ReturnPolicy.aspx.designer.cs">
       <DependentUpon>ReturnPolicy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Shop.aspx.cs">
+      <DependentUpon>Shop.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Shop.aspx.designer.cs">
+      <DependentUpon>Shop.aspx</DependentUpon>
     </Compile>
     <Compile Include="Specials.aspx.cs">
       <DependentUpon>Specials.aspx</DependentUpon>

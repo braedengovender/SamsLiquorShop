@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using SamsLiquorShop.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -6,7 +8,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Microsoft.AspNet.Identity;
+using System.Linq;
 
 namespace SamsLiquorShop
 {
@@ -72,7 +74,16 @@ namespace SamsLiquorShop
             if (Session["UserRole"] != null)
             {
                 phLoggedOut.Visible = false;
-                phLoggedIn.Visible = true;            }
+                phLoggedIn.Visible = true;
+            }
+
+            var cart = CartHelper.GetCart(Session);
+            int itemCount = cart.Sum(c => c.Quantity);
+
+            if (itemCount > 0)
+            {
+                litCartCount.Text = "<span class='cart-count-badge'>" + itemCount + "</span>";
+            }
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

@@ -209,7 +209,9 @@
             </ul>
             <div class="nav-auth">
               <button type="button" class="icon-btn" onclick="toggleSearch()" aria-label="Search">&#128269;</button>
-              <a href="Cart.aspx" class="icon-btn" aria-label="Cart">&#128722;</a>
+                <a href="Cart.aspx" class="icon-btn cart-icon-wrap" aria-label="Cart">&#128722;
+                   <asp:Literal runat="server" ID="litCartCount" />
+                </a>
 
               <asp:PlaceHolder runat="server" ID="phLoggedOut">
                 <a runat="server" href="~/Login.aspx" class="btn-ghost">Log in</a>
