@@ -179,6 +179,7 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Customer\CustomerNav.ascx" />
     <Content Include="Customer\Dashboard.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Employee\Dashboard.aspx" />
@@ -445,6 +446,13 @@
     </Compile>
     <Compile Include="Contact.aspx.designer.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Customer\CustomerNav.ascx.cs">
+      <DependentUpon>CustomerNav.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\CustomerNav.ascx.designer.cs">
+      <DependentUpon>CustomerNav.ascx</DependentUpon>
     </Compile>
     <Compile Include="Customer\Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>

@@ -3072,7 +3072,6 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     background: var(--bg);
     padding: 12px;
 }
-}
 
 .mgr-layout {
     display: grid;
@@ -3325,4 +3324,11 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
 [data-theme="dark"] .mgr-sidebar-links a:hover {
     background: rgba(255,255,255,0.06);
     color: var(--text-primary);
+}
+
+.cust-view-orders-link {
+    display: inline-block;
+    margin-top: 14px;
+    color: #fff !important;
+    text-decoration: underline;
 }

@@ -28,7 +28,7 @@ namespace SamsLiquorShop
 
                 // 1. Check Customer table (username OR email, must be Active)
                 string customerQuery = @"
-                    SELECT Customer_Username 
+                    SELECT Customer_ID, Customer_Username 
                     FROM Customer 
                     WHERE (Customer_Username = @Login OR Customer_EmailAddress = @Login) 
                       AND Customer_Password = @Password 
@@ -45,6 +45,7 @@ namespace SamsLiquorShop
                         {
                             role = "Customer";
                             displayName = reader["Customer_Username"].ToString();
+                            Session["CustomerID"] = reader["Customer_ID"];
                         }
                     }
                 }
