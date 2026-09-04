@@ -3010,6 +3010,69 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
 #passwordStrengthText.strength-strong {
     color: #27ae60;
 }
+/* --- Specials page --- */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
+}
+
+.product-card {
+    position: relative;
+}
+
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: var(--accent-amber);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    z-index: 1;
+}
+
+.product-price-old {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    text-decoration: line-through;
+    margin: 0 0 2px;
+}
+
+.filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.filter-tab {
+    padding: 9px 20px;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+    .filter-tab.is-active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+    }
+
+.products-grid .product-card img {
+    box-sizing: border-box;
+    object-fit: contain;
+    background: var(--bg);
+    padding: 12px;
+}
+}
 
 .mgr-layout {
     display: grid;
