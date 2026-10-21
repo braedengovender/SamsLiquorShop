@@ -4082,3 +4082,571 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     background: rgba(255,255,255,0.08);
     color: var(--text-primary);
 }
+
+/* ===== Dashboard charts & extras (shared by the role dashboards) ===== */
+
+.dash-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.dash-range {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.dash-range-chip {
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+    .dash-range-chip:hover {
+        background: var(--bg-tint-blue);
+        color: var(--text-primary);
+    }
+
+    .dash-range-chip.is-active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+    }
+
+.dash-delta {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.76rem;
+    font-weight: 500;
+}
+
+    .dash-delta.is-up {
+        color: #1a7f37;
+    }
+
+    .dash-delta.is-down {
+        color: #d70015;
+    }
+
+    .dash-delta.is-flat {
+        color: var(--text-secondary);
+    }
+
+.dash-doughnut-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.dash-doughnut-wrap {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    flex-shrink: 0;
+}
+
+.dash-legend {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 0.85rem;
+    min-width: 0;
+}
+
+.dash-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+}
+
+.dash-legend-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.dash-legend-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.dash-empty {
+    margin: 0;
+    padding: 40px 0;
+    text-align: center;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+}
+
+.dash-stock-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.dash-stock-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+
+.dash-stock-count {
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+
+.dash-meter {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--glass-border);
+    overflow: hidden;
+}
+
+.dash-meter-fill {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+}
+
+    .dash-meter-fill.is-critical {
+        background: #d03b3b;
+    }
+
+    .dash-meter-fill.is-warning {
+        background: #fab219;
+    }
+
+[data-theme="dark"] .dash-range-chip:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+[data-theme="dark"] .dash-delta.is-up {
+    color: #3fb950;
+}
+
+[data-theme="dark"] .dash-delta.is-down {
+    color: #ff453a;
+}
+
+[data-theme="dark"] .dash-meter {
+    background: rgba(255,255,255,0.08);
+}
+
+/* Customer dashboard loyalty card — sits on the blue .mgr-spotlight-card gradient
+   in both themes, so the white text and pill don't need dark-mode overrides */
+.dash-loyalty-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.dash-loyalty-points {
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.dash-loyalty-meta {
+    margin: 8px 0 0;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.dash-loyalty-link {
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: #fff;
+    color: #0057b8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+    .dash-loyalty-link:hover {
+        background: rgba(255, 255, 255, 0.88);
+    }
+
+/* Dashboard layout rows: main panel + side panel, then 3- and 2-up rows */
+.dash-grid,
+.dash-grid-2,
+.dash-grid-3 {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.dash-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.dash-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dash-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dash-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.dash-chart-tall .mgr-chart-canvas-wrap {
+    height: 300px;
+}
+
+.dash-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+    .dash-card-head h3 {
+        margin: 0;
+    }
+
+.dash-card-meta {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.dash-stat-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 8px 0 0;
+}
+
+.dash-stat-meta {
+    margin: 6px 0 0;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1100px) {
+    .dash-grid,
+    .dash-grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dash-grid-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .dash-grid-3 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Dashboard tables (GridViews use CssClass="dash-table" GridLines="None") */
+.dash-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 0;
+    font-size: 0.86rem;
+}
+
+    .dash-table th {
+        text-align: left;
+        padding: 10px 12px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--glass-border);
+        white-space: nowrap;
+    }
+
+    .dash-table td {
+        padding: 12px;
+        color: var(--text-primary);
+        border-bottom: 1px solid var(--glass-border);
+        white-space: nowrap;
+    }
+
+    .dash-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .dash-table tr:hover td {
+        background: var(--bg-tint-blue);
+    }
+
+    .dash-table .is-num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .dash-table .is-muted {
+        color: var(--text-secondary);
+    }
+
+    .dash-table .is-wrap {
+        white-space: normal;
+    }
+
+    .dash-table .dash-table-empty td {
+        padding: 32px 12px;
+        text-align: center;
+        color: var(--text-secondary);
+        white-space: normal;
+    }
+
+    .dash-table .dash-table-empty:hover td {
+        background: transparent;
+    }
+
+.dash-tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .dash-table tr:hover td {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .dash-tag {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ===== Frosted-glass dashboard theme (add .dash-glass to the dashboard <section>) =====
+   Translucent cards over the site's normal page background (the body tints).
+   Deliberately no backdrop-filter: stacked blur elements render blank in
+   Chromium (see CLAUDE.md). */
+
+    .dash-glass .mgr-sidebar,
+    .dash-glass .mgr-kpi-card,
+    .dash-glass .mgr-chart-card,
+    .dash-glass .mgr-table-card {
+        background: rgba(255, 255, 255, 0.52);
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        border-radius: 22px;
+        box-shadow: 0 10px 34px rgba(20, 40, 80, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .dash-glass .mgr-sidebar {
+        padding: 18px 12px;
+    }
+
+    .dash-glass .mgr-kpi-card {
+        padding: 20px 22px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .dash-glass .mgr-kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(20, 40, 80, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        }
+
+    .dash-glass .mgr-kpi-alert {
+        border-color: rgba(215, 0, 21, 0.22);
+    }
+
+    .dash-glass .mgr-kpi-value {
+        font-family: inherit;
+        font-size: 1.9rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .dash-glass h1 {
+        letter-spacing: -0.02em;
+    }
+
+    .dash-glass .dash-delta {
+        padding: 3px 9px;
+        border-radius: 999px;
+    }
+
+        .dash-glass .dash-delta.is-up {
+            background: rgba(26, 127, 55, 0.10);
+        }
+
+        .dash-glass .dash-delta.is-down {
+            background: rgba(215, 0, 21, 0.08);
+        }
+
+        .dash-glass .dash-delta.is-flat {
+            padding-left: 0;
+        }
+
+    .dash-glass .dash-range-chip {
+        background: rgba(255, 255, 255, 0.55);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 2px 10px rgba(20, 40, 80, 0.05);
+    }
+
+        .dash-glass .dash-range-chip.is-active {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 6px 18px rgba(10, 132, 255, 0.30);
+        }
+
+    .dash-glass .mgr-spotlight-card {
+        border-radius: 24px;
+        background:
+            radial-gradient(260px circle at 88% 12%, rgba(255, 255, 255, 0.22), transparent 60%),
+            linear-gradient(135deg, var(--accent) 0%, #0057b8 100%);
+        box-shadow: 0 14px 40px rgba(10, 132, 255, 0.28);
+    }
+
+    .dash-glass .dash-table tr:hover td {
+        background: rgba(10, 132, 255, 0.05);
+    }
+
+    .dash-glass .dash-meter {
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+/* KPI icons: a tinted circle with a line icon drawn by CSS mask */
+.dash-kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+    .dash-kpi-icon::before {
+        content: "";
+        width: 20px;
+        height: 20px;
+        background-color: currentColor;
+        -webkit-mask: var(--dash-icon) center / contain no-repeat;
+        mask: var(--dash-icon) center / contain no-repeat;
+    }
+
+    .dash-kpi-icon.is-blue {
+        background: rgba(10, 132, 255, 0.12);
+        color: var(--accent);
+    }
+
+    .dash-kpi-icon.is-amber {
+        background: rgba(201, 162, 75, 0.16);
+        color: var(--accent-amber-dark);
+    }
+
+    .dash-kpi-icon.is-red {
+        background: rgba(215, 0, 21, 0.10);
+        color: #d70015;
+    }
+
+.dash-icon-cash {
+    --dash-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 11a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z'/%3E%3Cpath d='M12 14a2 2 0 1 0 4 0a2 2 0 1 0 -4 0'/%3E%3Cpath d='M17 9v-2a2 2 0 0 0 -2 -2h-10a2 2 0 0 0 -2 2v6a2 2 0 0 0 2 2h2'/%3E%3C/svg%3E");
+}
+
+.dash-icon-receipt {
+    --dash-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2'/%3E%3Cpath d='M9 7h6'/%3E%3Cpath d='M9 11h6'/%3E%3Cpath d='M13 15h2'/%3E%3C/svg%3E");
+}
+
+.dash-icon-bag {
+    --dash-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z'/%3E%3Cpath d='M9 11v-5a3 3 0 0 1 6 0v5'/%3E%3C/svg%3E");
+}
+
+.dash-icon-alert {
+    --dash-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z'/%3E%3Cpath d='M12 16h.01'/%3E%3C/svg%3E");
+}
+
+/* Glass theme — dark mode */
+[data-theme="dark"] .dash-glass .mgr-sidebar,
+[data-theme="dark"] .dash-glass .mgr-kpi-card,
+[data-theme="dark"] .dash-glass .mgr-chart-card,
+[data-theme="dark"] .dash-glass .mgr-table-card {
+    background: rgba(24, 29, 42, 0.62);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .dash-glass .mgr-kpi-card:hover {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .dash-glass .mgr-kpi-alert {
+    border-color: rgba(255, 69, 58, 0.3);
+}
+
+[data-theme="dark"] .dash-glass .dash-delta.is-up {
+    background: rgba(63, 185, 80, 0.14);
+}
+
+[data-theme="dark"] .dash-glass .dash-delta.is-down {
+    background: rgba(255, 69, 58, 0.14);
+}
+
+[data-theme="dark"] .dash-glass .dash-range-chip {
+    background: rgba(24, 29, 42, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+}
+
+    [data-theme="dark"] .dash-glass .dash-range-chip.is-active {
+        background: var(--accent);
+        border-color: var(--accent);
+    }
+
+[data-theme="dark"] .dash-glass .dash-table tr:hover td {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .dash-glass .dash-meter {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .dash-kpi-icon.is-blue {
+    background: rgba(79, 163, 255, 0.16);
+}
+
+[data-theme="dark"] .dash-kpi-icon.is-amber {
+    background: rgba(201, 162, 75, 0.18);
+    color: var(--accent-amber);
+}
+
+[data-theme="dark"] .dash-kpi-icon.is-red {
+    background: rgba(255, 69, 58, 0.16);
+    color: #ff453a;
+}

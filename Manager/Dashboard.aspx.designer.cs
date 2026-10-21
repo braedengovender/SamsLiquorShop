@@ -33,6 +33,15 @@ namespace SamsLiquorShop.Manager
         protected global::System.Web.UI.WebControls.Literal litRevenue;
 
         /// <summary>
+        /// litRevenueDelta control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litRevenueDelta;
+
+        /// <summary>
         /// litTransactions control.
         /// </summary>
         /// <remarks>
@@ -40,6 +49,15 @@ namespace SamsLiquorShop.Manager
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litTransactions;
+
+        /// <summary>
+        /// litTransactionsDelta control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litTransactionsDelta;
 
         /// <summary>
         /// litAvgBasket control.
@@ -51,6 +69,15 @@ namespace SamsLiquorShop.Manager
         protected global::System.Web.UI.WebControls.Literal litAvgBasket;
 
         /// <summary>
+        /// litAvgBasketDelta control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litAvgBasketDelta;
+
+        /// <summary>
         /// litLowStock control.
         /// </summary>
         /// <remarks>
@@ -60,31 +87,22 @@ namespace SamsLiquorShop.Manager
         protected global::System.Web.UI.WebControls.Literal litLowStock;
 
         /// <summary>
-        /// litBestCustomerName control.
+        /// rptLowStock control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litBestCustomerName;
+        protected global::System.Web.UI.WebControls.Repeater rptLowStock;
 
         /// <summary>
-        /// litBestCustomerSpend control.
+        /// phNoLowStock control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litBestCustomerSpend;
-
-        /// <summary>
-        /// litBestCustomerOrders control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litBestCustomerOrders;
+        protected global::System.Web.UI.WebControls.PlaceHolder phNoLowStock;
 
         /// <summary>
         /// gvRecentSales control.
