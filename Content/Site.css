@@ -4082,3 +4082,170 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     background: rgba(255,255,255,0.08);
     color: var(--text-primary);
 }
+/* --- Manager: Employees page --- */
+.emp-header-flex {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+    .emp-header-flex input[type="submit"],
+    .emp-form-actions input[type="submit"],
+    .emp-toolbar input[type="submit"] {
+        cursor: pointer;
+    }
+
+.emp-form-card {
+    margin-bottom: 24px;
+}
+
+.emp-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 20px;
+}
+
+.emp-form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.emp-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+    .emp-toolbar .login-input {
+        width: auto;
+        flex: 1 1 220px;
+    }
+
+    .emp-toolbar .emp-select {
+        flex: 0 0 160px;
+    }
+
+.emp-count {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin: 0 0 10px;
+}
+
+.emp-table td {
+    font-family: inherit;
+    font-size: 0.85rem;
+    vertical-align: middle;
+}
+
+.emp-sub {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.emp-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.emp-badge-role {
+    background: rgba(10, 132, 255, 0.12);
+    color: var(--accent);
+}
+
+.emp-badge-active {
+    background: rgba(52, 199, 89, 0.14);
+    color: #1e8e3e;
+}
+
+.emp-badge-inactive {
+    background: rgba(215, 0, 21, 0.1);
+    color: #d70015;
+}
+
+.emp-action {
+    margin-right: 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    .emp-action:hover {
+        text-decoration: underline;
+    }
+
+.emp-action-danger {
+    color: #d70015;
+}
+
+.emp-pager td {
+    border-bottom: 0;
+    padding-top: 14px;
+    font-family: inherit;
+}
+
+.emp-pager a,
+.emp-pager span {
+    display: inline-block;
+    padding: 4px 10px;
+    margin-right: 4px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    text-decoration: none;
+}
+
+.emp-pager span {
+    background: var(--accent);
+    color: #fff;
+}
+
+.emp-alert {
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.emp-alert-success {
+    background: rgba(52, 199, 89, 0.12);
+    border: 1px solid rgba(52, 199, 89, 0.3);
+    color: #1e8e3e;
+}
+
+.emp-alert-error {
+    background: rgba(215, 0, 21, 0.08);
+    border: 1px solid rgba(215, 0, 21, 0.25);
+    color: #d70015;
+}
+
+[data-theme="dark"] .emp-badge-active,
+[data-theme="dark"] .emp-alert-success {
+    color: #30d158;
+}
+
+[data-theme="dark"] .emp-badge-inactive,
+[data-theme="dark"] .emp-alert-error,
+[data-theme="dark"] .emp-action-danger {
+    color: #ff453a;
+}
+
+[data-theme="dark"] .emp-badge-role {
+    color: #5ac8fa;
+}
+
+@media (max-width: 700px) {
+    .emp-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
