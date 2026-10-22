@@ -248,6 +248,7 @@
     <Content Include="Images\social\x.png" />
     <Content Include="Images\social\youtube.png" />
     <Content Include="Login.aspx" />
+    <Content Include="Manager\Employees.aspx" />
     <Content Include="Manager\Dashboard.aspx" />
     <Content Include="Manager\ManagerNav.ascx" />
     <Content Include="Register.aspx" />
@@ -518,12 +519,19 @@
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Manager\Employees.aspx.cs">
+      <DependentUpon>Employees.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Manager\Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Manager\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Manager\Employees.aspx.designer.cs">
+      <DependentUpon>Employees.aspx</DependentUpon>
     </Compile>
     <Compile Include="Manager\ManagerNav.ascx.cs">
       <DependentUpon>ManagerNav.ascx</DependentUpon>

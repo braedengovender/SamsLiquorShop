@@ -18,6 +18,10 @@
         <%: Scripts.Render("~/bundles/modernizr") %>
     </asp:PlaceHolder>
     <webopt:bundlereference runat="server" path="~/Content/css" />
+    <%-- Site.css is linked separately with its last-saved time as a version, so browsers fetch the new file whenever it changes --%>
+    <asp:PlaceHolder runat="server">
+        <link rel="stylesheet" href="<%: ResolveUrl("~/Content/Site.css") %>?v=<%: System.IO.File.GetLastWriteTimeUtc(Server.MapPath("~/Content/Site.css")).Ticks %>" />
+    </asp:PlaceHolder>
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
     <style>
@@ -948,6 +952,151 @@
         window.addEventListener('pageshow', function () {
             hidePageLoader();
         });
+
+        // ===== Dashboard charts =====
+        // A page declares a chart as <canvas data-chart="{type, labels, values, money}">.
+        // type is 'bar' (columns), 'hbar' (horizontal bars) or 'doughnut'.
+        // Chart.js is only downloaded on pages that actually have a chart, and every
+        // chart is redrawn when the theme toggles so text and gridlines stay readable.
+        (function () {
+            var canvases = document.querySelectorAll('canvas[data-chart]');
+            if (!canvases.length) return;
+
+            var charts = [];
+
+            // Doughnut colours were checked for colour-blind separation in both themes.
+            // Doughnuts are capped at 3 slices + a grey "Other" because blue/amber fail past that.
+            function themeColours() {
+                var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+                return dark
+                    ? { bar: '#3987e5', barSoft: '#1f4f8f', series: ['#3987e5', '#a67f2e', '#d55181'], other: '#636366', text: '#9a9aa2', grid: 'rgba(255,255,255,0.06)', surface: '#1a1f2c' }
+                    : { bar: '#0a84ff', barSoft: '#7cc4ff', series: ['#0a84ff', '#c9a24b', '#e87ba4'], other: '#aeaeb2', text: '#6e6e73', grid: 'rgba(0,0,0,0.05)', surface: '#f7f9fc' };
+            }
+
+            var tooltipStyle = { backgroundColor: 'rgba(29,29,31,0.92)', padding: 10, cornerRadius: 10, displayColors: false, titleFont: { weight: '600' } };
+
+            // Bars fade from a lighter blue at the baseline to the brand blue at the tip
+            function barGradient(c, horizontal) {
+                return function (ctx) {
+                    var area = ctx.chart.chartArea;
+                    if (!area) return c.bar;
+                    var g = horizontal
+                        ? ctx.chart.ctx.createLinearGradient(area.left, 0, area.right, 0)
+                        : ctx.chart.ctx.createLinearGradient(0, area.bottom, 0, area.top);
+                    g.addColorStop(0, c.barSoft);
+                    g.addColorStop(1, c.bar);
+                    return g;
+                };
+            }
+
+            function formatRand(v, decimals) {
+                return 'R' + Number(v).toLocaleString('en-ZA', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+            }
+
+            function formatAxis(v, money) {
+                if (!money) return v;
+                return Math.abs(v) >= 1000 ? 'R' + (v / 1000).toLocaleString('en-ZA', { maximumFractionDigits: 1 }) + 'k' : 'R' + v;
+            }
+
+            function foldToTop3(labels, values) {
+                if (labels.length <= 3) return { labels: labels, values: values };
+                var rest = values.slice(3).reduce(function (a, b) { return a + b; }, 0);
+                return { labels: labels.slice(0, 3).concat(['Other']), values: values.slice(0, 3).concat([rest]) };
+            }
+
+            function buildLegend(canvas, labels, values, colours, money) {
+                var card = canvas.closest('.mgr-chart-card');
+                var legend = card ? card.querySelector('.dash-legend') : null;
+                if (!legend) return;
+                var total = values.reduce(function (a, b) { return a + b; }, 0) || 1;
+                legend.innerHTML = labels.map(function (label, i) {
+                    var pct = Math.round(values[i] / total * 100);
+                    return '<li class="dash-legend-item"><span class="dash-legend-swatch" style="background:' + colours[i] + '"></span>' +
+                        '<span class="dash-legend-label"></span>' +
+                        '<span class="dash-legend-value">' + pct + '%' + (money ? ' · ' + formatRand(values[i], 0) : '') + '</span></li>';
+                }).join('');
+                // Labels come from the database, so set them as text rather than HTML
+                legend.querySelectorAll('.dash-legend-label').forEach(function (el, i) { el.textContent = labels[i]; });
+            }
+
+            function renderChart(canvas) {
+                var spec = JSON.parse(canvas.getAttribute('data-chart'));
+                var c = themeColours();
+                var values = (spec.values || []).map(Number);
+                var hasData = values.some(function (v) { return v > 0; });
+
+                var wrap = canvas.parentNode;
+                var empty = wrap.querySelector('.dash-empty');
+                if (!hasData) {
+                    canvas.style.display = 'none';
+                    if (!empty) {
+                        empty = document.createElement('p');
+                        empty.className = 'dash-empty';
+                        empty.textContent = canvas.getAttribute('data-empty') || 'No sales in this period';
+                        wrap.appendChild(empty);
+                    }
+                    return;
+                }
+
+                Chart.defaults.color = c.text;
+                Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+
+                if (spec.type === 'doughnut') {
+                    var folded = foldToTop3(spec.labels, values);
+                    var colours = folded.labels.map(function (label, i) { return i < 3 ? c.series[i] : c.other; });
+                    buildLegend(canvas, folded.labels, folded.values, colours, spec.money);
+                    charts.push(new Chart(canvas, {
+                        type: 'doughnut',
+                        data: { labels: folded.labels, datasets: [{ data: folded.values, backgroundColor: colours, borderColor: c.surface, borderWidth: 2 }] },
+                        options: {
+                            cutout: '62%', maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: Object.assign({}, tooltipStyle, { callbacks: { label: function (ctx) { return ctx.label + ': ' + (spec.money ? formatRand(ctx.parsed, 2) : ctx.parsed); } } })
+                            }
+                        }
+                    }));
+                    return;
+                }
+
+                var horizontal = spec.type === 'hbar';
+                var valueAxis = { grid: { color: c.grid }, border: { display: false }, beginAtZero: true, ticks: { callback: function (v) { return formatAxis(v, spec.money); } } };
+                // Long product names would be clipped at the canvas edge, so shorten them (the tooltip still shows the full name)
+                var categoryAxis = {
+                    grid: { display: false }, border: { display: false },
+                    ticks: horizontal
+                        ? { callback: function (v) { var label = this.getLabelForValue(v); return label.length > 22 ? label.slice(0, 21) + '…' : label; } }
+                        : { autoSkip: true, maxRotation: 0 }
+                };
+
+                charts.push(new Chart(canvas, {
+                    type: 'bar',
+                    data: { labels: spec.labels, datasets: [{ data: values, backgroundColor: barGradient(c, horizontal), hoverBackgroundColor: c.bar, borderRadius: 6, maxBarThickness: 26 }] },
+                    options: {
+                        indexAxis: horizontal ? 'y' : 'x', maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: Object.assign({}, tooltipStyle, { callbacks: { title: function (items) { return items[0].label; }, label: function (ctx) { var v = horizontal ? ctx.parsed.x : ctx.parsed.y; return spec.money ? formatRand(v, 2) : v.toLocaleString('en-ZA'); } } })
+                        },
+                        scales: horizontal ? { x: valueAxis, y: categoryAxis } : { x: categoryAxis, y: valueAxis }
+                    }
+                }));
+            }
+
+            function renderAll() {
+                charts.forEach(function (ch) { ch.destroy(); });
+                charts = [];
+                canvases.forEach(renderChart);
+            }
+
+            var script = document.createElement('script');
+            script.src = '/Scripts/chart.umd.min.js';
+            script.onload = function () {
+                renderAll();
+                new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+            };
+            document.body.appendChild(script);
+        })();
     </script>
 </body>
 </html>
