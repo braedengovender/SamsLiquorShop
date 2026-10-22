@@ -107,6 +107,10 @@ namespace SamsLiquorShop
             litCartCount.Text = cartCount > 0
                 ? "<span class='cart-count-badge'>" + cartCount + "</span>"
                 : "";
+
+            imgCart.ImageUrl = cartCount > 0
+                ? "~/Images/icons/fullcart.png"
+                : "~/Images/icons/emptycart.png";
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

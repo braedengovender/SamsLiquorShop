@@ -20,6 +20,120 @@
     <webopt:bundlereference runat="server" path="~/Content/css" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
+    <style>
+        .nl-continue-btn {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 36px;
+            border-radius: 999px;
+            background: var(--accent);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .nl-continue-btn:hover {
+            background: #006edb;
+        }
+
+        [data-theme="dark"] .nl-continue-btn:hover {
+            background: #6bb2ff;
+        }
+
+        /* --- Search suggestions --- */
+        #searchSuggestions .search-suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 12px 16px;
+        }
+
+        #searchSuggestions .search-suggestion-item:hover,
+        #searchSuggestions .search-suggestion-item:focus {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        #searchSuggestions .search-suggestion-img {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        #searchSuggestions .search-suggestion-name {
+            flex: 1;
+            min-width: 0;
+        }
+
+        #searchSuggestions .search-suggestion-prices {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            margin-left: auto;
+            padding-left: 24px;
+            flex-shrink: 0;
+        }
+
+        #searchSuggestions .search-suggestion-price {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--accent-amber-dark);
+            white-space: nowrap;
+        }
+
+        #searchSuggestions .search-suggestion-price.is-sale {
+            background: var(--accent-amber);
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 999px;
+        }
+
+        #searchSuggestions .search-suggestion-old {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            text-decoration: line-through;
+            white-space: nowrap;
+        }
+
+        [data-theme="dark"] #searchSuggestions .search-suggestion-price {
+            color: var(--accent-amber);
+        }
+
+        [data-theme="dark"] #searchSuggestions .search-suggestion-price.is-sale {
+            color: #fff;
+        }
+
+        /* --- Search clear button: centre the X in the grey circle --- */
+        #searchBar .search-bar-clear {
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 0;
+        }
+
+        #searchBar .search-bar-clear svg {
+            display: block;
+        }
+
+        /* --- Light / dark versions of the responsible drinking image --- */
+        img.theme-dark-only {
+            display: none;
+        }
+
+        [data-theme="dark"] img.theme-dark-only {
+            display: block;
+        }
+
+        [data-theme="dark"] img.theme-light-only {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div id="ageGate" class="age-gate" style="display:none;">
@@ -41,7 +155,8 @@
           <button type="button" class="btn-ghost age-exit" onclick="exitSite()">No, Get Me Out</button>
         </div>
 
-        <img src="/Images/responsible-drinking.jpg" alt="Drink responsibly" class="age-image" />
+        <img src="/Images/responsible-drinking.jpg" alt="Drink responsibly" class="age-image theme-light-only" />
+        <img src="/Images/responsible-drinking-dark.svg" alt="Drink responsibly" class="age-image theme-dark-only" />
       </div>
     </div>
     <script>
@@ -100,11 +215,16 @@
               <a href="PrivacyPolicy.aspx">privacy policy</a> and <a href="TermsOfService.aspx">terms of service</a>.
             </p>
           </div>
-          <div id="newsletterSuccess" class="newsletter-success" style="display:none;">
-            <div class="newsletter-success-icon">&#10003;</div>
-            <h3>You're in!</h3>
-            <p>Thanks for signing up - keep an eye on your inbox for new arrivals, tastings, and exclusive offers.</p>
-            <button type="button" class="btn-primary" onclick="closeNewsletter()">Continue Browsing</button>
+          <div id="newsletterSuccess" class="newsletter-success" style="display:none; text-align:center; padding:24px 0;">
+              <div style="width:56px; height:56px; margin:0 auto 20px;">
+                <svg viewBox="0 0 52 52" width="56" height="56" aria-hidden="true" style="display:block;">
+                  <circle cx="26" cy="26" r="24" fill="none" stroke="#c9a24b" stroke-width="2" />
+                  <path d="M16 27 L23 34 L37 19" fill="none" stroke="#c9a24b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <h3 style="font-size:1.5rem; font-weight:700; margin:0 0 10px;">You're in!</h3>
+              <p style="color:var(--text-secondary); font-size:0.95rem; line-height:1.5; margin:0 0 28px;">Thanks for signing up - keep an eye on your inbox for new arrivals, tastings, and exclusive offers.</p>
+              <button type="button" class="nl-continue-btn" onclick="closeNewsletter()">Continue Browsing</button>
           </div>
         </div>
 
@@ -212,37 +332,41 @@
               </li>
               <li><a href="~/Contact.aspx" runat="server">Contact</a></li>
             </ul>
-            <div class="nav-auth">
-              <button type="button" class="icon-btn" onclick="toggleSearch()" aria-label="Search">&#128269;</button>
-                <a href="Cart.aspx" class="icon-btn cart-icon-wrap" aria-label="Cart">&#128722;
-                   <asp:UpdatePanel ID="upnlCartBadge" runat="server" UpdateMode="Always" RenderMode="Inline">
-                       <ContentTemplate>
-                           <asp:Literal runat="server" ID="litCartCount" />
-                       </ContentTemplate>
-                   </asp:UpdatePanel>
-                </a>
+              <div class="nav-auth">
+                  <button type="button" class="icon-btn" onclick="toggleSearch()" aria-label="Search">
+                      <img src="/Images/icons/search.png" alt="" class="nav-icon" width="20" height="20" />
+                  </button>
+                  <a href="Cart.aspx" class="icon-btn cart-icon-wrap" aria-label="Cart">
+                      <asp:UpdatePanel ID="upnlCartBadge" runat="server" UpdateMode="Always" RenderMode="Inline">
+                          <ContentTemplate>
+                              <asp:Image ID="imgCart" runat="server" CssClass="nav-icon" Width="20" Height="20"
+                                  ImageUrl="~/Images/icons/emptycart.png" AlternateText="" />
+                              <asp:Literal runat="server" ID="litCartCount" />
+                          </ContentTemplate>
+                      </asp:UpdatePanel>
+                  </a>
 
-              <asp:PlaceHolder runat="server" ID="phLoggedOut">
-                <a runat="server" href="~/Login.aspx" class="btn-ghost">Log in</a>
-                <%--<a runat="server" href="~/Account/Register" class="btn-primary">Register</a>--%>
-                <a runat="server" href="~/Register.aspx" class="btn-primary">Register</a>
-              </asp:PlaceHolder>
+                  <asp:PlaceHolder runat="server" ID="phLoggedOut">
+                      <a runat="server" href="~/Login.aspx" class="btn-ghost">Log in</a>
+                      <%--<a runat="server" href="~/Account/Register" class="btn-primary">Register</a>--%>
+                      <a runat="server" href="~/Register.aspx" class="btn-primary">Register</a>
+                  </asp:PlaceHolder>
 
-              <asp:PlaceHolder runat="server" ID="phLoggedIn" Visible="false">
-                <a href="Account/Profile.aspx" class="icon-btn" aria-label="My Profile">&#128100;</a>
-                <asp:LinkButton runat="server" ID="btnLogout" CssClass="btn-ghost" OnClick="btnLogout_Click">Log out</asp:LinkButton>
-              </asp:PlaceHolder>
+                  <asp:PlaceHolder runat="server" ID="phLoggedIn" Visible="false">
+                      <a href="Account/Profile.aspx" class="icon-btn" aria-label="My Profile">&#128100;</a>
+                      <asp:LinkButton runat="server" ID="btnLogout" CssClass="btn-ghost" OnClick="btnLogout_Click">Log out</asp:LinkButton>
+                  </asp:PlaceHolder>
 
-              <button type="button" id="themeToggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
-                <span id="themeIcon">&#9789;</span>
-              </button>
-            </div>
+                  <button type="button" id="themeToggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                      <img id="themeIcon" src="/Images/icons/moon.png" alt="" class="nav-icon" width="20" height="20" />
+                  </button>
+              </div>
           </nav>
             <div id="searchBar" class="search-bar" style="display:none;">
                 <div class="search-bar-inner glass">
-                    <span class="search-bar-icon">&#128269;</span>
+                    <img src="/Images/icons/search.png" alt="" class="nav-icon search-bar-icon-img" width="18" height="18" />
                     <input type="text" id="headerSearchInput" placeholder="Search for products..." autocomplete="off" />
-                    <button type="button" class="search-bar-clear" id="searchClearBtn" onclick="clearHeaderSearch()" aria-label="Clear search" style="display:none;">&times;</button>
+                    <button type="button" class="search-bar-clear" id="searchClearBtn" onclick="clearHeaderSearch()" aria-label="Clear search" style="display:none;"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2 L10 10 M10 2 L2 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" /></svg></button>
                 </div>
                 <div id="searchSuggestions" class="search-suggestions glass" style="display:none;"></div>
             </div>
@@ -361,7 +485,8 @@
             <p>&copy; 2026 Sam's Liquor Shop - All Rights Reserved. Designed by The Byte Club.</p>
           </div>
           <div class="glass footer-responsible">
-            <img src="/Images/responsible-drinking.jpg" alt="Please drink responsibly" />
+            <img src="/Images/responsible-drinking.jpg" alt="Please drink responsibly" class="theme-light-only" />
+            <img src="/Images/responsible-drinking-dark.svg" alt="Please drink responsibly" class="theme-dark-only" />
           </div>
           <div class="glass footer-info">
             <div class="footer-security">
@@ -394,7 +519,7 @@
             var current = document.documentElement.getAttribute('data-theme');
             var next = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
-            document.getElementById('themeIcon').innerHTML = next === 'dark' ? '&#9728;' : '&#9789;';
+            setThemeIcon(next);
             localStorage.setItem('theme', next);
         }
 
@@ -407,6 +532,11 @@
             } else {
                 document.getElementById('searchSuggestions').style.display = 'none';
             }
+        }
+
+        function setThemeIcon(theme) {
+            document.getElementById('themeIcon').src =
+                theme === 'dark' ? '/Images/icons/sun.png' : '/Images/icons/moon.png';
         }
 
         function clearHeaderSearch() {
@@ -444,7 +574,14 @@
                 }
 
                 box.innerHTML = items.map(function (item) {
-                    return '<a href="Shop.aspx?search=' + encodeURIComponent(item.name) + '" class="search-suggestion-item">' + escapeHtml(item.name) + '</a>';
+                    return '<a href="Shop.aspx?search=' + encodeURIComponent(item.name) + '" class="search-suggestion-item" data-name="' + escapeHtml(item.name) + '">' +
+                        '<img src="' + item.image + '" alt="" class="search-suggestion-img" width="48" height="48" />' +
+                        '<span class="search-suggestion-name">' + escapeHtml(item.name) + '</span>' +
+                        '<span class="search-suggestion-prices">' +
+                        (item.oldPrice ? '<span class="search-suggestion-old">' + escapeHtml(item.oldPrice) + '</span>' : '') +
+                        '<span class="search-suggestion-price' + (item.oldPrice ? ' is-sale' : '') + '">' + escapeHtml(item.price) + '</span>' +
+                        '</span>' +
+                        '</a>';
                 }).join('');
                 box.style.display = 'block';
                 activeIndex = -1;
@@ -486,7 +623,7 @@
                 } else if (e.key === 'Enter') {
                     e.preventDefault();
                     if (activeIndex >= 0 && items[activeIndex]) {
-                        goToSearch(items[activeIndex].textContent);
+                        goToSearch(items[activeIndex].getAttribute('data-name'));
                     } else if (input.value.trim().length > 0) {
                         goToSearch(input.value.trim());
                     }
@@ -505,7 +642,7 @@
         // Set the correct icon on load based on saved preference
         window.addEventListener('DOMContentLoaded', function () {
             var current = document.documentElement.getAttribute('data-theme');
-            document.getElementById('themeIcon').innerHTML = current === 'dark' ? '&#9728;' : '&#9789;';
+            setThemeIcon(current);
         });
 
         (function populateDobDropdowns() {

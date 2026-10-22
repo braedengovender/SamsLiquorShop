@@ -208,6 +208,11 @@
     <Content Include="Images\categories\wine.jpg" />
     <Content Include="Images\chatbot-icon.png" />
     <Content Include="Images\hero-drink.jpg" />
+    <Content Include="Images\icons\emptycart.png" />
+    <Content Include="Images\icons\fullcart.png" />
+    <Content Include="Images\icons\moon.png" />
+    <Content Include="Images\icons\search.png" />
+    <Content Include="Images\icons\sun.png" />
     <Content Include="Images\logo-cropped.png" />
     <Content Include="Images\logo-spaced.png" />
     <Content Include="Images\logo.png" />
@@ -235,6 +240,7 @@
     <Content Include="Images\products\promo4.jpg" />
     <Content Include="Images\products\promo5.jpg" />
     <Content Include="Images\products\promo6.jpg" />
+    <Content Include="Images\responsible-drinking-dark.svg" />
     <Content Include="Images\responsible-drinking.jpg" />
     <Content Include="Images\social\facebook.png" />
     <Content Include="Images\social\instagram.png" />
