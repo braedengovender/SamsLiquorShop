@@ -340,6 +340,14 @@
                   <button type="button" class="icon-btn" onclick="toggleSearch()" aria-label="Search">
                       <img src="/Images/icons/search.png" alt="" class="nav-icon" width="20" height="20" />
                   </button>
+                  <a href="Shop.aspx?wishlist=1" class="icon-btn cart-icon-wrap" aria-label="Wishlist">
+                      <asp:UpdatePanel ID="upnlWishBadge" runat="server" UpdateMode="Always" RenderMode="Inline">
+                          <ContentTemplate>
+                              <svg class="wish-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+                              <asp:Literal runat="server" ID="litWishCount" />
+                          </ContentTemplate>
+                      </asp:UpdatePanel>
+                  </a>
                   <a href="Cart.aspx" class="icon-btn cart-icon-wrap" aria-label="Cart">
                       <asp:UpdatePanel ID="upnlCartBadge" runat="server" UpdateMode="Always" RenderMode="Inline">
                           <ContentTemplate>

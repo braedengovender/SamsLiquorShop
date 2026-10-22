@@ -108,6 +108,11 @@ namespace SamsLiquorShop
                 ? "<span class='cart-count-badge'>" + cartCount + "</span>"
                 : "";
 
+            int wishCount = CartHelper.GetWishlist(Session).Count();
+            litWishCount.Text = wishCount > 0
+                ? "<span class='cart-count-badge'>" + wishCount + "</span>"
+                : "";
+
             imgCart.ImageUrl = cartCount > 0
                 ? "~/Images/icons/fullcart.png"
                 : "~/Images/icons/emptycart.png";
