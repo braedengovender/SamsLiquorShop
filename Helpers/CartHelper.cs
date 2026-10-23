@@ -11,6 +11,7 @@ namespace SamsLiquorShop.Helpers
         public int ProductId { get; set; }
         public string ProductName { get; set; }
         public decimal UnitPrice { get; set; }
+        public decimal ShelfPrice { get; set; }   // original price before any discount
         public int Quantity { get; set; }
     }
 

@@ -93,6 +93,10 @@ namespace SamsLiquorShop
                 switch (role.Trim().ToLower())
                 {
                     case "customer":
+                        string returnUrl = Request.QueryString["returnUrl"];
+                        // only follow simple relative links like "Cart.aspx" (stops open redirects)
+                        if (!string.IsNullOrEmpty(returnUrl) && !returnUrl.Contains(":") && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("\\"))
+                            Response.Redirect("~/" + returnUrl.TrimStart('/'));
                         Response.Redirect("~/Customer/Dashboard.aspx");
                         break;
                     case "cashier":
