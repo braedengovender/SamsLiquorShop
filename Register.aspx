@@ -255,7 +255,8 @@
                                     ControlToValidate="txtConfirmPassword"
                                     ErrorMessage="Please confirm your password."
                                     CssClass="field-validation"
-                                    Display="Dynamic" />
+                                    Display="Dynamic"
+                                    ValidationGroup="RegisterForm" />
 
                                 <asp:CompareValidator
                                     ID="cvConfirmPassword"
@@ -264,7 +265,8 @@
                                     ControlToCompare="txtPassword"
                                     ErrorMessage="Passwords do not match."
                                     CssClass="field-validation"
-                                    Display="Dynamic" />
+                                    Display="Dynamic"
+                                    ValidationGroup="RegisterForm" />
                             </div>
 
                         </div>
@@ -534,62 +536,6 @@
 
                     window.addEventListener('load', initAddressAutocomplete);
                 </script>
-
-                <asp:Panel ID="pnlSuccess" runat="server" Visible="false" CssClass="register-success">
-
-                    <p class="login-eyebrow">Email Verification</p>
-
-                    <h1 class="login-heading">Check your email</h1>
-
-                    <p class="login-subtext">
-                        We've sent a 5-digit verification code to your email address.
-                        Enter the code below to verify your account.
-                    </p>
-
-                    <div class="login-field" style="margin-top: 25px;">
-
-                        <label for="txtOTP">Verification code</label>
-
-                        <asp:TextBox
-                            ID="txtOTP"
-                            runat="server"
-                            ClientIDMode="Static"
-                            CssClass="login-input"
-                            MaxLength="5"
-                            placeholder="Enter 5-digit code"
-                            autocomplete="one-time-code"
-                            Style="text-align: center; font-size: 24px; letter-spacing: 8px;" />
-
-                        <asp:RequiredFieldValidator
-                            ID="rfvOTP"
-                            runat="server"
-                            ControlToValidate="txtOTP"
-                            CssClass="field-error"
-                            Display="Dynamic"
-                            ErrorMessage="Please enter the verification code." />
-
-                    </div>
-
-                    <asp:Label
-                        ID="lblOtpError"
-                        runat="server"
-                        CssClass="field-error"
-                        Style="display: block; text-align: center; margin-top: 10px;">
-                    </asp:Label>
-
-                    <asp:Button
-                        ID="btnVerifyOTP"
-                        runat="server"
-                        Text="Verify email"
-                        CssClass="btn-primary login-submit"
-                        OnClick="btnVerifyOTP_Click" />
-
-                    <p style="text-align: center; margin-top: 18px; color: #718093; font-size: 12px;">
-                        Didn't receive the email? Check your spam/junk folder.
-                    </p>
-
-                </asp:Panel>
-
             </div>
         </div>
     </div>

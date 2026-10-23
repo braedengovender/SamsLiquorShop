@@ -1,21 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Net;
-using System.Net.Mail;
-
 
 namespace SamsLiquorShop
 {
     public partial class Register : System.Web.UI.Page
     {
+        private const string RegistrationDateColumn = "Customer_RegistrationDateTime";
+
+        private string ConnStr => ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
+
+        private class NewCustomer
+        {
+            public string First, Last, IdNumber, Phone, Email;
+            public string UnitNumber, UnitName, StreetNumber, StreetName, Suburb, PostalCode, City, Province;
+            public string Username, Password;
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Someone who is already logged in has no need to register.
+            if (Session["UserRole"] != null)
+            {
+                Response.Redirect("~/Default.aspx");
+                return;
+            }
 
+            // Keep field lengths in step with the database columns.
+            txtEmail.MaxLength = 100;
+            txtPhone.MaxLength = 12;
+            txtUnitName.MaxLength = 50;
+            txtStreetNumber.MaxLength = 10;
+            txtSuburb.MaxLength = 50;
+            txtCity.MaxLength = 50;
+            txtPassword.MaxLength = 50;
+            txtConfirmPassword.MaxLength = 50;
+            revPassword.ValidationExpression = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,50}$";
         }
+
+        // ---------- Validators ----------
         protected void cvIdNumber_ServerValidate(object source, ServerValidateEventArgs args)
         {
             var id = txtIdNumber.Text.Trim();
@@ -50,170 +76,160 @@ namespace SamsLiquorShop
             args.IsValid = chkTerms.Checked;
         }
 
+        // ---------- Create the account ----------
         protected void btnRegister_Click(object sender, EventArgs e)
         {
+            lblError.Text = "";
             if (!Page.IsValid) return;
 
-            // Generate a 5-digit OTP
-            Random random = new Random();
-            string otp = random.Next(10000, 100000).ToString();
-
-            // Store OTP temporarily in Session
-            Session["RegistrationOTP"] = otp;
-            Session["RegistrationEmail"] = txtEmail.Text.Trim();
-
-            try
+            if (txtPassword.Text != txtConfirmPassword.Text)
             {
-                string emailAddress = "theofficialbyteclub@gmail.com";
-                string emailPassword = "";
-
-                string customerEmail = txtEmail.Text.Trim();
-
-                // Create the email
-                using (MailMessage mail = new MailMessage())
-                {
-                    mail.From = new MailAddress(emailAddress, "Sam's Liquor Shop");
-                    mail.To.Add(customerEmail);
-
-                    mail.Subject = "Sam's Liquor Shop - Verify Your Email";
-
-                    // Professional HTML email
-                    mail.IsBodyHtml = true;
-
-                    mail.Body = @"
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset='UTF-8'>
-                    </head>
-
-                    <body style='margin:0; padding:0; background-color:#f4f9fd; font-family:Arial, Helvetica, sans-serif;'>
-
-                        <div style='padding:40px 15px;'>
-
-                            <div style='max-width:520px; margin:0 auto; background-color:#ffffff; border:1px solid #dceaf4; border-radius:16px; overflow:hidden;'>
-
-                                <!-- HEADER -->
-                                <div style='text-align:center; padding:28px 25px; border-bottom:2px solid #00a8ff;'>
-
-                                    <h1 style='margin:0; color:#0097e6; font-size:26px;'>
-                                        Sam's Liquor Shop
-                                    </h1>
-
-                                    <p style='margin:7px 0 0 0; color:#718093; font-size:13px;'>
-                                        Your trusted liquor store
-                                    </p>
-
-                                </div>
-
-                                <!-- CONTENT -->
-                                <div style='padding:35px 30px;'>
-
-                                    <h2 style='margin:0 0 12px 0; color:#2f3640; font-size:22px;'>
-                                        Verify your email
-                                    </h2>
-
-                                    <p style='margin:0 0 25px 0; color:#718093; font-size:14px; line-height:1.6;'>
-                                        Thanks for creating an account with Sam's Liquor Shop.
-                                        Please enter the verification code below to confirm your email address.
-                                    </p>
-
-                                    <!-- OTP BOX -->
-                                    <div style='text-align:center; background-color:#f0f8ff; border:1px solid #cfe9fa; border-radius:12px; padding:25px; margin:25px 0;'>
-
-                                        <p style='margin:0 0 10px 0; color:#718093; font-size:12px; text-transform:uppercase; letter-spacing:1px;'>
-                                            Your verification code
-                                        </p>
-
-                                        <div style='font-size:34px; font-weight:bold; letter-spacing:8px; color:#0097e6;'>
-                                            " + otp + @"
-                                        </div>
-
-                                    </div>
-
-                                    <p style='margin:25px 0 0 0; color:#718093; font-size:13px; line-height:1.5;'>
-                                        Enter this code on the registration page to activate your account.
-                                    </p>
-
-                                    <p style='margin:20px 0 0 0; color:#718093; font-size:12px;'>
-                                        If you did not create this account, you can safely ignore this email.
-                                    </p>
-
-                                </div>
-
-                                <!-- FOOTER -->
-                                <div style='background-color:#f5f6fa; text-align:center; padding:18px 20px; border-top:1px solid #e5e9ef;'>
-
-                                    <p style='margin:0; color:#7f8c8d; font-size:11px;'>
-                                        Sam's Liquor Shop
-                                    </p>
-
-                                    <p style='margin:5px 0 0 0; color:#a0a5ab; font-size:10px;'>
-                                        Powered by The Byte Club
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </body>
-                    </html>";
-
-                    // Gmail SMTP
-                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                    {
-                        smtp.EnableSsl = true;
-
-                        smtp.Credentials = new NetworkCredential(
-                            emailAddress,
-                            emailPassword
-                        );
-
-                        smtp.Send(mail);
-                    }
-                }
-
-                // Email sent successfully
-                pnlForm.Visible = false;
-                pnlSuccess.Visible = true;
-                lblError.Text = "";
-            }
-            catch
-            {
-                lblError.Text = "Unable to send verification email. Please try again.";
-            }
-        }
-
-        protected void btnVerifyOTP_Click(object sender, EventArgs e)
-        {
-            string enteredOTP = txtOTP.Text.Trim();
-
-            string storedOTP = Session["RegistrationOTP"] as string;
-
-            if (string.IsNullOrEmpty(storedOTP))
-            {
-                lblOtpError.Text = "Your verification code has expired. Please register again.";
+                lblError.Text = "Passwords do not match.";
                 return;
             }
 
-            if (enteredOTP == storedOTP)
+            var c = new NewCustomer
             {
-                // OTP is correct
-                Session.Remove("RegistrationOTP");
+                First = txtFirstName.Text.Trim(),
+                Last = txtLastName.Text.Trim(),
+                IdNumber = txtIdNumber.Text.Trim(),
+                Phone = txtPhone.Text.Trim(),
+                Email = txtEmail.Text.Trim(),
+                UnitNumber = txtUnitNumber.Text.Trim(),
+                UnitName = txtUnitName.Text.Trim(),
+                StreetNumber = txtStreetNumber.Text.Trim(),
+                StreetName = txtStreetName.Text.Trim(),
+                Suburb = txtSuburb.Text.Trim(),
+                PostalCode = txtPostalCode.Text.Trim(),
+                City = txtCity.Text.Trim(),
+                Province = ddlProvince.SelectedValue,
+                Username = txtUsername.Text.Trim(),
+                Password = txtPassword.Text
+            };
 
-                pnlSuccess.Visible = true;
-
-                lblOtpError.CssClass = "field-valid";
-                lblOtpError.Text = "Email verified successfully! Your account has been activated.";
+            // Blank username: use the email address, as the form promises.
+            if (c.Username.Length == 0)
+            {
+                if (c.Email.Length > 50)
+                {
+                    lblError.Text = "Your email address is too long to use as a username. Please enter a username above.";
+                    return;
+                }
+                c.Username = c.Email;
             }
-            else
+
+            string duplicate = FindDuplicate(c);
+            if (duplicate != null)
             {
-                lblOtpError.Text = "Incorrect verification code. Please try again.";
+                lblError.Text = duplicate;
+                return;
+            }
+
+            int newId;
+            try
+            {
+                newId = InsertCustomer(c);
+            }
+            catch (SqlException ex)
+            {
+                lblError.Text = "We couldn't create your account. Please try again or contact us."
+                    + (HttpContext.Current.IsDebuggingEnabled ? " (" + ex.Message + ")" : "");
+                return;
+            }
+
+            // Log the new customer straight in.
+            Session["CustomerID"] = newId;
+            Session["UserRole"] = "Customer";
+            Session["UserName"] = c.Username;
+
+            Response.Redirect("~/Customer/Dashboard.aspx");
+        }
+
+        // ---------- Database ----------
+        private int InsertCustomer(NewCustomer c)
+        {
+            string sql = @"
+                INSERT INTO Customer
+                    (Customer_FirstName, Customer_LastName, Customer_EmailAddress, Customer_IDNumber,
+                     Customer_PhoneNumber, Customer_UnitNumber, Customer_UnitName, Customer_StreetNumber,
+                     Customer_StreetName, Customer_Suburb, Customer_PostalCode, Customer_City,
+                     Customer_Province, Customer_Country, " + RegistrationDateColumn + @",
+                     Customer_Status, Customer_Username, Customer_Password)
+                OUTPUT INSERTED.Customer_ID
+                VALUES
+                    (@First, @Last, @Email, @IdNumber,
+                     @Phone, @UnitNumber, @UnitName, @StreetNumber,
+                     @StreetName, @Suburb, @PostalCode, @City,
+                     @Province, 'South Africa', @Registered,
+                     'Active', @Username, @Password)";
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@First", c.First);
+                cmd.Parameters.AddWithValue("@Last", c.Last);
+                cmd.Parameters.AddWithValue("@Email", c.Email);
+                cmd.Parameters.AddWithValue("@IdNumber", c.IdNumber);
+                cmd.Parameters.AddWithValue("@Phone", c.Phone);
+                cmd.Parameters.AddWithValue("@UnitNumber", string.IsNullOrWhiteSpace(c.UnitNumber) ? (object)DBNull.Value : c.UnitNumber);
+                cmd.Parameters.AddWithValue("@UnitName", string.IsNullOrWhiteSpace(c.UnitName) ? (object)DBNull.Value : c.UnitName);
+                cmd.Parameters.AddWithValue("@StreetNumber", c.StreetNumber);
+                cmd.Parameters.AddWithValue("@StreetName", c.StreetName);
+                cmd.Parameters.AddWithValue("@Suburb", c.Suburb);
+                cmd.Parameters.AddWithValue("@PostalCode", c.PostalCode);
+                cmd.Parameters.AddWithValue("@City", c.City);
+                cmd.Parameters.AddWithValue("@Province", c.Province);
+                cmd.Parameters.Add("@Registered", SqlDbType.DateTime2).Value = DateTime.Now;
+                cmd.Parameters.AddWithValue("@Username", c.Username);
+                cmd.Parameters.AddWithValue("@Password", c.Password);
+
+                conn.Open();
+                return Convert.ToInt32(cmd.ExecuteScalar());
             }
         }
 
+        private string FindDuplicate(NewCustomer c)
+        {
+            if (LoginNameTaken(c.Email))
+                return "An account with that email address already exists. Try logging in instead.";
+
+            if (!string.Equals(c.Username, c.Email, StringComparison.OrdinalIgnoreCase) && LoginNameTaken(c.Username))
+                return "That username is already taken. Please choose another.";
+
+            if (IdNumberTaken(c.IdNumber))
+                return "An account with that ID number already exists. Try logging in instead.";
+
+            return null;
+        }
+
+        // Login accepts a username OR an email, so neither may collide with
+        // another customer's or employee's username or email.
+        private bool LoginNameTaken(string value)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(@"
+                SELECT
+                    (SELECT COUNT(*) FROM Customer WHERE Customer_Username = @V OR Customer_EmailAddress = @V)
+                  + (SELECT COUNT(*) FROM Employee WHERE Employee_Username = @V OR Employee_EmailAddress = @V)", conn))
+            {
+                cmd.Parameters.AddWithValue("@V", value);
+                conn.Open();
+                return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
+        }
+
+        private bool IdNumberTaken(string idNumber)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM Customer WHERE Customer_IDNumber = @V", conn))
+            {
+                cmd.Parameters.AddWithValue("@V", idNumber);
+                conn.Open();
+                return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
+        }
+
+        // ---------- ID helpers ----------
         private static bool IsAllDigits(string value)
         {
             foreach (var c in value)
@@ -223,8 +239,6 @@ namespace SamsLiquorShop
             return true;
         }
 
-        // Standard Luhn checksum - the last digit of a valid SA ID number
-        // must make this sum divisible by 10.
         private static bool IsValidLuhn(string number)
         {
             var sum = 0;
@@ -245,10 +259,6 @@ namespace SamsLiquorShop
             return sum % 10 == 0;
         }
 
-        // First 6 digits of an SA ID are YYMMDD. The ID itself doesn't encode
-        // century, so we assume "not born in the future" - if the two-digit
-        // year is greater than the current two-digit year, it must be 1900s,
-        // otherwise 2000s.
         private static bool TryGetBirthDateFromSaId(string id, out DateTime birthDate)
         {
             birthDate = default;
