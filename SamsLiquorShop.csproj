@@ -180,8 +180,11 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Customer\Account.aspx" />
     <Content Include="Customer\CustomerNav.ascx" />
     <Content Include="Customer\Dashboard.aspx" />
+    <Content Include="Customer\Orders.aspx" />
+    <Content Include="Customer\Wishlist.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Employee\CashierNav.ascx" />
     <Content Include="Employee\Dashboard.aspx" />
@@ -465,6 +468,13 @@
     <Compile Include="Contact.aspx.designer.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Customer\Account.aspx.cs">
+      <DependentUpon>Account.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\Account.aspx.designer.cs">
+      <DependentUpon>Account.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Customer\CustomerNav.ascx.cs">
       <DependentUpon>CustomerNav.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -478,6 +488,20 @@
     </Compile>
     <Compile Include="Customer\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Customer\Orders.aspx.cs">
+      <DependentUpon>Orders.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\Orders.aspx.designer.cs">
+      <DependentUpon>Orders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Customer\Wishlist.aspx.cs">
+      <DependentUpon>Wishlist.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\Wishlist.aspx.designer.cs">
+      <DependentUpon>Wishlist.aspx</DependentUpon>
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -514,6 +538,7 @@
     <Compile Include="Helpers\CartHelper.cs" />
     <Compile Include="Helpers\PricingHelper.cs" />
     <Compile Include="Helpers\ProductDetailHelper.cs" />
+    <Compile Include="Helpers\WishlistHelper.cs" />
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
