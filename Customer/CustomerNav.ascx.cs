@@ -13,7 +13,8 @@ namespace SamsLiquorShop.Customer
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            string currentPage = Path.GetFileName(Request.Path);
+            // The site uses extensionless URLs (/Manager/Customers), so add .aspx back before matching
+            string currentPage = Path.GetFileNameWithoutExtension(Request.Path) + ".aspx";
 
             HtmlControl active = null;
             switch (currentPage)

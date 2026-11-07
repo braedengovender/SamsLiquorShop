@@ -1105,6 +1105,92 @@
             };
             document.body.appendChild(script);
         })();
+
+        // ===== Management page helpers (Manage Customers, Manage Sales, cashier Orders) =====
+
+        // Confirmation dialog for grid buttons. Use as OnClientClick="return dashConfirm(this, title, text, okLabel, danger);"
+        // The page supplies the #dashModal markup; the button's postback runs only after OK is clicked.
+        var dashPendingAction = null;
+
+        function dashConfirm(link, title, text, okLabel, danger) {
+            var modal = document.getElementById('dashModal');
+            if (!modal) return true;
+            dashPendingAction = link.getAttribute('href');
+            document.getElementById('dashModalTitle').textContent = title;
+            document.getElementById('dashModalText').textContent = text;
+            var ok = document.getElementById('dashModalOk');
+            ok.textContent = okLabel;
+            ok.className = 'btn-primary' + (danger ? ' emp-btn-danger' : '');
+            modal.classList.add('is-open');
+            return false;
+        }
+
+        function dashModalClose() {
+            var modal = document.getElementById('dashModal');
+            if (modal) modal.classList.remove('is-open');
+            dashPendingAction = null;
+        }
+
+        document.addEventListener('click', function (e) {
+            if (!e.target || e.target.id !== 'dashModalOk') return;
+            var js = dashPendingAction;
+            dashModalClose();
+            if (js) { new Function(js.replace(/^javascript:/i, ''))(); }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') dashModalClose();
+        });
+
+        // Live search: a box with data-live-search="<button client ID>" clicks that button 350ms after typing stops.
+        // Inputs marked data-digits / data-phone strip characters that can't belong in an ID number or phone number.
+        var dashSearchTimer = null;
+        document.addEventListener('input', function (e) {
+            var t = e.target;
+            if (!t || !t.getAttribute) return;
+
+            var buttonId = t.getAttribute('data-live-search');
+            if (buttonId) {
+                clearTimeout(dashSearchTimer);
+                dashSearchTimer = setTimeout(function () {
+                    var b = document.getElementById(buttonId);
+                    if (b) b.click();
+                }, 350);
+            }
+            if (t.getAttribute('data-digits')) t.value = t.value.replace(/[^0-9]/g, '');
+            if (t.getAttribute('data-phone')) t.value = t.value.replace(/(?!^\+)[^0-9]/g, '');
+        });
+
+        // Success messages fade out after 5 seconds, including ones shown by an UpdatePanel refresh.
+        // After a partial refresh the search box is replaced, so put the cursor back where the user was typing.
+        function dashAfterLoad() {
+            var a = document.querySelector('.emp-alert-success');
+            if (a && !a.getAttribute('data-timer')) {
+                a.setAttribute('data-timer', '1');
+                setTimeout(function () {
+                    a.classList.add('is-hiding');
+                    setTimeout(function () { if (a.parentNode) a.parentNode.removeChild(a); }, 450);
+                }, 5000);
+            }
+
+            var search = document.querySelector('[data-live-search]');
+            if (search && window.dashRefocusSearch) {
+                window.dashRefocusSearch = false;
+                search.focus();
+                var end = search.value.length;
+                search.setSelectionRange(end, end);
+            }
+        }
+
+        document.addEventListener('focusin', function (e) {
+            window.dashRefocusSearch = !!(e.target && e.target.getAttribute && e.target.getAttribute('data-live-search'));
+        });
+
+        if (window.Sys && Sys.Application) {
+            Sys.Application.add_load(dashAfterLoad);
+        } else {
+            document.addEventListener('DOMContentLoaded', dashAfterLoad);
+        }
     </script>
 </body>
 </html>

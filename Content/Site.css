@@ -5983,3 +5983,76 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
         padding-right: 0;
     }
 }
+/* ===== Manage Customers / Manage Sales (Kiyan) — reuses the emp-* page styles ===== */
+.cust-history-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+    .cust-history-stats > div {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: rgba(10, 132, 255, 0.06);
+    }
+
+    .cust-history-stats .mgr-kpi-label {
+        display: block;
+        margin: 0 0 4px;
+    }
+
+    .cust-history-stats strong {
+        font-size: 1.1rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+[data-theme="dark"] .cust-history-stats > div {
+    background: rgba(255, 255, 255, 0.05);
+}
+.sale-section-title {
+    margin: 22px 0 8px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+}
+
+.sale-totals {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 28px;
+    max-width: 340px;
+    margin: 14px 0 0 auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.9rem;
+}
+
+    .sale-totals dt {
+        color: var(--text-secondary);
+    }
+
+    .sale-totals dd {
+        margin: 0;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .sale-totals .is-total {
+        padding-top: 6px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+.sale-date-row {
+    margin-top: 10px;
+    align-items: center;
+}
+
+    .sale-date-row label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }

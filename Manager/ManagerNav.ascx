@@ -5,7 +5,7 @@
     <p class="mgr-sidebar-label">Manager</p>
     <ul class="mgr-sidebar-links">
         <li><a href="~/Manager/Dashboard.aspx" runat="server" id="navOverview">Overview</a></li>
-        <li><a href="~/Manager/Orders.aspx" runat="server" id="navOrders">Manage Orders</a></li>
+        <li><a href="~/Manager/Sales.aspx" runat="server" id="navOrders">Manage Sales</a></li>
         <li><a href="~/Manager/Products.aspx" runat="server" id="navProducts">Manage Products</a></li>
         <li><a href="~/Manager/Employees.aspx" runat="server" id="navEmployees">Manage Employees</a></li>
         <li><a href="~/Manager/Customers.aspx" runat="server" id="navCustomers">Manage Customers</a></li>

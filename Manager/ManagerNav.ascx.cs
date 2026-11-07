@@ -15,13 +15,14 @@ namespace SamsLiquorShop.Manager
         protected void Page_Load(object sender, EventArgs e)
         {
             // Highlight the current page in the sidebar
-            string currentPage = Path.GetFileName(Request.Path);
+            // The site uses extensionless URLs (/Manager/Customers), so add .aspx back before matching
+            string currentPage = Path.GetFileNameWithoutExtension(Request.Path) + ".aspx";
 
             HtmlControl active = null;
             switch (currentPage)
             {
                 case "Dashboard.aspx": active = navOverview; break;
-                case "Orders.aspx": active = navOrders; break;
+                case "Sales.aspx": active = navOrders; break;
                 case "Products.aspx": active = navProducts; break;
                 case "Employees.aspx": active = navEmployees; break;
                 case "Customers.aspx": active = navCustomers; break;
