@@ -365,7 +365,7 @@
                   </asp:PlaceHolder>
 
                   <asp:PlaceHolder runat="server" ID="phLoggedIn" Visible="false">
-                      <a href="Account/Profile.aspx" class="icon-btn" aria-label="My Profile">&#128100;</a>
+                      <a runat="server" id="lnkProfile" href="~/Customer/Dashboard.aspx" class="icon-btn" aria-label="My Dashboard">&#128100;</a>
                       <asp:LinkButton runat="server" ID="btnLogout" CssClass="btn-ghost" OnClick="btnLogout_Click">Log out</asp:LinkButton>
                   </asp:PlaceHolder>
 

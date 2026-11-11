@@ -78,11 +78,25 @@ namespace SamsLiquorShop
             {
                 phLoggedOut.Visible = false;
                 phLoggedIn.Visible = true;
+
+                lnkProfile.HRef = GetDashboardUrl(Session["UserRole"].ToString());
             }
 
             if (!IsPostBack)
             {
                 LoadNavCategories();
+            }
+        }
+
+        // Sends the profile icon to the dashboard that matches the logged-in role
+        private string GetDashboardUrl(string role)
+        {
+            switch ((role ?? "").Trim().ToLowerInvariant())
+            {
+                case "customer": return "~/Customer/Dashboard.aspx";
+                case "manager": return "~/Manager/Dashboard.aspx";   // adjust to your manager folder
+                case "cashier": return "~/Cashier/Dashboard.aspx";   // adjust to your cashier folder
+                default: return "~/Account/Profile.aspx";
             }
         }
 
