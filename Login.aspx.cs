@@ -83,6 +83,8 @@ namespace SamsLiquorShop
                 Session["UserRole"] = role;
                 Session["UserName"] = displayName;
 
+                if (role == "Customer") Helpers.WishlistHelper.MergeAtLogin(Session);
+
                 if (RememberMe.Checked)
                 {
                     HttpCookie rememberCookie = new HttpCookie("SamsRememberedUser", displayName);

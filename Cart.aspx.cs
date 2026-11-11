@@ -270,7 +270,7 @@ namespace SamsLiquorShop
                     ShowDetail(productId);
                     break;
                 case "MoveToWishlist":
-                    CartHelper.GetWishlist(Session).Add(productId);   // HashSet, so adding twice is harmless
+                    WishlistHelper.AddToWishlist(Session, productId);   // HashSet, so adding twice is harmless
                     CartHelper.RemoveFromCart(Session, productId);
                     break;
             }

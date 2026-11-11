@@ -180,8 +180,11 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Customer\Account.aspx" />
     <Content Include="Customer\CustomerNav.ascx" />
     <Content Include="Customer\Dashboard.aspx" />
+    <Content Include="Customer\Orders.aspx" />
+    <Content Include="Customer\Wishlist.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Employee\CashierNav.ascx" />
     <Content Include="Employee\Dashboard.aspx" />
@@ -249,6 +252,10 @@
     <Content Include="Images\social\youtube.png" />
     <Content Include="Login.aspx" />
     <Content Include="Manager\Employees.aspx" />
+    <Content Include="Manager\Customers.aspx" />
+    <Content Include="Manager\Sales.aspx" />
+    <Content Include="Employee\Orders.aspx" />
+    <Content Include="Controls\SalesBrowser.ascx" />
     <Content Include="Manager\Dashboard.aspx" />
     <Content Include="Manager\ManagerNav.ascx" />
     <Content Include="Register.aspx" />
@@ -465,6 +472,13 @@
     <Compile Include="Contact.aspx.designer.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Customer\Account.aspx.cs">
+      <DependentUpon>Account.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\Account.aspx.designer.cs">
+      <DependentUpon>Account.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Customer\CustomerNav.ascx.cs">
       <DependentUpon>CustomerNav.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -478,6 +492,20 @@
     </Compile>
     <Compile Include="Customer\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Customer\Orders.aspx.cs">
+      <DependentUpon>Orders.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\Orders.aspx.designer.cs">
+      <DependentUpon>Orders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Customer\Wishlist.aspx.cs">
+      <DependentUpon>Wishlist.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\Wishlist.aspx.designer.cs">
+      <DependentUpon>Wishlist.aspx</DependentUpon>
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -514,6 +542,7 @@
     <Compile Include="Helpers\CartHelper.cs" />
     <Compile Include="Helpers\PricingHelper.cs" />
     <Compile Include="Helpers\ProductDetailHelper.cs" />
+    <Compile Include="Helpers\WishlistHelper.cs" />
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -534,6 +563,34 @@
     </Compile>
     <Compile Include="Manager\Employees.aspx.designer.cs">
       <DependentUpon>Employees.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Manager\Customers.aspx.cs">
+      <DependentUpon>Customers.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\Customers.aspx.designer.cs">
+      <DependentUpon>Customers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Manager\Sales.aspx.cs">
+      <DependentUpon>Sales.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\Sales.aspx.designer.cs">
+      <DependentUpon>Sales.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Employee\Orders.aspx.cs">
+      <DependentUpon>Orders.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Employee\Orders.aspx.designer.cs">
+      <DependentUpon>Orders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SalesBrowser.ascx.cs">
+      <DependentUpon>SalesBrowser.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\SalesBrowser.ascx.designer.cs">
+      <DependentUpon>SalesBrowser.ascx</DependentUpon>
     </Compile>
     <Compile Include="Manager\ManagerNav.ascx.cs">
       <DependentUpon>ManagerNav.ascx</DependentUpon>

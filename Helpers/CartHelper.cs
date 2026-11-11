@@ -60,6 +60,9 @@ namespace SamsLiquorShop.Helpers
                 wishlist.Remove(productId);
             else
                 wishlist.Add(productId);
+
+            // logged-in customers: keep the database wishlist in step
+            WishlistHelper.Sync(session, productId);
         }
 
         public static void UpdateQuantity(System.Web.SessionState.HttpSessionState session, int productId, int quantity)
