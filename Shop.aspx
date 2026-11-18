@@ -27,7 +27,7 @@
             <asp:HiddenField ID="hfAbvMax" runat="server" />
             <asp:HiddenField ID="hfRangeData" runat="server" />
             <asp:Button ID="btnApplyRanges" runat="server" Text="Apply" OnClick="btnApplyRanges_Click" UseSubmitBehavior="false" CausesValidation="false" style="display:none" />
-
+             
             <section class="shell shop-layout">
 
                 <!-- FILTER SIDEBAR -->
