@@ -291,6 +291,7 @@
     <Content Include="Account\Web.config" />
     <Content Include="EmailSecrets.config" />
     <Content Include="ProductImage.ashx" />
+    <Content Include="OtpSecrets.config" />
     <None Include="Properties\PublishProfiles\IST-WST-Group-15 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\chart.umd.min.js" />
@@ -329,6 +330,7 @@
     <Content Include="Shipping.aspx" />
     <Content Include="Site.Master" />
     <Content Include="Sustainability.aspx" />
+    <Content Include="VerifyOtp.aspx" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -540,6 +542,7 @@
     </Compile>
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\CartHelper.cs" />
+    <Compile Include="Helpers\OtpHelper.cs" />
     <Compile Include="Helpers\PricingHelper.cs" />
     <Compile Include="Helpers\ProductDetailHelper.cs" />
     <Compile Include="Helpers\WishlistHelper.cs" />
@@ -688,6 +691,13 @@
     </Compile>
     <Compile Include="Sustainability.aspx.designer.cs">
       <DependentUpon>Sustainability.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="VerifyOtp.aspx.cs">
+      <DependentUpon>VerifyOtp.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="VerifyOtp.aspx.designer.cs">
+      <DependentUpon>VerifyOtp.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>

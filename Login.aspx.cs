@@ -19,6 +19,9 @@ namespace SamsLiquorShop
 
             string role = null;
             string displayName = null;
+            object pendingId = null;
+            string pendingEmail = null;
+            string pendingKey = null;
 
             string connStr = ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
 
@@ -28,7 +31,7 @@ namespace SamsLiquorShop
 
                 // 1. Check Customer table (username OR email, must be Active)
                 string customerQuery = @"
-                    SELECT Customer_ID, Customer_Username 
+                    SELECT Customer_ID, Customer_Username, Customer_EmailAddress
                     FROM Customer 
                     WHERE (Customer_Username = @Login OR Customer_EmailAddress = @Login) 
                       AND Customer_Password = @Password 
@@ -45,7 +48,9 @@ namespace SamsLiquorShop
                         {
                             role = "Customer";
                             displayName = reader["Customer_Username"].ToString();
-                            Session["CustomerID"] = reader["Customer_ID"];
+                            pendingId = reader["Customer_ID"];
+                            pendingEmail = reader["Customer_EmailAddress"].ToString();
+                            pendingKey = "CustomerID";
                         }
                     }
                 }
@@ -54,7 +59,7 @@ namespace SamsLiquorShop
                 if (role == null)
                 {
                     string employeeQuery = @"
-                        SELECT Employee_ID, Employee_Username, Employee_Role 
+                        SELECT Employee_ID, Employee_Username, Employee_Role, Employee_EmailAddress
                         FROM Employee 
                         WHERE (Employee_Username = @Login OR Employee_EmailAddress = @Login) 
                           AND Employee_Password = @Password 
@@ -71,7 +76,9 @@ namespace SamsLiquorShop
                             {
                                 role = reader["Employee_Role"].ToString().Trim();
                                 displayName = reader["Employee_Username"].ToString();
-                                Session["EmployeeID"] = reader["Employee_ID"];
+                                pendingId = reader["Employee_ID"];
+                                pendingEmail = reader["Employee_EmailAddress"].ToString();
+                                pendingKey = "EmployeeID";
                             }
                         }
                     }
@@ -80,34 +87,25 @@ namespace SamsLiquorShop
 
             if (role != null)
             {
-                Session["UserRole"] = role;
-                Session["UserName"] = displayName;
+                string code = Helpers.OtpHelper.GenerateCode();
+                Session["PendingRole"] = role;
+                Session["PendingName"] = displayName;
+                Session["PendingKey"] = pendingKey;
+                Session["PendingId"] = pendingId;
+                Session["PendingRemember"] = RememberMe.Checked;
+                Session["PendingReturnUrl"] = Request.QueryString["returnUrl"];
+                Session["OtpCode"] = code;
+                Session["OtpExpiry"] = DateTime.Now.AddMinutes(10);
+                Session["OtpAttempts"] = 0;
+                Session["OtpDemoMode"] = Helpers.OtpHelper.DemoMode;
 
-                if (role == "Customer") Helpers.WishlistHelper.MergeAtLogin(Session);
-
-                if (RememberMe.Checked)
+                if (!Helpers.OtpHelper.SendCode(pendingEmail, displayName, code))
                 {
-                    HttpCookie rememberCookie = new HttpCookie("SamsRememberedUser", displayName);
-                    rememberCookie.Expires = DateTime.Now.AddDays(30);
-                    Response.Cookies.Add(rememberCookie);
+                    lblError.Text = "We couldn't send your login code. Please try again.";
+                    lblError.Visible = true;
+                    return;
                 }
-
-                switch (role.Trim().ToLower())
-                {
-                    case "customer":
-                        string returnUrl = Request.QueryString["returnUrl"];
-                        // only follow simple relative links like "Cart.aspx" (stops open redirects)
-                        if (!string.IsNullOrEmpty(returnUrl) && !returnUrl.Contains(":") && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("\\"))
-                            Response.Redirect("~/" + returnUrl.TrimStart('/'));
-                        Response.Redirect("~/Customer/Dashboard.aspx");
-                        break;
-                    case "cashier":
-                        Response.Redirect("~/Employee/Dashboard.aspx");
-                        break;
-                    case "manager":
-                        Response.Redirect("~/Manager/Dashboard.aspx");
-                        break;
-                }
+                Response.Redirect("~/VerifyOtp.aspx");
                 return;
             }
 
