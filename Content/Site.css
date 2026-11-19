@@ -3975,13 +3975,48 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     -webkit-backdrop-filter: blur(3px);
 }
 
-.loading-spinner {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: 4px solid rgba(10, 132, 255, 0.15);
-    border-top-color: var(--accent);
-    animation: loading-spin 0.7s linear infinite;
+.bubbles {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    overflow: hidden;
+}
+
+    .bubbles span {
+        position: absolute;
+        bottom: -12px;
+        left: var(--x);
+        width: var(--s);
+        height: var(--s);
+        border-radius: 50%;
+        border: 2px solid var(--accent-amber);
+        opacity: 0;
+        animation: bubble-rise var(--t, 1.8s) ease-in infinite;
+        animation-delay: var(--d);
+    }
+
+@keyframes bubble-rise {
+    0% {
+        transform: translateY(0) scale(0.6);
+        opacity: 0;
+    }
+
+    15%, 85% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-130px) scale(1);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bubbles span {
+        animation: none;
+        opacity: 0.8;
+        bottom: 20px;
+    }
 }
 
 .loading-overlay p {
@@ -5019,7 +5054,6 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
 
 [data-theme="dark"] .emp-avatar {
     color: #5ac8fa;
-}
 }
 
 .nav-icon {
