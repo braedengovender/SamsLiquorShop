@@ -189,6 +189,7 @@
     <Content Include="Employee\CashierNav.ascx" />
     <Content Include="Employee\Dashboard.aspx" />
     <Content Include="favicon.ico" />
+    <Content Include="ForgotPassword.aspx" />
     <Content Include="Gallery.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Images\about\loyalty-card.jpg" />
@@ -529,6 +530,13 @@
     </Compile>
     <Compile Include="Employee\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ForgotPassword.aspx.cs">
+      <DependentUpon>ForgotPassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ForgotPassword.aspx.designer.cs">
+      <DependentUpon>ForgotPassword.aspx</DependentUpon>
     </Compile>
     <Compile Include="Gallery.aspx.cs">
       <DependentUpon>Gallery.aspx</DependentUpon>

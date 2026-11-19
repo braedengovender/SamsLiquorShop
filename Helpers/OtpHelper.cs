@@ -51,7 +51,7 @@ namespace SamsLiquorShop.Helpers
         }
 
         // Returns true if the email was sent (or demo mode is on).
-        public static bool SendCode(string toEmail, string toName, string code)
+        public static bool SendCode(string toEmail, string toName, string code, string purpose = "login")
         {
             if (DemoMode) return true;
 
@@ -67,8 +67,8 @@ namespace SamsLiquorShop.Helpers
                         {
                             From = new { Email = Setting("BrevoSenderEmail"), Name = Setting("BrevoSenderName") },
                             To = new[] { new { Email = toEmail, Name = toName } },
-                            Subject = "Your Sam's Liquor Shop login code",
-                            HTMLPart = "<p>Your login code is:</p><h2 style='font-family:monospace;letter-spacing:4px'>"
+                            Subject = "Your Sam's Liquor Shop " + purpose + " code",
+                            HTMLPart = "<p>Your " + purpose + " code is:</p><h2 style='font-family:monospace;letter-spacing:4px'>"
                                         + code + "</h2><p>It expires in 10 minutes. If this wasn't you, ignore this email.</p>"
                         }
                     }
