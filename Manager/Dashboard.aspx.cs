@@ -65,6 +65,44 @@ namespace SamsLiquorShop.Manager
                 LoadRecentSales();
                 LoadTopCustomers(cutoff);
                 LoadActiveDiscounts();
+
+                // Low-stock pop-up: once per login (logout clears the session, so it shows again next time)
+                if (Session["LowStockToastShown"] == null)
+                {
+                    Session["LowStockToastShown"] = true;
+                    LoadStockToast();
+                }
+            }
+        }
+
+        // Count of active products at or below their reorder level, plus the five lowest for the pop-up.
+        // Stays hidden when nothing is low.
+        private void LoadStockToast()
+        {
+            string query = @"
+                SELECT Product_Name, Product_QuantityInStock, Product_ReorderQuantity,
+                       COUNT(*) OVER () AS LowCount
+                FROM Product
+                WHERE Product_QuantityInStock <= Product_ReorderQuantity
+                  AND Product_Status = 'Active'
+                ORDER BY Product_QuantityInStock ASC, Product_Name";
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlDataAdapter da = new SqlDataAdapter(query, conn))
+            {
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+                if (dt.Rows.Count == 0) return;
+
+                int lowCount = Convert.ToInt32(dt.Rows[0]["LowCount"]);
+                litToastTitle.Text = lowCount + (lowCount == 1 ? " item is" : " items are") + " low on stock";
+
+                DataTable top = dt.Clone();
+                for (int i = 0; i < Math.Min(5, dt.Rows.Count); i++) top.ImportRow(dt.Rows[i]);
+                rptToastItems.DataSource = top;
+                rptToastItems.DataBind();
+
+                phStockToast.Visible = true;
             }
         }
 

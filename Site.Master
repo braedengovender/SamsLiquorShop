@@ -235,6 +235,10 @@
       </div>
     </div>
 
+    <button type="button" id="backToTop" class="back-to-top" aria-label="Back to top">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+    </button>
+
     <div class="chatbot-widget">
       <div id="chatbotPanel" class="glass chatbot-panel" style="display:none;">
         <div class="chatbot-header">
@@ -1200,6 +1204,43 @@
         } else {
             document.addEventListener('DOMContentLoaded', dashAfterLoad);
         }
+
+        // ===== Back-to-top button (bottom right, left of the chatbot) =====
+        (function () {
+            var btn = document.getElementById('backToTop');
+            if (!btn) return;
+            function update() { btn.classList.toggle('is-visible', window.scrollY > 400); }
+            window.addEventListener('scroll', update, { passive: true });
+            update();
+            btn.addEventListener('click', function () {
+                var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+            });
+        })();
+
+        // ===== Low-stock pop-up (Manager dashboard, once per login) =====
+        // Hides after 10s; hovering or focusing inside it pauses the countdown.
+        (function () {
+            var toast = document.getElementById('stockToast');
+            if (!toast) return;
+            var remaining = 10000, started = 0, timer = null;
+            function hide() { toast.classList.remove('is-open'); clearTimeout(timer); }
+            function start() { clearTimeout(timer); started = Date.now(); timer = setTimeout(hide, Math.max(remaining, 1500)); }
+            function pause() { clearTimeout(timer); remaining -= Date.now() - started; }
+            toast.addEventListener('mouseenter', pause);
+            toast.addEventListener('mouseleave', start);
+            toast.addEventListener('focusin', pause);
+            toast.addEventListener('focusout', start);
+            toast.querySelector('.stock-toast-close').addEventListener('click', hide);
+            setTimeout(function () {
+                // Sit above the cookie banner if it's showing in the same corner
+                var cookie = document.getElementById('cookieBanner');
+                // (offsetParent is always null for fixed elements, so check for a rendered box instead)
+                if (cookie && cookie.getClientRects().length > 0) toast.style.bottom = (cookie.offsetHeight + 36) + 'px';
+                toast.classList.add('is-open');
+                start();
+            }, 600);
+        })();
     </script>
 </body>
 </html>

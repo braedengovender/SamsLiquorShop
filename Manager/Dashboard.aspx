@@ -55,7 +55,7 @@
                     </div>
                     <div class="mgr-chart-canvas-wrap"><canvas data-chart="<%: RevenueChartJson %>" role="img" aria-label="Column chart of revenue over the selected period"></canvas></div>
                 </div>
-                <div class="mgr-chart-card">
+                <div class="mgr-chart-card" id="restock">
                     <div class="dash-card-head">
                         <h3>Needs Restocking</h3>
                         <span class="dash-card-meta">stock / reorder level</span>
@@ -169,4 +169,23 @@
             </div>
         </div>
     </section>
+
+    <!-- LOW-STOCK POP-UP: shown once per login, bottom left; opened/timed by the script in Site.Master -->
+    <asp:PlaceHolder ID="phStockToast" runat="server" Visible="false">
+        <div id="stockToast" class="stock-toast" role="status" aria-live="polite">
+            <span class="dash-kpi-icon is-red dash-icon-alert" aria-hidden="true"></span>
+            <div class="stock-toast-body">
+                <strong><asp:Literal ID="litToastTitle" runat="server" /></strong>
+                <asp:Repeater ID="rptToastItems" runat="server">
+                    <HeaderTemplate><ul></HeaderTemplate>
+                    <ItemTemplate>
+                        <li><span><%#: Eval("Product_Name") %></span> <span class="stock-toast-count"><%# Eval("Product_QuantityInStock") %> / <%# Eval("Product_ReorderQuantity") %></span></li>
+                    </ItemTemplate>
+                    <FooterTemplate></ul></FooterTemplate>
+                </asp:Repeater>
+                <a href="#restock" class="stock-toast-link">View all &rarr;</a>
+            </div>
+            <button type="button" class="stock-toast-close" aria-label="Dismiss">&times;</button>
+        </div>
+    </asp:PlaceHolder>
 </asp:Content>
