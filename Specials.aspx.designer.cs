@@ -13,5 +13,21 @@ namespace SamsLiquorShop
 
     public partial class Specials
     {
+
+        protected global::System.Web.UI.WebControls.PlaceHolder phSpecials;
+
+        protected global::System.Web.UI.WebControls.PlaceHolder phStats;
+
+        protected global::System.Web.UI.WebControls.Literal litMaxOff;
+
+        protected global::System.Web.UI.WebControls.Literal litCount;
+
+        protected global::System.Web.UI.WebControls.Literal litCartMessage;
+
+        protected global::System.Web.UI.WebControls.Repeater rptTabs;
+
+        protected global::System.Web.UI.WebControls.Repeater rptSpecials;
+
+        protected global::System.Web.UI.WebControls.PlaceHolder phNone;
     }
 }

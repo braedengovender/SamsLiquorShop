@@ -20,20 +20,23 @@
       </div>
     </section>
 
+    <asp:PlaceHolder ID="phSpecials" runat="server">
+
+    <asp:PlaceHolder ID="phStats" runat="server">
     <%-- ============ AT A GLANCE ============ --%>
     <section class="shell home-section">
       <div class="glass stats-bar">
         <div class="stat-item">
-          <p class="stat-number">Up to 22%</p>
+          <p class="stat-number">Up to <asp:Literal ID="litMaxOff" runat="server" />%</p>
           <p class="stat-label">Off selected favourites</p>
         </div>
-        <%-- [CONFIRM] Refresh cadence --%>
         <div class="stat-item">
-          <p class="stat-number">Weekly</p>
-          <p class="stat-label">New specials added regularly</p>
+          <p class="stat-number"><asp:Literal ID="litCount" runat="server" /></p>
+          <p class="stat-label">Specials on right now</p>
         </div>
       </div>
     </section>
+    </asp:PlaceHolder>
 
     <%-- ============ FILTER + GRID ============ --%>
     <section class="shell home-section" id="specials-grid">
@@ -42,86 +45,50 @@
       </div>
       <p class="section-subtext">Filter by category to find your next favourite.</p>
 
+      <asp:Literal ID="litCartMessage" runat="server" Visible="false" />
+
       <div class="filter-tabs">
         <button type="button" class="filter-tab is-active" onclick="filterSpecials('all', this)">All</button>
-        <button type="button" class="filter-tab" onclick="filterSpecials('spirits', this)">Spirits</button>
-        <button type="button" class="filter-tab" onclick="filterSpecials('wine', this)">Wine</button>
-        <button type="button" class="filter-tab" onclick="filterSpecials('beer', this)">Beer</button>
-        <button type="button" class="filter-tab" onclick="filterSpecials('cider-rtd', this)">Cider &amp; RTDs</button>
-        <button type="button" class="filter-tab" onclick="filterSpecials('non-alcoholic', this)">Non-Alcoholic</button>
-        <button type="button" class="filter-tab" onclick="filterSpecials('gifts', this)">Gift Sets</button>
+        <asp:Repeater ID="rptTabs" runat="server">
+          <ItemTemplate>
+            <button type="button" class="filter-tab" onclick="filterSpecials('<%# Eval("Category_ID") %>', this)"><%# H(Eval("Category_Name")) %></button>
+          </ItemTemplate>
+        </asp:Repeater>
       </div>
 
-      <div class="products-grid">
+      <asp:Repeater ID="rptSpecials" runat="server" OnItemCommand="rptSpecials_ItemCommand">
+        <HeaderTemplate><div class="products-grid"></HeaderTemplate>
+        <ItemTemplate>
+          <div class="card-surface product-card special-card" data-cat="<%# Eval("Category_ID") %>">
+            <span class="discount-badge" style='<%# (bool)Eval("Running") ? "" : "background:#8a8f98;" %>'><%# (bool)Eval("Running") ? "-" + Eval("DiscountPercent") + "%" : H(Eval("Note")) %></span>
+            <a href="Shop.aspx?search=<%# HttpUtility.UrlEncode(Convert.ToString(Eval("Product_Name"))) %>" style="display:block;">
+              <img src="ProductImage.ashx?id=<%# Eval("Product_ID") %>" alt="<%# H(Eval("Product_Name")) %>" />
+            </a>
+            <p class="product-name"><%# H(Eval("Product_Name")) %></p>
+            <p class="product-price-old" style='<%# (bool)Eval("Running") ? "" : "display:none;" %>'><s><%# Money(Eval("Product_SellingPrice")) %></s></p>
+            <p class="product-price"><%# Money(Eval("DiscountedPrice")) %></p>
+            <asp:LinkButton runat="server" CommandName="AddToCart" CommandArgument='<%# Eval("Product_ID") %>' CssClass="btn-primary shop-add-cart-btn" Enabled='<%# (bool)Eval("InStock") %>'><%# (bool)Eval("InStock") ? "Add to Cart" : "Out of Stock" %></asp:LinkButton>
+          </div>
+        </ItemTemplate>
+        <FooterTemplate></div></FooterTemplate>
+      </asp:Repeater>
 
-        <a href="#" class="card-surface product-card special-card" data-cat="spirits">
-          <span class="discount-badge">-13%</span>
-          <img src="Images/products/promo1.jpg" alt="Jack Daniel's Whiskey 750ml" />
-          <p class="product-name">Jack Daniel's Whiskey 750ml</p>
-          <p class="product-price-old"><s>R379.99</s></p>
-          <p class="product-price">R329.99</p>
-        </a>
-
-        <a href="#" class="card-surface product-card special-card" data-cat="spirits">
-          <span class="discount-badge">-16%</span>
-          <img src="Images/products/promo2.jpg" alt="Amarula Cream Liqueur 750ml" />
-          <p class="product-name">Amarula Cream Liqueur 750ml</p>
-          <p class="product-price-old"><s>R219.99</s></p>
-          <p class="product-price">R184.99</p>
-        </a>
-
-        <a href="#" class="card-surface product-card special-card" data-cat="cider-rtd">
-          <span class="discount-badge">-18%</span>
-          <img src="Images/products/promo3.jpg" alt="Savanna Dry NRB 6 x 330ml" />
-          <p class="product-name">Savanna Dry NRB 6 x 330ml</p>
-          <p class="product-price-old"><s>R109.99</s></p>
-          <p class="product-price">R89.99</p>
-        </a>
-
-        <a href="#" class="card-surface product-card special-card" data-cat="wine">
-          <span class="discount-badge">-22%</span>
-          <img src="Images/products/promo4.jpg" alt="Four Cousins Natural Sweet Rose 750ml" />
-          <p class="product-name">Four Cousins Natural Sweet Rose 750ml</p>
-          <p class="product-price-old"><s>R89.99</s></p>
-          <p class="product-price">R69.99</p>
-        </a>
-
-        <a href="#" class="card-surface product-card special-card" data-cat="wine">
-          <span class="discount-badge">-20%</span>
-          <img src="Images/products/promo5.jpg" alt="Nederburg Baronne 750ml" />
-          <p class="product-name">Nederburg Baronne 750ml</p>
-          <p class="product-price-old"><s>R99.99</s></p>
-          <p class="product-price">R79.99</p>
-        </a>
-
-        <a href="#" class="card-surface product-card special-card" data-cat="beer">
-          <span class="discount-badge">-15%</span>
-          <img src="Images/products/promo6.jpg" alt="Carling Black Label Local Beer 6 x 500ml" />
-          <p class="product-name">Carling Black Label Local Beer 6 x 500ml</p>
-          <p class="product-price-old"><s>R99.99</s></p>
-          <p class="product-price">R84.99</p>
-        </a>
-
-        <a href="#" class="card-surface product-card special-card" data-cat="gifts">
-          <span class="discount-badge">-20%</span>
-          <img src="Images/products/gift1.jpg" alt="DAY Champagne Glass 250ml 4 Piece" />
-          <p class="product-name">DAY Champagne Glass 250ml 4 Piece</p>
-          <p class="product-price-old"><s>R149.99</s></p>
-          <p class="product-price">R119.99</p>
-        </a>
-
-        <a href="#" class="card-surface product-card special-card" data-cat="non-alcoholic">
-          <span class="discount-badge">-16%</span>
-          <img src="Images/products/na2.jpg" alt="Brutal Fruit Ruby Apple 0% Can 6 x 300ml" />
-          <p class="product-name">Brutal Fruit Ruby Apple 0% Can 6 x 300ml</p>
-          <p class="product-price-old"><s>R94.99</s></p>
-          <p class="product-price">R79.99</p>
-        </a>
-
-      </div>
-
-      <p class="ship-table-note">Prices shown include VAT. While stocks last &mdash; specials may be withdrawn or changed without notice.</p>
+      <p class="ship-table-note">Prices shown include VAT. While stocks last &mdash; specials may be withdrawn or changed without notice. Items marked in grey have a special that isn&rsquo;t running right now and are shown at their normal price.</p>
     </section>
+
+    </asp:PlaceHolder>
+
+    <asp:PlaceHolder ID="phNone" runat="server" Visible="false">
+    <section class="shell home-section">
+      <div class="glass ship-cta">
+        <h3>No specials on right now</h3>
+        <p>Our next round of deals will be up soon. In the meantime, have a browse of the full range.</p>
+        <div class="hero-buttons">
+          <a href="Shop.aspx" class="btn-primary">Browse Full Shop</a>
+        </div>
+      </div>
+    </section>
+    </asp:PlaceHolder>
 
     <%-- ============ CLOSING CTA ============ --%>
     <section class="shell home-section">
