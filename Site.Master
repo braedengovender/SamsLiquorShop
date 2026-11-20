@@ -1241,6 +1241,11 @@
                 start();
             }, 600);
         })();
+
+        // ===== Receipts: links ending in &print=1 open the print window straight away =====
+        if (document.querySelector('[data-autoprint]')) {
+            window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 300); });
+        }
     </script>
 </body>
 </html>

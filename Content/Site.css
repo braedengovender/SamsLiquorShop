@@ -6390,3 +6390,65 @@ textarea.login-input {
 [data-theme="dark"] .emp-stock-preview.is-bad {
     color: #ff453a;
 }
+
+/* ===== Customer receipts (Customer/Receipt.aspx + My Orders) ===== */
+.receipt-print {
+    margin: 4px 0 40px;
+}
+
+.receipt-tip {
+    margin: 0 0 16px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.ord-line-product {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ord-line-thumb {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--glass-border);
+}
+
+.ord-receipt-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-left: auto;
+}
+
+[data-theme="dark"] .ord-line-thumb {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Print only the receipt: hide the header, sidebar, footer, chat button, pop-ups and page buttons */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+
+    .receipt-print,
+    .receipt-print * {
+        visibility: visible !important;
+    }
+
+    .receipt-print {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+    }
+
+        .receipt-print > div {
+            border: 0 !important;
+        }
+}

@@ -47,7 +47,12 @@
                                     <asp:Repeater ID="rptLines" runat="server">
                                         <ItemTemplate>
                                             <tr>
-                                                <td><%# Eval("Product_Name") %></td>
+                                                <td>
+                                                    <div class="ord-line-product">
+                                                        <img class="ord-line-thumb" src='<%# "/ProductImage.ashx?id=" + Eval("Product_ID") %>' alt="" loading="lazy" />
+                                                        <span><%# Eval("Product_Name") %></span>
+                                                    </div>
+                                                </td>
                                                 <td class="is-num"><%# Eval("Quantity") %></td>
                                                 <td class="is-num"><%# Eval("UnitPrice", "{0:C}") %></td>
                                                 <td class="is-num"><%# Eval("Subtotal", "{0:C}") %></td>
@@ -59,6 +64,11 @@
 
                             <div class="ord-actions">
                                 <span class="ord-total-line">Order total: <strong><%# Eval("Sale_TotalAmount", "{0:C}") %></strong></span>
+                                <span class="ord-receipt-actions">
+                                    <a href='<%# "Receipt.aspx?sale=" + Eval("Sale_ID") %>' class="btn-ghost ord-reorder-btn">View receipt</a>
+                                    <a href='<%# "Receipt.aspx?sale=" + Eval("Sale_ID") + "&print=1" %>' class="btn-ghost ord-reorder-btn">Print</a>
+                                    <asp:LinkButton runat="server" CommandName="EmailReceipt" CommandArgument='<%# Eval("Sale_ID") %>' CssClass="btn-ghost ord-reorder-btn">Email receipt</asp:LinkButton>
+                                </span>
                                 <asp:LinkButton runat="server" CommandName="Reorder" CommandArgument='<%# Eval("Sale_ID") %>' CssClass="btn-primary ord-reorder-btn">Buy again</asp:LinkButton>
                             </div>
                         </div>

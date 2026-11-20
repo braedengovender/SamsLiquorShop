@@ -184,6 +184,7 @@
     <Content Include="Customer\CustomerNav.ascx" />
     <Content Include="Customer\Dashboard.aspx" />
     <Content Include="Customer\Orders.aspx" />
+    <Content Include="Customer\Receipt.aspx" />
     <Content Include="Customer\Wishlist.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Employee\CashierNav.ascx" />
@@ -552,6 +553,14 @@
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\CartHelper.cs" />
     <Compile Include="Helpers\OtpHelper.cs" />
+    <Compile Include="Helpers\ReceiptHelper.cs" />
+    <Compile Include="Customer\Receipt.aspx.cs">
+      <DependentUpon>Receipt.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Customer\Receipt.aspx.designer.cs">
+      <DependentUpon>Receipt.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\PricingHelper.cs" />
     <Compile Include="Helpers\ProductDetailHelper.cs" />
     <Compile Include="Helpers\StockLogHelper.cs" />

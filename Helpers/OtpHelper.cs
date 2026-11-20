@@ -91,5 +91,47 @@ namespace SamsLiquorShop.Helpers
                 return false;
             }
         }
+
+        // Sends any HTML email through the same Mailjet account (used for emailed receipts).
+        // Unlike SendCode, returns false in demo mode, because nothing is actually sent.
+        public static bool SendEmail(string toEmail, string toName, string subject, string html)
+        {
+            if (DemoMode) return false;
+
+            try
+            {
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+
+                var payload = new
+                {
+                    Messages = new[]
+                    {
+                        new
+                        {
+                            From = new { Email = Setting("BrevoSenderEmail"), Name = Setting("BrevoSenderName") },
+                            To = new[] { new { Email = toEmail, Name = toName } },
+                            Subject = subject,
+                            HTMLPart = html
+                        }
+                    }
+                };
+
+                string json = new JavaScriptSerializer().Serialize(payload);
+
+                using (var client = new WebClient())
+                {
+                    client.Encoding = Encoding.UTF8;
+                    client.Headers[HttpRequestHeader.ContentType] = "application/json";
+                    string creds = Setting("MailjetApiKey") + ":" + Setting("MailjetSecretKey");
+                    client.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(creds));
+                    client.UploadString("https://api.mailjet.com/v3.1/send", "POST", json);
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

@@ -66,6 +66,7 @@ namespace SamsLiquorShop.Customer
                     using (SqlCommand cmd = new SqlCommand(@"
                         SELECT
                             sl.Sale_ID,
+                            sl.Product_ID,
                             p.Product_Name,
                             sl.SaleLine_Quantity AS Quantity,
                             CASE WHEN sl.SaleLine_Quantity > 0 THEN sl.SaleLine_Subtotal / sl.SaleLine_Quantity ELSE 0 END AS UnitPrice,
@@ -120,6 +121,16 @@ namespace SamsLiquorShop.Customer
         // ---------- BUY AGAIN ----------
         protected void rptOrders_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
+            // ---------- EMAIL RECEIPT (receipt built by Helpers/ReceiptHelper.cs) ----------
+            if (e.CommandName == "EmailReceipt")
+            {
+                string message;
+                bool sent = ReceiptHelper.Email(ConnStr, Convert.ToInt32(e.CommandArgument), CustomerId, out message);
+                litMessage.Text = "<div class=\"emp-alert " + (sent ? "emp-alert-success" : "emp-alert-error") + "\">"
+                    + Server.HtmlEncode(message) + "</div>";
+                return;
+            }
+
             if (e.CommandName != "Reorder") return;
 
             int saleId = Convert.ToInt32(e.CommandArgument);

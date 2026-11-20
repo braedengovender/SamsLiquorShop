@@ -20,7 +20,8 @@ namespace SamsLiquorShop.Customer
             switch (currentPage)
             {
                 case "Dashboard.aspx": active = navOverview; break;
-                case "Orders.aspx": active = navOrders; break;
+                case "Orders.aspx":
+                case "Receipt.aspx": active = navOrders; break;
                 case "Wishlist.aspx": active = navWishlist; break;
                 case "Account.aspx": active = navAccount; break;
             }
