@@ -183,7 +183,7 @@
                     </ItemTemplate>
                     <FooterTemplate></ul></FooterTemplate>
                 </asp:Repeater>
-                <a href="#restock" class="stock-toast-link">View all &rarr;</a>
+                <a href="~/Manager/Products.aspx" runat="server" class="stock-toast-link">Manage products &rarr;</a>
             </div>
             <button type="button" class="stock-toast-close" aria-label="Dismiss">&times;</button>
         </div>
