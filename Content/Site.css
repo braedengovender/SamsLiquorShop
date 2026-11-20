@@ -6090,3 +6090,116 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
         font-size: 0.8rem;
         color: var(--text-secondary);
     }
+/* --- Manage Products --- */
+.emp-badge-low {
+    background: rgba(201, 162, 75, 0.18);
+    color: #8a6a14;
+}
+
+.emp-form-wide {
+    grid-column: 1 / -1;
+}
+
+.emp-static-field {
+    padding: 13px 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+textarea.login-input {
+    resize: vertical;
+    min-height: 90px;
+    font-family: inherit;
+}
+
+.emp-stock-preview {
+    margin: 4px 0 18px;
+    min-height: 1.2em;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+    .emp-stock-preview.is-bad {
+        color: #d70015;
+    }
+
+.emp-change-up {
+    color: #1e8e3e;
+    font-weight: 600;
+}
+
+.emp-change-down {
+    color: #d70015;
+    font-weight: 600;
+}
+
+.prod-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.prod-thumb {
+    flex: 0 0 auto;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    object-fit: contain;
+    background: var(--bg-tint-blue);
+}
+
+.prod-image-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.prod-image-controls {
+    flex: 1 1 260px;
+}
+
+.prod-preview {
+    flex: 0 0 auto;
+    width: 110px;
+    height: 110px;
+    border-radius: 14px;
+    object-fit: contain;
+    background: var(--bg-tint-blue);
+    border: 1px solid var(--glass-border);
+}
+
+.prod-preview-empty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+.emp-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+[data-theme="dark"] .emp-badge-low {
+    color: #e0b84f;
+}
+
+[data-theme="dark"] .emp-change-up {
+    color: #30d158;
+}
+
+[data-theme="dark"] .emp-change-down,
+[data-theme="dark"] .emp-stock-preview.is-bad {
+    color: #ff453a;
+}
