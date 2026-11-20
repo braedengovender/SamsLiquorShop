@@ -30,10 +30,6 @@
           <p class="stat-number">Up to <asp:Literal ID="litMaxOff" runat="server" />%</p>
           <p class="stat-label">Off selected favourites</p>
         </div>
-        <div class="stat-item">
-          <p class="stat-number"><asp:Literal ID="litCount" runat="server" /></p>
-          <p class="stat-label">Specials on right now</p>
-        </div>
       </div>
     </section>
     </asp:PlaceHolder>

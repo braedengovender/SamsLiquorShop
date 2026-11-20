@@ -141,10 +141,9 @@ namespace SamsLiquorShop
                 categories[Convert.ToString(r["Category_Name"])] = Convert.ToInt32(r["Category_ID"]);
             }
 
-            // The "up to X% off" strip only makes sense while something is actually running
+            // The "up to X% off" strip only shows while something is actually running
             phStats.Visible = runningCount > 0;
             litMaxOff.Text = maxOff.ToString();
-            litCount.Text = runningCount.ToString();
 
             DataTable tabs = new DataTable();
             tabs.Columns.Add("Category_ID", typeof(int));

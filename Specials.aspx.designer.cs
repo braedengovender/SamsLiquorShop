@@ -20,8 +20,6 @@ namespace SamsLiquorShop
 
         protected global::System.Web.UI.WebControls.Literal litMaxOff;
 
-        protected global::System.Web.UI.WebControls.Literal litCount;
-
         protected global::System.Web.UI.WebControls.Literal litCartMessage;
 
         protected global::System.Web.UI.WebControls.Repeater rptTabs;
