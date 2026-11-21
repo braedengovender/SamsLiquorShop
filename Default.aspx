@@ -349,6 +349,47 @@
       </div>
     </section>
 
+    <section class="shell home-section" id="drinkQuiz">
+      <div class="section-header">
+        <h2>Find My Drink</h2>
+      </div>
+      <p class="section-subtext">Five quick questions to match you with your perfect pour.</p>
+
+      <div class="glass quiz-card">
+        <div class="quiz-side">
+          <p class="quiz-side-tag">Sam's Liquor Shop</p>
+          <h3 class="quiz-side-heading">Not sure what to pour?</h3>
+          <p class="quiz-side-sub">Answer five quick questions and we'll match you with a drink you'll love.</p>
+          <span class="quiz-side-glow" aria-hidden="true"></span>
+        </div>
+        <div class="quiz-main">
+        <div id="quizQuestionView">
+          <div class="quiz-progress-row">
+            <span id="quizStepLabel" class="quiz-step-label">Question 1 of 5</span>
+            <div class="quiz-progress"><span id="quizProgressFill"></span></div>
+          </div>
+          <h3 id="quizQuestionText" class="quiz-question"></h3>
+          <div id="quizOptions" class="quiz-options"></div>
+          <button type="button" id="quizBackBtn" class="quiz-back" onclick="quizBack()">&larr; Back</button>
+        </div>
+
+        <div id="quizResultView" class="quiz-result" style="display:none;">
+          <p class="quiz-result-eyebrow">Your match</p>
+          <div id="quizResultIcon" class="quiz-result-icon"></div>
+          <h3 id="quizResultName" class="quiz-result-name"></h3>
+          <p id="quizResultBlurb" class="quiz-result-blurb"></p>
+          <p id="quizResultPick" class="quiz-result-pick"></p>
+          <div class="quiz-result-actions">
+            <a id="quizShopLink" href="Shop.aspx" class="btn-primary">Shop now</a>
+            <button type="button" class="btn-ghost quiz-retake" onclick="quizRestart()">Retake quiz</button>
+          </div>
+          <p id="quizRunnerUp" class="quiz-runner-up"></p>
+          <p class="quiz-note">Please enjoy responsibly. You must be 18 or older to purchase alcohol.</p>
+        </div>
+        </div>
+      </div>
+    </section>
+
     <section class="shell home-section">
       <div class="section-header">
         <h2>Featured Reviews</h2>
@@ -388,5 +429,144 @@
         </div>
       </div>
     </section>
+
+        <script>
+        (function () {
+            var results = {
+                whisky:  { icon: '🥃', name: 'Whisky',            search: 'whisky',
+                           blurb: 'You like smooth, rich and a little bit classic. Sip it neat, on ice, or with a splash of soda.',
+                           pick: 'Try: Johnnie Walker Black Label 12yo or Jack Daniel\'s' },
+                gin:     { icon: '🍸', name: 'Gin & Tonic',       search: 'gin',
+                           blurb: 'Crisp, botanical and refreshing. You enjoy something with character that\'s still easy-drinking.',
+                           pick: 'Try: Hendrick\'s Gin with tonic and cucumber' },
+                vodka:   { icon: '🍹', name: 'Vodka & Mixers',    search: 'vodka',
+                           blurb: 'Clean, versatile and social. You like to mix it up, from a simple vodka soda to a full cocktail night.',
+                           pick: 'Try: Ciroc or Grey Goose' },
+                red:     { icon: '🍷', name: 'Red Wine',          search: 'red wine',
+                           blurb: 'Rich, warm and made for good food and long conversations.',
+                           pick: 'Try: a bold red with your next braai or dinner' },
+                white:   { icon: '🥂', name: 'White & Rosé Wine', search: 'rose',
+                           blurb: 'Light, fruity and easy-going. Perfect for warm Durban afternoons.',
+                           pick: 'Try: Four Cousins Natural Sweet Rosé or Nederburg Baronne' },
+                bubbly:  { icon: '🍾', name: 'Champagne & Bubbly', search: 'champagne',
+                           blurb: 'You\'re here for the celebration. Elegant, festive and always a good time.',
+                           pick: 'Try: Moët & Chandon Brut Impérial' },
+                beer:    { icon: '🍺', name: 'Beer & Cider',      search: 'beer',
+                           blurb: 'Cold, crisp and sociable. You keep it relaxed and easy-going.',
+                           pick: 'Try: Carling Black Label or Savanna Dry' },
+                cream:   { icon: '🍨', name: 'Cream Liqueur',     search: 'amarula',
+                           blurb: 'Sweet, smooth and indulgent. Great over ice or as a dessert in a glass.',
+                           pick: 'Try: Amarula Cream Liqueur' },
+                zero:    { icon: '🍋', name: 'Non-Alcoholic',     search: 'non-alcoholic',
+                           blurb: 'Great taste doesn\'t need proof. There are some brilliant zero-alcohol options these days.',
+                           pick: 'Try: Heineken 0.0 or JC Le Roux Le Domaine Non-Alcoholic' }
+            };
+
+            var questions = [
+                { q: 'What\'s the occasion?', options: [
+                    { t: 'Braai with friends',  s: { beer: 2, red: 2, whisky: 1, vodka: 1 } },
+                    { t: 'Quiet night in',      s: { whisky: 2, red: 2, cream: 2 } },
+                    { t: 'A celebration',       s: { bubbly: 3, vodka: 1, white: 1 } },
+                    { t: 'Dinner party',        s: { red: 2, white: 2, gin: 1 } },
+                    { t: 'Sundowners outside',  s: { gin: 2, white: 2, beer: 1, vodka: 1 } }
+                ]},
+                { q: 'Which flavour sounds best?', options: [
+                    { t: 'Sweet and fruity',    s: { white: 2, cream: 2, vodka: 1 } },
+                    { t: 'Smooth and rich',     s: { whisky: 2, red: 2, cream: 2 } },
+                    { t: 'Crisp and refreshing', s: { gin: 2, beer: 2, white: 1, bubbly: 1 } },
+                    { t: 'Bold and smoky',      s: { whisky: 3, red: 1 } }
+                ]},
+                { q: 'How would you describe your style?', options: [
+                    { t: 'Classic and timeless', s: { whisky: 2, red: 1, bubbly: 1 } },
+                    { t: 'Adventurous',         s: { gin: 2, vodka: 1, whisky: 1 } },
+                    { t: 'Relaxed and easy-going', s: { beer: 2, white: 1, cream: 1 } },
+                    { t: 'Life of the party',   s: { vodka: 2, bubbly: 2, beer: 1 } }
+                ]},
+                { q: 'How strong do you like it?', options: [
+                    { t: 'Light and easy',      s: { beer: 2, white: 2, bubbly: 1 } },
+                    { t: 'Somewhere in the middle', s: { red: 2, gin: 1, cream: 1, vodka: 1 } },
+                    { t: 'Bring on the strong stuff', s: { whisky: 3, vodka: 1, gin: 1 } },
+                    { t: 'No alcohol for me',   s: { zero: 20 } }
+                ]},
+                { q: 'What\'s your budget per bottle?', options: [
+                    { t: 'Under R100',          s: { beer: 2, white: 2, red: 1 } },
+                    { t: 'R100 – R250',         s: { cream: 2, red: 1, white: 1, gin: 1, zero: 1 } },
+                    { t: 'R250 – R500',         s: { whisky: 2, gin: 2, vodka: 1 } },
+                    { t: 'R500 and up',         s: { bubbly: 2, whisky: 1, vodka: 1 } }
+                ]}
+            ];
+
+            var answers = [];
+
+            function $(id) { return document.getElementById(id); }
+
+            function renderQuestion() {
+                var step = answers.length;
+                var q = questions[step];
+                $('quizStepLabel').textContent = 'Question ' + (step + 1) + ' of ' + questions.length;
+                $('quizProgressFill').style.width = (step / questions.length * 100) + '%';
+                $('quizQuestionText').textContent = q.q;
+                $('quizBackBtn').style.visibility = step === 0 ? 'hidden' : 'visible';
+
+                var box = $('quizOptions');
+                box.innerHTML = '';
+                q.options.forEach(function (opt, i) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'quiz-option';
+                    b.textContent = opt.t;
+                    b.addEventListener('click', function () { choose(i); });
+                    box.appendChild(b);
+                });
+            }
+
+            function choose(i) {
+                answers.push(i);
+                if (answers.length === questions.length) showResult();
+                else renderQuestion();
+            }
+
+            function showResult() {
+                var scores = {};
+                answers.forEach(function (ai, qi) {
+                    var s = questions[qi].options[ai].s;
+                    for (var k in s) scores[k] = (scores[k] || 0) + s[k];
+                });
+                var ranked = Object.keys(scores).sort(function (a, b) { return scores[b] - scores[a]; });
+                var top = results[ranked[0]];
+
+                $('quizResultIcon').textContent = top.icon;
+                $('quizResultName').textContent = top.name;
+                $('quizResultBlurb').textContent = top.blurb;
+                $('quizResultPick').textContent = top.pick;
+                $('quizShopLink').href = 'Shop.aspx?search=' + encodeURIComponent(top.search);
+                $('quizShopLink').textContent = 'Shop ' + top.name;
+
+                var runner = $('quizRunnerUp');
+                if (ranked[1] && ranked[0] !== 'zero') {
+                    runner.textContent = 'You might also enjoy: ' + results[ranked[1]].name;
+                    runner.style.display = 'block';
+                } else {
+                    runner.style.display = 'none';
+                }
+
+                $('quizQuestionView').style.display = 'none';
+                $('quizResultView').style.display = 'block';
+            }
+
+            window.quizBack = function () {
+                if (answers.length > 0) { answers.pop(); renderQuestion(); }
+            };
+
+            window.quizRestart = function () {
+                answers = [];
+                $('quizResultView').style.display = 'none';
+                $('quizQuestionView').style.display = 'block';
+                renderQuestion();
+            };
+
+            if ($('quizOptions')) renderQuestion();
+        })();
+        </script>
 
 </asp:Content>
