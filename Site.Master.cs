@@ -134,6 +134,10 @@ namespace SamsLiquorShop
 
         protected void btnLogout_Click(object sender, EventArgs e)
         {
+            string noticeEmail, noticeName;
+            if (SessionWatch.Unregister(Session.SessionID, out noticeEmail, out noticeName))
+                OtpHelper.SendLoginNotice(noticeEmail, noticeName, "logout", Request.UserAgent, Request.UserHostAddress);
+
             Session.Clear();
             Response.Redirect("~/Default.aspx");
         }

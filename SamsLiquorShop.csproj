@@ -564,6 +564,7 @@
     </Compile>
     <Compile Include="Helpers\PricingHelper.cs" />
     <Compile Include="Helpers\ProductDetailHelper.cs" />
+    <Compile Include="Helpers\SessionWatch.cs" />
     <Compile Include="Helpers\StockLogHelper.cs" />
     <Compile Include="Helpers\WishlistHelper.cs" />
     <Compile Include="Login.aspx.cs">
@@ -683,6 +684,9 @@
     <Compile Include="ReturnPolicy.aspx.designer.cs">
       <DependentUpon>ReturnPolicy.aspx</DependentUpon>
     </Compile>
+    <Compile Include="SessionBeacon.ashx.cs">
+      <DependentUpon>SessionBeacon.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Shop.aspx.cs">
       <DependentUpon>Shop.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -749,6 +753,7 @@
     <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.0.min.map" />
     <Content Include="SearchSuggestions.ashx" />
+    <Content Include="SessionBeacon.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

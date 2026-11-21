@@ -45,12 +45,20 @@ namespace SamsLiquorShop
             Session["UserName"] = displayName;
             string returnUrl = Session["PendingReturnUrl"] as string;
             bool remember = (bool)Session["PendingRemember"];
+            string email = Session["PendingEmail"] as string;
 
             foreach (string k in new[] { "PendingRole", "PendingName", "PendingKey", "PendingId",
-                "PendingRemember", "PendingReturnUrl", "OtpCode", "OtpExpiry", "OtpAttempts", "OtpDemoMode" })
+                "PendingRemember", "PendingReturnUrl", "PendingEmail", "OtpCode", "OtpExpiry", "OtpAttempts", "OtpDemoMode" })
                 Session.Remove(k);
 
             if (role == "Customer") Helpers.WishlistHelper.MergeAtLogin(Session);
+
+            // Customers, cashiers and managers all get login/logout notifications
+            if (!string.IsNullOrEmpty(email))
+            {
+                Helpers.SessionWatch.Register(Session.SessionID, email, displayName);
+                Helpers.OtpHelper.SendLoginNotice(email, displayName, "login", Request.UserAgent, Request.UserHostAddress);
+            }
 
             if (remember)
             {

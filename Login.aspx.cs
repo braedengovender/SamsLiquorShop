@@ -99,6 +99,7 @@ namespace SamsLiquorShop
                 Session["PendingName"] = displayName;
                 Session["PendingKey"] = pendingKey;
                 Session["PendingId"] = pendingId;
+                Session["PendingEmail"] = pendingEmail;
                 Session["PendingRemember"] = RememberMe.Checked;
                 Session["PendingReturnUrl"] = Request.QueryString["returnUrl"];
                 Session["OtpCode"] = code;
