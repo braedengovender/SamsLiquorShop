@@ -6727,3 +6727,69 @@ textarea.login-input {
 [data-theme="dark"] .quiz-result-actions .btn-ghost {
     background: rgba(255, 255, 255, 0.08);
 }
+
+/* ===== Manage Discounts / Manage Suppliers ===== */
+.emp-badge-ended {
+    background: rgba(142, 142, 147, 0.16);
+    color: #636366;
+}
+
+[data-theme="dark"] .emp-badge-ended {
+    color: #aeaeb2;
+}
+
+.disc-readonly {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+    .disc-readonly > div {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: rgba(10, 132, 255, 0.06);
+    }
+
+    .disc-readonly .mgr-kpi-label {
+        display: block;
+        margin: 0 0 4px;
+    }
+
+[data-theme="dark"] .disc-readonly > div {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.disc-name-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+    .disc-name-link:hover strong,
+    .disc-name-link:focus-visible strong {
+        color: var(--accent);
+        text-decoration: underline;
+    }
+
+.disc-note {
+    margin: 0 0 14px;
+}
+
+.sup-section-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 8px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+[data-theme="dark"] #supAddressResults {
+    background: #1c1c1e !important;
+}
+
+    [data-theme="dark"] #supAddressResults div {
+        color: #f5f5f7 !important;
+    }

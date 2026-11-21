@@ -8,6 +8,7 @@
         <li><a href="~/Manager/Sales.aspx" runat="server" id="navOrders">Manage Sales</a></li>
         <li><a href="~/Manager/Products.aspx" runat="server" id="navProducts">Manage Products</a></li>
         <li><a href="~/Manager/Categories.aspx" runat="server" id="navCategories">Manage Categories</a></li>
+        <li><a href="~/Manager/Suppliers.aspx" runat="server" id="navSuppliers">Manage Suppliers</a></li>
         <li><a href="~/Manager/Employees.aspx" runat="server" id="navEmployees">Manage Employees</a></li>
         <li><a href="~/Manager/Customers.aspx" runat="server" id="navCustomers">Manage Customers</a></li>
         <li><a href="~/Manager/Discounts.aspx" runat="server" id="navDiscounts">Manage Discounts</a></li>
