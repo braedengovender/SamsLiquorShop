@@ -769,10 +769,37 @@
 
             if (!valid) return false;
 
-            // TODO: wire this to your sign-up endpoint / code-behind method
-            document.getElementById('newsletterForm').style.display = 'none';
-            document.getElementById('newsletterSuccess').style.display = 'block';
+            var btn = e.currentTarget;
+            var label = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Signing up...';
+
+            newsletterSignup(first.value.trim(), last.value.trim(), email.value.trim(), function (ok, message) {
+                btn.disabled = false;
+                btn.textContent = label;
+                if (ok) {
+                    document.getElementById('newsletterForm').style.display = 'none';
+                    document.getElementById('newsletterSuccess').style.display = 'block';
+                } else {
+                    document.getElementById('nlEmailError').textContent = message;
+                    email.classList.add('invalid');
+                }
+            });
             return false;
+        }
+
+        // Shared by the popup and the footer form
+        function newsletterSignup(first, last, email, done) {
+            fetch('/NewsletterSignup.ashx', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'firstName=' + encodeURIComponent(first) +
+                      '&lastName=' + encodeURIComponent(last) +
+                      '&email=' + encodeURIComponent(email)
+            })
+                .then(function (res) { return res.json(); })
+                .then(function (data) { done(!!data.ok, data.message); })
+                .catch(function () { done(false, 'Something went wrong. Please try again.'); });
         }
 
         function toggleChatbot() {
@@ -902,11 +929,25 @@
             }
             if (!valid) return false;
 
-            first.value = ''; last.value = ''; email.value = '';
-            document.getElementById('footerNewsletterSuccess').style.display = 'block';
-            setTimeout(function () {
-                document.getElementById('footerNewsletterSuccess').style.display = 'none';
-            }, 5000);
+            var btn = e.currentTarget;
+            var label = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Signing up...';
+
+            newsletterSignup(first.value.trim(), last.value.trim(), email.value.trim(), function (ok, message) {
+                btn.disabled = false;
+                btn.textContent = label;
+                if (ok) {
+                    first.value = ''; last.value = ''; email.value = '';
+                    document.getElementById('footerNewsletterSuccess').style.display = 'block';
+                    setTimeout(function () {
+                        document.getElementById('footerNewsletterSuccess').style.display = 'none';
+                    }, 5000);
+                } else {
+                    document.getElementById('footerEmailError').textContent = message;
+                    email.classList.add('invalid');
+                }
+            });
             return false;
         }
 
