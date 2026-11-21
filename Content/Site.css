@@ -171,7 +171,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.9);
+    background: #ffffff;
     padding: 24px;
 }
 
@@ -1497,9 +1497,9 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     border-color: rgba(255, 255, 255, 0.12);
 }
 
-[data-theme="dark"] .age-gate {
-    background: rgba(5, 7, 13, 0.92);
-}
+    [data-theme="dark"] .age-gate {
+        background: #05070d;
+    }
 
 [data-theme="dark"] .footer-credit,
 [data-theme="dark"] .footer-responsible,
