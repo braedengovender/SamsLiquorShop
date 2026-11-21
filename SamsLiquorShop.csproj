@@ -255,6 +255,8 @@
     <Content Include="Login.aspx" />
     <Content Include="Manager\Employees.aspx" />
     <Content Include="Manager\Customers.aspx" />
+    <Content Include="Manager\Categories.aspx" />
+    <Content Include="Manager\Discounts.aspx" />
     <Content Include="Manager\Products.aspx" />
     <Content Include="Manager\Sales.aspx" />
     <Content Include="Employee\Orders.aspx" />
@@ -572,6 +574,13 @@
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Manager\Discounts.aspx.cs">
+      <DependentUpon>Discounts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\Discounts.aspx.designer.cs">
+      <DependentUpon>Discounts.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Manager\Employees.aspx.cs">
       <DependentUpon>Employees.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -592,6 +601,13 @@
     </Compile>
     <Compile Include="Manager\Customers.aspx.designer.cs">
       <DependentUpon>Customers.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Manager\Categories.aspx.cs">
+      <DependentUpon>Categories.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\Categories.aspx.designer.cs">
+      <DependentUpon>Categories.aspx</DependentUpon>
     </Compile>
     <Compile Include="Manager\Products.aspx.cs">
       <DependentUpon>Products.aspx</DependentUpon>

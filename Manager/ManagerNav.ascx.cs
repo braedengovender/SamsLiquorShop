@@ -24,6 +24,7 @@ namespace SamsLiquorShop.Manager
                 case "Dashboard.aspx": active = navOverview; break;
                 case "Sales.aspx": active = navOrders; break;
                 case "Products.aspx": active = navProducts; break;
+                case "Categories.aspx": active = navCategories; break;
                 case "Employees.aspx": active = navEmployees; break;
                 case "Customers.aspx": active = navCustomers; break;
                 case "Discounts.aspx": active = navDiscounts; break;
