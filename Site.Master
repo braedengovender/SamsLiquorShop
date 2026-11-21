@@ -1299,7 +1299,7 @@
             window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 300); });
         }
     </script>
-    <% if (Session["UserRole"] != null) { %>
+    <% if (Context.Session != null && Session["UserRole"] != null) { %>
     <script>
         // Lets the server tell "tab closed" apart from "moved to another page".
         (function () {
