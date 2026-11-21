@@ -203,10 +203,10 @@
         <a href="Shipping.aspx" class="card-surface guide-card">
           <p>Shipping &amp; Delivery</p><span class="arrow">&rarr;</span>
         </a>
-        <a href="Terms.aspx" class="card-surface guide-card">
+        <a href="Legal.aspx#terms" class="card-surface guide-card">
           <p>Terms &amp; Conditions</p><span class="arrow">&rarr;</span>
         </a>
-        <a href="PrivacyPolicy.aspx" class="card-surface guide-card">
+        <a href="Legal.aspx#privacy" class="card-surface guide-card">
           <p>Privacy Policy</p><span class="arrow">&rarr;</span>
         </a>
         <a href="FAQ.aspx" class="card-surface guide-card">

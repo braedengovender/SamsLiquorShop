@@ -1224,40 +1224,45 @@ namespace SamsLiquorShop.Manager
         }
 
         // ---------- EXPORT / DOWNLOAD ----------
-        protected void btnExport_Click(object sender, EventArgs e)
+        // Export PDF / Export Excel: the products matching the current filters
+        protected void btnExport_Command(object sender, CommandEventArgs e)
         {
             DataTable dt = LoadProductTable();
 
-            var sb = new StringBuilder();
-            sb.AppendLine("Product ID,Name,Brand,Category,Supplier,Size (ml),Barcode,Cost Price,Selling Price,Stock,Reorder At,Stock Level,Status");
+            var table = new ExportTable("Products", "Stock list")
+                .Col("ID", ExportKind.Integer)
+                .Col("Name")
+                .Col("Brand")
+                .Col("Category")
+                .Col("Supplier")
+                .Col("Size (ml)", ExportKind.Integer)
+                .Col("Barcode")
+                .Col("Cost Price", ExportKind.Money)
+                .Col("Selling Price", ExportKind.Money)
+                .Col("Stock", ExportKind.Integer)
+                .Col("Reorder At", ExportKind.Integer)
+                .Col("Stock Level")
+                .Col("Status");
 
             foreach (DataRow r in dt.Rows)
             {
-                sb.AppendLine(string.Join(",", new[]
-                {
-                    Csv(r["Product_ID"]),
-                    Csv(r["Product_Name"]),
-                    Csv(r["Product_Brand"]),
-                    Csv(r["Category_Name"]),
-                    Csv(r["Supplier_Name"]),
-                    Csv(r["Product_SizeML"]),
-                    Csv(r["Product_BarcodeNumber"]),
-                    Csv(Convert.ToDecimal(r["Product_CostPrice"]).ToString("0.00", CultureInfo.InvariantCulture)),
-                    Csv(Convert.ToDecimal(r["Product_SellingPrice"]).ToString("0.00", CultureInfo.InvariantCulture)),
-                    Csv(r["Product_QuantityInStock"]),
-                    Csv(r["Product_ReorderQuantity"]),
-                    Csv(StockLabel(r["Product_QuantityInStock"], r["Product_ReorderQuantity"])),
-                    Csv(r["Product_Status"])
-                }));
+                table.Add(
+                    r["Product_ID"],
+                    r["Product_Name"],
+                    r["Product_Brand"],
+                    r["Category_Name"],
+                    r["Supplier_Name"],
+                    r["Product_SizeML"],
+                    Convert.ToString(r["Product_BarcodeNumber"]),
+                    r["Product_CostPrice"],
+                    r["Product_SellingPrice"],
+                    r["Product_QuantityInStock"],
+                    r["Product_ReorderQuantity"],
+                    StockLabel(r["Product_QuantityInStock"], r["Product_ReorderQuantity"]),
+                    r["Product_Status"]);
             }
 
-            Response.Clear();
-            Response.ContentType = "text/csv";
-            Response.ContentEncoding = Encoding.UTF8;
-            Response.AddHeader("Content-Disposition", "attachment; filename=products-" + DateTime.Today.ToString("yyyyMMdd") + ".csv");
-            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
-            Response.Write(sb.ToString());
-            Response.End();
+            ExportHelper.Send(Response, table, "products", e.CommandArgument.ToString());
         }
 
         protected void btnDownloadLog_Click(object sender, EventArgs e)

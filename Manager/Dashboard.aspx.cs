@@ -17,7 +17,7 @@ namespace SamsLiquorShop.Manager
         // Walk-in sales on the POS are recorded against this placeholder customer
         private const int WalkInCustomerId = 999999;
 
-        // Selected date range, from ?range=30d|3m|12m (defaults to 3 months)
+        // Selected date range, from ?range=7d|30d|3m|12m (defaults to 3 months)
         protected string RangeKey = "3m";
         protected string RangeLabel = "3 months";
         protected string RevenueBucketLabel = "by Week";
@@ -112,6 +112,11 @@ namespace SamsLiquorShop.Manager
         {
             switch (Request.QueryString["range"])
             {
+                case "7d":
+                    RangeKey = "7d";
+                    RangeLabel = "7 days";
+                    RevenueBucketLabel = "by Day";
+                    return now.Date.AddDays(-6);
                 case "30d":
                     RangeKey = "30d";
                     RangeLabel = "30 days";
@@ -239,11 +244,11 @@ namespace SamsLiquorShop.Manager
             Func<DateTime, DateTime, decimal> sumBetween = (from, to) =>
                 daily.Where(d => d.Key >= from && d.Key < to).Sum(d => d.Value);
 
-            if (RangeKey == "30d")
+            if (RangeKey == "7d" || RangeKey == "30d")
             {
                 for (DateTime day = cutoff.Date; day <= now.Date; day = day.AddDays(1))
                 {
-                    labels.Add(day.ToString("d MMM"));
+                    labels.Add(RangeKey == "7d" ? day.ToString("ddd d MMM") : day.ToString("d MMM"));
                     values.Add(sumBetween(day, day.AddDays(1)));
                 }
             }
@@ -480,6 +485,29 @@ namespace SamsLiquorShop.Manager
                     gvRecentSales.DataBind();
                 }
             }
+        }
+
+        // Manage Sales opens a sale straight away when given ?sale=<id>
+        protected string SaleDetailUrl(object saleId)
+        {
+            return ResolveUrl("~/Manager/Sales.aspx?sale=" + Convert.ToInt32(saleId));
+        }
+
+        // Makes each Recent Sales row clickable (and reachable with the keyboard) through to the sale's details
+        protected void gvRecentSales_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType != DataControlRowType.DataRow) return;
+
+            object saleId = DataBinder.Eval(e.Row.DataItem, "Sale_ID");
+            string url = SaleDetailUrl(saleId);
+
+            e.Row.CssClass = "dash-row-link";
+            e.Row.Attributes["data-href"] = url;
+            e.Row.Attributes["tabindex"] = "0";
+            e.Row.Attributes["role"] = "link";
+            e.Row.Attributes["aria-label"] = "View details for sale " + saleId;
+            e.Row.Attributes["onclick"] = "if (event.target.closest('a')) return; window.location.href = this.getAttribute('data-href');";
+            e.Row.Attributes["onkeydown"] = "if (event.key === 'Enter') { window.location.href = this.getAttribute('data-href'); }";
         }
 
         private void LoadTopCustomers(DateTime cutoff)

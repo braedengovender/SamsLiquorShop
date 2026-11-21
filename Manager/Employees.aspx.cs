@@ -638,36 +638,37 @@ namespace SamsLiquorShop.Manager
         }
 
         // ---------- EXPORT ----------
-        protected void btnExport_Click(object sender, EventArgs e)
+        // Export PDF / Export Excel: the employees matching the current filters
+        protected void btnExport_Command(object sender, CommandEventArgs e)
         {
             DataTable dt = LoadEmployeeTable();
 
-            var sb = new StringBuilder();
-            sb.AppendLine("Employee ID,First Name,Last Name,Username,Email,Phone,Role,Status,Hire Date");
+            var table = new ExportTable("Employees", "Staff list")
+                .Col("ID", ExportKind.Integer)
+                .Col("First Name")
+                .Col("Last Name")
+                .Col("Username")
+                .Col("Email")
+                .Col("Phone")
+                .Col("Role")
+                .Col("Status")
+                .Col("Hire Date", ExportKind.Date);
 
             foreach (DataRow r in dt.Rows)
             {
-                sb.AppendLine(string.Join(",", new[]
-                {
-                    Csv(r["Employee_ID"]),
-                    Csv(r["Employee_FirstName"]),
-                    Csv(r["Employee_LastName"]),
-                    Csv(r["Employee_Username"]),
-                    Csv(r["Employee_EmailAddress"]),
-                    Csv(r["Employee_PhoneNumber"]),
-                    Csv(r["Employee_Role"]),
-                    Csv(r["Employee_Status"]),
-                    Csv(Convert.ToDateTime(r["Employee_HireDate"]).ToString("yyyy-MM-dd"))
-                }));
+                table.Add(
+                    r["Employee_ID"],
+                    r["Employee_FirstName"],
+                    r["Employee_LastName"],
+                    r["Employee_Username"],
+                    r["Employee_EmailAddress"],
+                    Convert.ToString(r["Employee_PhoneNumber"]),
+                    r["Employee_Role"],
+                    r["Employee_Status"],
+                    r["Employee_HireDate"]);
             }
 
-            Response.Clear();
-            Response.ContentType = "text/csv";
-            Response.ContentEncoding = Encoding.UTF8;
-            Response.AddHeader("Content-Disposition", "attachment; filename=employees-" + DateTime.Today.ToString("yyyyMMdd") + ".csv");
-            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
-            Response.Write(sb.ToString());
-            Response.End();
+            ExportHelper.Send(Response, table, "employees", e.CommandArgument.ToString());
         }
 
         // Quotes a CSV value and defuses spreadsheet formulas (cells starting with = + - @)

@@ -214,8 +214,8 @@
         <h2>Related Information</h2>
       </div>
       <div class="guides-grid">
-        <a href="DeliveryPolicy.aspx" class="card-surface guide-card">
-          <p>Delivery Policy</p><span class="arrow">&rarr;</span>
+        <a href="Legal.aspx#terms" class="card-surface guide-card">
+          <p>Terms &amp; Conditions</p><span class="arrow">&rarr;</span>
         </a>
         <a href="ReturnPolicy.aspx" class="card-surface guide-card">
           <p>Returns &amp; Refunds</p><span class="arrow">&rarr;</span>

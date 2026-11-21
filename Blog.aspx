@@ -93,7 +93,7 @@
         </div>
         <p class="hours-note" style="margin-top:16px;">
           By subscribing you agree to receive marketing emails. Read our
-          <a href="PrivacyPolicy.aspx">privacy policy</a>.
+          <a href="Legal.aspx#privacy">privacy policy</a>.
         </p>
       </div>
     </section>

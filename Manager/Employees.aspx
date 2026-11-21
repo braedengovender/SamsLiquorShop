@@ -13,7 +13,8 @@
                     <p class="mgr-dash-subtext">Add, update, deactivate or remove staff accounts.</p>
                 </div>
                 <div class="emp-header-actions">
-                    <asp:Button ID="btnExport" runat="server" Text="Export CSV" CssClass="btn-ghost" OnClick="btnExport_Click" />
+                    <asp:LinkButton ID="btnExportPdf" runat="server" CssClass="export-btn is-pdf" CommandArgument="pdf" OnCommand="btnExport_Command" ToolTip="Download as PDF"><img src="/Images/icons/pdf.svg" alt="" /> Export PDF</asp:LinkButton>
+                    <asp:LinkButton ID="btnExportExcel" runat="server" CssClass="export-btn is-excel" CommandArgument="excel" OnCommand="btnExport_Command" ToolTip="Download as Excel"><img src="/Images/icons/excel.svg" alt="" /> Export Excel</asp:LinkButton>
                     <asp:Button ID="btnAddNew" runat="server" Text="+ Add Employee" CssClass="btn-primary" OnClick="btnAddNew_Click" />
                 </div>
             </div>

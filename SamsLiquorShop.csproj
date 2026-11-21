@@ -51,6 +51,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
@@ -215,6 +216,8 @@
     <Content Include="Images\chatbot-icon.png" />
     <Content Include="Images\hero-drink.jpg" />
     <Content Include="Images\icons\emptycart.png" />
+    <Content Include="Images\icons\excel.svg" />
+    <Content Include="Images\icons\pdf.svg" />
     <Content Include="Images\icons\fullcart.png" />
     <Content Include="Images\icons\moon.png" />
     <Content Include="Images\icons\search.png" />
@@ -334,6 +337,7 @@
     <Content Include="ResponsibleDrinking.aspx" />
     <Content Include="FAQ.aspx" />
     <Content Include="ReturnPolicy.aspx" />
+    <Content Include="Legal.aspx" />
     <Content Include="Shop.aspx" />
     <Content Include="Specials.aspx" />
     <Content Include="Shipping.aspx" />
@@ -564,6 +568,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AuthHelper.cs" />
+    <Compile Include="Helpers\ExportHelper.cs" />
     <Compile Include="Helpers\CartHelper.cs" />
     <Compile Include="Helpers\OtpHelper.cs" />
     <Compile Include="Helpers\ReceiptHelper.cs" />
@@ -710,6 +715,13 @@
     </Compile>
     <Compile Include="FAQ.aspx.designer.cs">
       <DependentUpon>FAQ.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Legal.aspx.cs">
+      <DependentUpon>Legal.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Legal.aspx.designer.cs">
+      <DependentUpon>Legal.aspx</DependentUpon>
     </Compile>
     <Compile Include="ReturnPolicy.aspx.cs">
       <DependentUpon>ReturnPolicy.aspx</DependentUpon>

@@ -2,7 +2,8 @@
 {
     public partial class Employees
     {
-        protected global::System.Web.UI.WebControls.Button btnExport;
+        protected global::System.Web.UI.WebControls.LinkButton btnExportPdf;
+        protected global::System.Web.UI.WebControls.LinkButton btnExportExcel;
         protected global::System.Web.UI.WebControls.Button btnAddNew;
         protected global::System.Web.UI.UpdatePanel upSummary;
         protected global::System.Web.UI.WebControls.Literal litKpiTotal;

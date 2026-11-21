@@ -12,6 +12,7 @@
                     <p class="mgr-dash-subtext"><asp:Literal runat="server" ID="litGreeting" /> &middot; last <%= RangeLabel %></p>
                 </div>
                 <nav class="dash-range" aria-label="Date range">
+                    <a href="?range=7d" class="dash-range-chip<%= RangeKey == "7d" ? " is-active" : "" %>">7 days</a>
                     <a href="?range=30d" class="dash-range-chip<%= RangeKey == "30d" ? " is-active" : "" %>">30 days</a>
                     <a href="?range=3m" class="dash-range-chip<%= RangeKey == "3m" ? " is-active" : "" %>">3 months</a>
                     <a href="?range=12m" class="dash-range-chip<%= RangeKey == "12m" ? " is-active" : "" %>">12 months</a>
@@ -120,18 +121,24 @@
                 <div class="mgr-table-card">
                     <div class="dash-card-head">
                         <h3>Recent Sales</h3>
-                        <span class="dash-card-meta">latest 15, all time</span>
+                        <span class="dash-card-meta">latest 15, all time &middot; click a sale for details</span>
                     </div>
                     <asp:GridView ID="gvRecentSales" runat="server" AutoGenerateColumns="false" CssClass="dash-table" GridLines="None"
-                        EmptyDataText="No sales recorded yet." EmptyDataRowStyle-CssClass="dash-table-empty">
+                        EmptyDataText="No sales recorded yet." EmptyDataRowStyle-CssClass="dash-table-empty"
+                        OnRowDataBound="gvRecentSales_RowDataBound">
                         <Columns>
-                            <asp:BoundField DataField="Sale_ID" HeaderText="Sale #" ItemStyle-CssClass="is-muted" />
+                            <asp:TemplateField HeaderText="Sale #">
+                                <ItemTemplate><a href="<%# SaleDetailUrl(Eval("Sale_ID")) %>"><%# Eval("Sale_ID") %></a></ItemTemplate>
+                            </asp:TemplateField>
                             <asp:BoundField DataField="Sale_DateTime" HeaderText="Date" DataFormatString="{0:d MMM yyyy, HH:mm}" />
                             <asp:TemplateField HeaderText="Customer">
                                 <ItemTemplate><%# CustomerCell(Eval("CustomerName")) %></ItemTemplate>
                             </asp:TemplateField>
                             <asp:BoundField DataField="EmployeeName" HeaderText="Cashier" />
                             <asp:BoundField DataField="Sale_TotalAmount" HeaderText="Total" DataFormatString="{0:C}" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
+                            <asp:TemplateField ItemStyle-CssClass="is-num">
+                                <ItemTemplate><span class="dash-row-chevron" aria-hidden="true">&rsaquo;</span></ItemTemplate>
+                            </asp:TemplateField>
                         </Columns>
                     </asp:GridView>
                 </div>

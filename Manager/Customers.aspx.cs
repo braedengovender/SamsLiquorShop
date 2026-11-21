@@ -699,38 +699,41 @@ namespace SamsLiquorShop.Manager
         }
 
         // ---------- EXPORT ----------
-        protected void btnExport_Click(object sender, EventArgs e)
+        // Export PDF / Export Excel: the customers matching the current filters
+        protected void btnExport_Command(object sender, CommandEventArgs e)
         {
             DataTable dt = LoadCustomerTable();
 
-            var sb = new StringBuilder();
-            sb.AppendLine("Customer ID,First Name,Last Name,Username,Email,Phone,Status,Loyalty Points,Purchases,Total Spent,Last Purchase");
+            var table = new ExportTable("Customers", "Customer list")
+                .Col("ID", ExportKind.Integer)
+                .Col("First Name")
+                .Col("Last Name")
+                .Col("Username")
+                .Col("Email")
+                .Col("Phone")
+                .Col("Status")
+                .Col("Loyalty Points", ExportKind.Integer)
+                .Col("Purchases", ExportKind.Integer)
+                .Col("Total Spent", ExportKind.Money)
+                .Col("Last Purchase", ExportKind.DateTime);
 
             foreach (DataRow r in dt.Rows)
             {
-                sb.AppendLine(string.Join(",", new[]
-                {
-                    Csv(r["Customer_ID"]),
-                    Csv(r["Customer_FirstName"]),
-                    Csv(r["Customer_LastName"]),
-                    Csv(r["Customer_Username"]),
-                    Csv(r["Customer_EmailAddress"]),
-                    Csv(r["Customer_PhoneNumber"]),
-                    Csv(r["Customer_Status"]),
-                    Csv(r["Customer_LoyaltyPointsBalance"]),
-                    Csv(r["OrderCount"]),
-                    Csv(Convert.ToDecimal(r["TotalSpent"]).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)),
-                    Csv(r["LastPurchase"] == DBNull.Value ? "" : Convert.ToDateTime(r["LastPurchase"]).ToString("yyyy-MM-dd HH:mm"))
-                }));
+                table.Add(
+                    r["Customer_ID"],
+                    r["Customer_FirstName"],
+                    r["Customer_LastName"],
+                    r["Customer_Username"],
+                    r["Customer_EmailAddress"],
+                    Convert.ToString(r["Customer_PhoneNumber"]),
+                    r["Customer_Status"],
+                    r["Customer_LoyaltyPointsBalance"],
+                    r["OrderCount"],
+                    r["TotalSpent"],
+                    r["LastPurchase"]);
             }
 
-            Response.Clear();
-            Response.ContentType = "text/csv";
-            Response.ContentEncoding = Encoding.UTF8;
-            Response.AddHeader("Content-Disposition", "attachment; filename=customers-" + DateTime.Today.ToString("yyyyMMdd") + ".csv");
-            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
-            Response.Write(sb.ToString());
-            Response.End();
+            ExportHelper.Send(Response, table, "customers", e.CommandArgument.ToString());
         }
 
         // Quotes a CSV value and defuses spreadsheet formulas (cells starting with = + - @)

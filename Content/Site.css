@@ -6793,3 +6793,183 @@ textarea.login-input {
     [data-theme="dark"] #supAddressResults div {
         color: #f5f5f7 !important;
     }
+
+/* ===================== EXPORT BUTTONS (PDF / Excel) ===================== */
+.export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px 7px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: var(--bg-tint-blue);
+    color: var(--text-primary);
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+    .export-btn img {
+        width: 22px;
+        height: 22px;
+        display: block;
+    }
+
+    .export-btn:hover {
+        color: var(--text-primary);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    .export-btn.is-pdf:hover {
+        border-color: #e2231a;
+    }
+
+    .export-btn.is-excel:hover {
+        border-color: #107c41;
+    }
+
+/* ===================== DASHBOARD: CLICKABLE RECENT SALES ===================== */
+.dash-table tr.dash-row-link {
+    cursor: pointer;
+}
+
+    .dash-table tr.dash-row-link:focus-visible td {
+        outline: none;
+        background: var(--bg-tint-blue);
+    }
+
+    .dash-table tr.dash-row-link td:first-child a {
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+.dash-row-chevron {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.dash-table tr.dash-row-link:hover .dash-row-chevron {
+    color: var(--accent);
+}
+
+/* ===================== LEGAL PAGE ===================== */
+.legal-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.legal-toc {
+    position: sticky;
+    top: 110px;
+    padding: 20px;
+}
+
+    .legal-toc h3 {
+        margin: 0 0 12px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-secondary);
+    }
+
+    .legal-toc ol {
+        margin: 0;
+        padding-left: 18px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .legal-toc a {
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.92rem;
+    }
+
+        .legal-toc a:hover {
+            color: var(--accent);
+        }
+
+.legal-sections {
+    display: grid;
+    gap: 24px;
+}
+
+.legal-section {
+    padding: 28px 32px;
+    scroll-margin-top: 110px;
+}
+
+    .legal-section h2 {
+        margin: 0 0 4px;
+    }
+
+    .legal-section .legal-updated {
+        margin: 0 0 18px;
+        font-size: 0.82rem;
+        color: var(--text-secondary);
+    }
+
+    .legal-section h3 {
+        margin: 22px 0 8px;
+        font-size: 1rem;
+    }
+
+    .legal-section p,
+    .legal-section li {
+        line-height: 1.65;
+        color: var(--text-primary);
+    }
+
+    .legal-section ul {
+        padding-left: 20px;
+    }
+
+    .legal-section table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        margin: 8px 0 4px;
+    }
+
+    .legal-section th,
+    .legal-section td {
+        text-align: left;
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--glass-border);
+        vertical-align: top;
+    }
+
+    .legal-section th {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+    }
+
+.legal-back-top {
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 0.85rem;
+    color: var(--accent);
+    text-decoration: none;
+}
+
+@media (max-width: 900px) {
+    .legal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .legal-toc {
+        position: static;
+    }
+
+    .legal-section {
+        padding: 22px 20px;
+    }
+}

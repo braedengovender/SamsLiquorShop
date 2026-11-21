@@ -53,7 +53,8 @@ namespace SamsLiquorShop.Controls
                 litSubtitle.Text = CashierMode
                     ? "Sales processed at the till. Showing your own sales by default; pick another cashier or All cashiers to look further."
                     : "Every sale made at the till, with items, payments, discounts and loyalty points.";
-                btnExport.Visible = !CashierMode;
+                btnExportPdf.Visible = !CashierMode;
+                btnExportExcel.Visible = !CashierMode;
 
                 LoadFilterOptions();
                 ResetFilters();
@@ -470,41 +471,64 @@ namespace SamsLiquorShop.Controls
         }
 
         // ---------- EXPORT (manager only) ----------
-        protected void btnExport_Click(object sender, EventArgs e)
+        // Export PDF / Export Excel: the sales matching the current filters
+        protected void btnExport_Command(object sender, CommandEventArgs e)
         {
             if (CashierMode) return;
 
             DataTable dt = LoadSalesTable();
-            var inv = CultureInfo.InvariantCulture;
 
-            var sb = new StringBuilder();
-            sb.AppendLine("Invoice,Date,Customer,Cashier,Items,Paid By,Status,Subtotal,Discount,Total,Points Earned");
+            var filters = new List<string> { ddlRange.SelectedItem.Text };
+            if (ddlRange.SelectedValue == "custom")
+            {
+                filters[0] = "Custom dates: " + (txtFrom.Text.Trim().Length > 0 ? txtFrom.Text.Trim() : "start") +
+                             " to " + (txtTo.Text.Trim().Length > 0 ? txtTo.Text.Trim() : "today");
+            }
+            if (ddlCashier.SelectedValue != "") filters.Add("Cashier: " + ddlCashier.SelectedItem.Text);
+            if (ddlPayment.SelectedValue != "") filters.Add("Payment: " + ddlPayment.SelectedItem.Text);
+            if (ddlStatus.SelectedValue != "") filters.Add("Status: " + ddlStatus.SelectedItem.Text);
+            if (txtSearch.Text.Trim().Length > 0) filters.Add("Search: \"" + txtSearch.Text.Trim() + "\"");
 
+            var table = new ExportTable("Sales", string.Join("  ·  ", filters))
+                .Col("Invoice")
+                .Col("Date", ExportKind.DateTime)
+                .Col("Customer")
+                .Col("Cashier")
+                .Col("Items", ExportKind.Integer)
+                .Col("Paid By")
+                .Col("Status")
+                .Col("Subtotal", ExportKind.Money)
+                .Col("Discount", ExportKind.Money)
+                .Col("Total", ExportKind.Money)
+                .Col("Points Earned", ExportKind.Integer);
+
+            decimal subtotal = 0, discount = 0, totalAmount = 0;
             foreach (DataRow r in dt.Rows)
             {
-                sb.AppendLine(string.Join(",", new[]
-                {
-                    Csv(InvoiceNumber(r["Sale_ID"])),
-                    Csv(Convert.ToDateTime(r["Sale_DateTime"]).ToString("yyyy-MM-dd HH:mm")),
-                    Csv(r["CustomerName"] == DBNull.Value ? "Walk-in" : r["CustomerName"]),
-                    Csv(r["EmployeeName"]),
-                    Csv(r["ItemCount"]),
-                    Csv(r["PaymentMethods"]),
-                    Csv(r["Sale_Status"]),
-                    Csv(Convert.ToDecimal(r["Sale_Subtotal"]).ToString("0.00", inv)),
-                    Csv(Convert.ToDecimal(r["Sale_DiscountAmount"]).ToString("0.00", inv)),
-                    Csv(Convert.ToDecimal(r["Sale_TotalAmount"]).ToString("0.00", inv)),
-                    Csv(r["Sale_LoyaltyPointsEarned"])
-                }));
+                decimal sub = r["Sale_Subtotal"] == DBNull.Value ? 0 : Convert.ToDecimal(r["Sale_Subtotal"]);
+                decimal disc = Convert.ToDecimal(r["Sale_DiscountAmount"]);
+                decimal tot = Convert.ToDecimal(r["Sale_TotalAmount"]);
+                subtotal += sub; discount += disc; totalAmount += tot;
+
+                table.Add(
+                    InvoiceNumber(r["Sale_ID"]),
+                    r["Sale_DateTime"],
+                    r["CustomerName"] == DBNull.Value ? "Walk-in" : r["CustomerName"],
+                    r["EmployeeName"],
+                    r["ItemCount"],
+                    r["PaymentMethods"],
+                    r["Sale_Status"],
+                    sub,
+                    disc,
+                    tot,
+                    r["Sale_LoyaltyPointsEarned"]);
+            }
+            if (dt.Rows.Count > 0)
+            {
+                table.Add("TOTAL", null, null, null, null, null, null, subtotal, discount, totalAmount, null);
             }
 
-            Response.Clear();
-            Response.ContentType = "text/csv";
-            Response.ContentEncoding = Encoding.UTF8;
-            Response.AddHeader("Content-Disposition", "attachment; filename=sales-" + DateTime.Today.ToString("yyyyMMdd") + ".csv");
-            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
-            Response.Write(sb.ToString());
-            Response.End();
+            ExportHelper.Send(Response, table, "sales", e.CommandArgument.ToString());
         }
 
         // Quotes a CSV value and defuses spreadsheet formulas (cells starting with = + - @)

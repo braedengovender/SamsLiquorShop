@@ -216,7 +216,7 @@
             <button type="button" class="btn-primary newsletter-submit" onclick="submitNewsletter(event)">Sign Up</button>
             <p class="newsletter-terms">
               By signing up, you agree to receive marketing emails. View our
-              <a href="PrivacyPolicy.aspx">privacy policy</a> and <a href="TermsOfService.aspx">terms of service</a>.
+              <a href="/Legal.aspx#privacy">privacy policy</a> and <a href="/Legal.aspx#website-terms">terms of service</a>.
             </p>
           </div>
           <div id="newsletterSuccess" class="newsletter-success" style="display:none; text-align:center; padding:24px 0;">
@@ -344,6 +344,7 @@
                   <a href="FAQ.aspx">FAQ</a>
                   <a href="Shipping.aspx">Shipping & Delivery Info</a>
                   <a href="ReturnPolicy.aspx">Returns & Refunds</a>
+                  <a href="/Legal.aspx">Legal & Policies</a>
                 
                 </div>
               </li>
@@ -459,12 +460,12 @@
                 <h3>Support</h3>
                 <ul>
                   <li><a href="FAQ.aspx">FAQ</a></li>
-                  <li><a href="DeliveryPolicy.aspx">Delivery Policy</a></li>
+                  <li><a href="Shipping.aspx">Delivery Policy</a></li>
                   <li><a href="ReturnPolicy.aspx">Return Policy</a></li>
-                  <li><a href="PrivacyPolicy.aspx">Privacy Policy</a></li>
-                  <li><a href="CookiesPolicy.aspx">Cookies Policy</a></li>
-                  <li><a href="Terms.aspx">Terms & Conditions</a></li>
-                  <li><a href="WebsiteTerms.aspx">Website Terms of Use</a></li>
+                  <li><a href="/Legal.aspx#privacy">Privacy Policy</a></li>
+                  <li><a href="/Legal.aspx#cookies">Cookies Policy</a></li>
+                  <li><a href="/Legal.aspx#terms">Terms & Conditions</a></li>
+                  <li><a href="/Legal.aspx#website-terms">Website Terms of Use</a></li>
                 </ul>
               </div>
 
@@ -501,7 +502,7 @@
               <button type="button" class="btn-primary" onclick="submitFooterNewsletter(event)">Sign Up</button>
             </div>
             <p id="footerNewsletterSuccess" class="footer-newsletter-success" style="display:none;">&#10003; You're subscribed — thanks for joining!</p>
-            <p class="footer-newsletter-privacy">How do we use your information? Read our <a href="PrivacyPolicy.aspx">privacy policy</a>.</p>
+            <p class="footer-newsletter-privacy">How do we use your information? Read our <a href="/Legal.aspx#privacy">privacy policy</a>.</p>
           </div>
         </section>
 

@@ -23,8 +23,7 @@
           </details>
           <details class="card-surface faq-item">
             <summary>Which payment methods do you accept?</summary>
-            <%-- [CONFIRM] Payment gateway not yet chosen --%>
-            <p>We currently accept major debit and credit cards at checkout. Additional payment options are being introduced &mdash; please check back, or contact us to arrange an alternative payment method.</p>
+            <p>We accept major debit and credit cards, as well as <strong>loyalty points</strong>. Every point in your Rewards balance is worth R1 and can be used to pay for all or part of your order &mdash; simply choose Loyalty Points as your payment method. See our <a href="Rewards.aspx">Loyalty &amp; Rewards page</a> for details.</p>
           </details>
           <details class="card-surface faq-item">
             <summary>Can I amend or cancel my order after placing it?</summary>
@@ -38,11 +37,11 @@
         <div class="faq-list">
           <details class="card-surface faq-item">
             <summary>How long does delivery take?</summary>
-            <p>Same-day delivery is available within the Durban area for orders placed before 2pm. Greater KwaZulu-Natal takes 1&ndash;2 business days, and nationwide delivery takes 2&ndash;4 business days. Please refer to our <a href="Shipping.aspx">Shipping &amp; Delivery page</a> for full details.</p>
+            <p>We aim for next-day delivery on most orders. As an estimate, please allow between 1 and 3 business days for your order to arrive, depending on your location. Please refer to our <a href="Shipping.aspx">Shipping &amp; Delivery page</a> for full details.</p>
           </details>
           <details class="card-surface faq-item">
             <summary>Is delivery free?</summary>
-            <p>Delivery is free on all orders over R750. Below this threshold, delivery costs range from R55 to R120 depending on your area.</p>
+            <p>Yes &mdash; delivery is free on all orders over R500. Below this threshold, delivery costs range from R55 to R120 depending on your area. You can also use your loyalty points to pay for your order, including any delivery fee.</p>
           </details>
           <details class="card-surface faq-item">
             <summary>Can I collect my order in store instead?</summary>
@@ -74,8 +73,11 @@
         <div class="faq-list">
           <details class="card-surface faq-item">
             <summary>Do I need an account to place an order?</summary>
-            <%-- [CONFIRM] Guest checkout not yet built --%>
-            <p>Creating an account allows you to track orders, save your details for future purchases, and collect loyalty points. Use the Register link in the top menu to get started.</p>
+            <p>Yes. You need an account to place an order. Your account lets you track orders, save your details for future purchases, and collect and spend loyalty points. Use the Register link in the top menu to get started.</p>
+          </details>
+          <details class="card-surface faq-item">
+            <summary>Who can create an account?</summary>
+            <p>Accounts are only available to South Africans. You will need a valid South African ID number to register, and you must be 18 or older.</p>
           </details>
           <details class="card-surface faq-item">
             <summary>I have forgotten my password &mdash; what should I do?</summary>
@@ -83,7 +85,7 @@
           </details>
           <details class="card-surface faq-item">
             <summary>How does the Loyalty &amp; Rewards programme work?</summary>
-            <p>Every purchase earns points that convert into real discounts. Please visit our Loyalty &amp; Rewards page, linked in the footer, for full details.</p>
+            <p>Every purchase earns points that convert into real discounts. Points can also be used as a method of payment, with every point worth R1. Please visit our <a href="Rewards.aspx">Loyalty &amp; Rewards page</a> for full details.</p>
           </details>
         </div>
       </div>
