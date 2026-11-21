@@ -59,14 +59,30 @@ namespace SamsLiquorShop.Helpers
             if (space > 0) first = first.Substring(0, space);
             string greeting = first.Length > 0 ? "Hi " + WebUtility.HtmlEncode(first) + "," : "Hi,";
 
-            string eyebrow = isReset ? "Password reset" : "Secure login";
-            string heading = isReset ? "Reset your password" : "Your login code";
-            string intro = isReset
-                ? "We received a request to reset the password on your Sam's Liquor Shop account. Enter the code below to continue."
-                : "Use the code below to finish logging in to your Sam's Liquor Shop account.";
-            string ignore = isReset
-                ? "If you didn't ask to reset your password, you can ignore this email and your password will stay the same."
-                : "If you didn't try to log in, you can ignore this email. Your account has not been accessed.";
+            bool isRegister = (purpose ?? "").ToLowerInvariant().Contains("registration");
+
+            string eyebrow, heading, intro, ignore;
+            if (isRegister)
+            {
+                eyebrow = "Email verification";
+                heading = "Verify your email address";
+                intro = "Thanks for creating an account with Sam's Liquor Shop. Enter the code below on the registration page to confirm that this email address belongs to you.";
+                ignore = "If you didn't try to create an account, you can ignore this email. No account will be created without this code.";
+            }
+            else if (isReset)
+            {
+                eyebrow = "Password reset";
+                heading = "Reset your password";
+                intro = "We received a request to reset the password on your Sam's Liquor Shop account. Enter the code below to continue.";
+                ignore = "If you didn't ask to reset your password, you can ignore this email and your password will stay the same.";
+            }
+            else
+            {
+                eyebrow = "Secure login";
+                heading = "Your login code";
+                intro = "Use the code below to finish logging in to your Sam's Liquor Shop account.";
+                ignore = "If you didn't try to log in, you can ignore this email. Your account has not been accessed.";
+            }
 
             string html = @"<!DOCTYPE html>
 <html lang=""en"">

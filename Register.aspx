@@ -297,6 +297,35 @@
 
                 </asp:Panel>
 
+                <asp:Panel ID="pnlVerify" runat="server" Visible="false" DefaultButton="btnVerify">
+                    <div style="max-width:440px;">
+                        <p class="login-eyebrow">One last step</p>
+                        <h1 class="login-heading">Verify your email</h1>
+                        <p class="login-subtext">We sent a 6-digit code to <strong><asp:Label ID="lblVerifyEmail" runat="server" /></strong>. Enter it below to create your account. The code expires in 10 minutes.</p>
+
+                        <asp:Label ID="lblDemo" runat="server" CssClass="field-hint invalid" Visible="false" />
+
+                        <div class="login-field">
+                            <label for="<%= txtOtp.ClientID %>">Verification code</label>
+                            <asp:TextBox ID="txtOtp" runat="server" CssClass="login-input" MaxLength="6"
+                                autocomplete="one-time-code" inputmode="numeric" data-digits="1" placeholder="000000"
+                                Style="text-align:center;font-size:1.4rem;letter-spacing:8px;" />
+                        </div>
+
+                        <asp:Label ID="lblVerifyError" runat="server" CssClass="field-error login-server-error" />
+                        <asp:Label ID="lblVerifyInfo" runat="server" CssClass="field-hint valid login-server-error" />
+
+                        <asp:Button ID="btnVerify" runat="server" Text="Verify and create account" CssClass="btn-primary login-submit" CausesValidation="false" OnClick="btnVerify_Click" />
+
+                        <p class="login-register-text">
+                            Didn't get it? Check your spam folder or
+                            <asp:LinkButton ID="btnResend" runat="server" CausesValidation="false" OnClick="btnResend_Click">send a new code</asp:LinkButton>.
+                            <br />
+                            <asp:LinkButton ID="btnChangeEmail" runat="server" CausesValidation="false" OnClick="btnChangeEmail_Click">Use a different email address</asp:LinkButton>
+                        </p>
+                    </div>
+                </asp:Panel>
+
                 <script>
                     function onIdNumberInput() {
                         var input = document.getElementById('txtIdNumber');

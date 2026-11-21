@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Web;
 using System.Web.UI.WebControls;
+using SamsLiquorShop.Helpers;
 
 namespace SamsLiquorShop
 {
@@ -28,6 +29,9 @@ namespace SamsLiquorShop
                 Response.Redirect("~/Default.aspx");
                 return;
             }
+
+            // A fresh visit always starts registration from scratch.
+            if (!IsPostBack) ClearPending();
 
             // Keep field lengths in step with the database columns.
             txtEmail.MaxLength = 100;
@@ -125,6 +129,73 @@ namespace SamsLiquorShop
                 return;
             }
 
+            // Hold the details in the session until the email is verified.
+            Session["RegPending"] = c;
+            Session["RegResends"] = 0;
+
+            if (!SendNewCode(c))
+            {
+                ClearPending();
+                lblError.Text = "We couldn't send a verification email. Please check your email address and try again.";
+                return;
+            }
+
+            ShowVerify(c.Email);
+        }
+
+        // ---------- Email verification (OTP) ----------
+        private const int CodeMinutes = 10;
+        private const int MaxAttempts = 5;
+        private const int ResendSeconds = 60;
+        private const int MaxResends = 5;
+
+        protected void btnVerify_Click(object sender, EventArgs e)
+        {
+            var c = Session["RegPending"] as NewCustomer;
+            string code = Session["RegCode"] as string;
+
+            if (c == null || code == null || !(Session["RegExpires"] is DateTime))
+            {
+                ShowForm("Your verification session expired. Please fill in the form again.");
+                return;
+            }
+
+            if (DateTime.UtcNow > (DateTime)Session["RegExpires"])
+            {
+                lblVerifyError.Text = "That code has expired. Please request a new one.";
+                ShowVerify(c.Email);
+                return;
+            }
+
+            int attempts = Session["RegAttempts"] is int ? (int)Session["RegAttempts"] : 0;
+            if (attempts >= MaxAttempts)
+            {
+                lblVerifyError.Text = "Too many incorrect attempts. Please request a new code.";
+                ShowVerify(c.Email);
+                return;
+            }
+
+            string entered = txtOtp.Text.Trim();
+            if (entered != code)
+            {
+                attempts++;
+                Session["RegAttempts"] = attempts;
+                txtOtp.Text = "";
+                lblVerifyError.Text = attempts >= MaxAttempts
+                    ? "Too many incorrect attempts. Please request a new code."
+                    : "That code isn't correct. You have " + (MaxAttempts - attempts) + " attempt(s) left.";
+                ShowVerify(c.Email);
+                return;
+            }
+
+            // Code is correct. Re-check for duplicates in case someone registered in the meantime.
+            string duplicate = FindDuplicate(c);
+            if (duplicate != null)
+            {
+                ShowForm(duplicate);
+                return;
+            }
+
             int newId;
             try
             {
@@ -132,10 +203,13 @@ namespace SamsLiquorShop
             }
             catch (SqlException ex)
             {
-                lblError.Text = "We couldn't create your account. Please try again or contact us."
+                lblVerifyError.Text = "We couldn't create your account. Please try again or contact us."
                     + (HttpContext.Current.IsDebuggingEnabled ? " (" + ex.Message + ")" : "");
+                ShowVerify(c.Email);
                 return;
             }
+
+            ClearPending();
 
             // Log the new customer straight in.
             Session["CustomerID"] = newId;
@@ -143,6 +217,95 @@ namespace SamsLiquorShop
             Session["UserName"] = c.Username;
 
             Response.Redirect("~/Customer/Dashboard.aspx");
+        }
+
+        protected void btnResend_Click(object sender, EventArgs e)
+        {
+            var c = Session["RegPending"] as NewCustomer;
+            if (c == null)
+            {
+                ShowForm("Your verification session expired. Please fill in the form again.");
+                return;
+            }
+
+            int resends = Session["RegResends"] is int ? (int)Session["RegResends"] : 0;
+            if (resends >= MaxResends)
+            {
+                ShowForm("Too many codes were requested. Please try again later.");
+                return;
+            }
+
+            if (Session["RegLastSent"] is DateTime)
+            {
+                double elapsed = (DateTime.UtcNow - (DateTime)Session["RegLastSent"]).TotalSeconds;
+                if (elapsed < ResendSeconds)
+                {
+                    lblVerifyError.Text = "Please wait " + (int)Math.Ceiling(ResendSeconds - elapsed) + " second(s) before requesting another code.";
+                    ShowVerify(c.Email);
+                    return;
+                }
+            }
+
+            if (!SendNewCode(c))
+            {
+                lblVerifyError.Text = "We couldn't send the email. Please try again shortly.";
+                ShowVerify(c.Email);
+                return;
+            }
+
+            Session["RegResends"] = resends + 1;
+            txtOtp.Text = "";
+            lblVerifyInfo.Text = "A new code is on its way.";
+            ShowVerify(c.Email);
+        }
+
+        protected void btnChangeEmail_Click(object sender, EventArgs e)
+        {
+            ShowForm("");
+        }
+
+        // Creates a fresh code, stores it in the session and emails it.
+        private bool SendNewCode(NewCustomer c)
+        {
+            string code = OtpHelper.GenerateCode();
+            Session["RegCode"] = code;
+            Session["RegExpires"] = DateTime.UtcNow.AddMinutes(CodeMinutes);
+            Session["RegAttempts"] = 0;
+            Session["RegLastSent"] = DateTime.UtcNow;
+
+            bool sent = OtpHelper.SendCode(c.Email, c.First + " " + c.Last, code, "registration");
+            if (!sent) Session["RegCode"] = null;
+            return sent;
+        }
+
+        private void ShowVerify(string email)
+        {
+            pnlForm.Visible = false;
+            pnlVerify.Visible = true;
+            lblVerifyEmail.Text = Server.HtmlEncode(email);
+
+            // In demo mode no email is sent, so show the code to allow testing.
+            lblDemo.Visible = OtpHelper.DemoMode && Session["RegCode"] is string;
+            if (lblDemo.Visible)
+                lblDemo.Text = "Demo mode is on, so no email was sent. Your code is " + (string)Session["RegCode"] + ".";
+        }
+
+        private void ShowForm(string message)
+        {
+            ClearPending();
+            pnlVerify.Visible = false;
+            pnlForm.Visible = true;
+            lblError.Text = message;
+        }
+
+        private void ClearPending()
+        {
+            Session.Remove("RegPending");
+            Session.Remove("RegCode");
+            Session.Remove("RegExpires");
+            Session.Remove("RegAttempts");
+            Session.Remove("RegLastSent");
+            Session.Remove("RegResends");
         }
 
         // ---------- Database ----------
