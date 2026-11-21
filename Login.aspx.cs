@@ -16,7 +16,22 @@ namespace SamsLiquorShop
         {
             // Writing to Session forces ASP.NET to issue the session cookie now,
             // so the session is stable by the time the login button is clicked.
-            if (!IsPostBack) Session["SessionInit"] = true;
+            if (!IsPostBack)
+            {
+                Session["SessionInit"] = true;
+
+                string otp = Request.QueryString["otp"];
+                if (otp == "locked")
+                {
+                    lblError.Text = "Too many incorrect codes. Please log in again to get a new code.";
+                    lblError.Visible = true;
+                }
+                else if (otp == "expired")
+                {
+                    lblError.Text = "Your login code expired. Please log in again.";
+                    lblError.Visible = true;
+                }
+            }
         }
 
         protected void btnLogin_Click(object sender, EventArgs e)
@@ -105,6 +120,8 @@ namespace SamsLiquorShop
                 Session["OtpCode"] = code;
                 Session["OtpExpiry"] = DateTime.Now.AddMinutes(10);
                 Session["OtpAttempts"] = 0;
+                Session["OtpResends"] = 0;
+                Session["OtpLastSent"] = DateTime.Now;
                 Session["OtpDemoMode"] = Helpers.OtpHelper.DemoMode;
 
                 if (!Helpers.OtpHelper.SendCode(pendingEmail, displayName, code))

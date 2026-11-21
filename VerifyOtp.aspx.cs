@@ -20,20 +20,91 @@ namespace SamsLiquorShop
             }
         }
 
+        private void ClearPending()
+        {
+            foreach (string k in new[] { "PendingRole", "PendingName", "PendingKey", "PendingId",
+                "PendingRemember", "PendingReturnUrl", "PendingEmail", "OtpCode", "OtpExpiry",
+                "OtpAttempts", "OtpDemoMode", "OtpResends", "OtpLastSent" })
+                Session.Remove(k);
+        }
+
+        protected void btnResend_Click(object sender, EventArgs e)
+        {
+            const int MaxResends = 3;
+            const int CooldownSeconds = 30;
+
+            int resends = Session["OtpResends"] is int ? (int)Session["OtpResends"] : 0;
+            if (resends >= MaxResends)
+            {
+                lblError.Text = "You've reached the maximum number of resends. Please go back and log in again.";
+                lblError.Visible = true;
+                return;
+            }
+
+            if (Session["OtpLastSent"] is DateTime)
+            {
+                double wait = CooldownSeconds - (DateTime.Now - (DateTime)Session["OtpLastSent"]).TotalSeconds;
+                if (wait > 0)
+                {
+                    lblError.Text = "Please wait " + (int)Math.Ceiling(wait) + " seconds before requesting another code.";
+                    lblError.Visible = true;
+                    return;
+                }
+            }
+
+            string email = Session["PendingEmail"] as string;
+            string name = Session["PendingName"] as string;
+            string code = Helpers.OtpHelper.GenerateCode();
+
+            if (!Helpers.OtpHelper.SendCode(email, name, code))
+            {
+                lblError.Text = "We couldn't send your login code. Please try again.";
+                lblError.Visible = true;
+                return;
+            }
+
+            // The new code replaces the old one. Attempts are deliberately NOT reset.
+            Session["OtpCode"] = code;
+            Session["OtpExpiry"] = DateTime.Now.AddMinutes(10);
+            Session["OtpLastSent"] = DateTime.Now;
+            Session["OtpResends"] = resends + 1;
+
+            txtCode.Text = "";
+            lblInfo.Text = "A new code has been sent to your email.";
+            lblInfo.Visible = true;
+
+            if (Session["OtpDemoMode"] is bool && (bool)Session["OtpDemoMode"])
+            {
+                spanDemo.InnerText = "Demo mode: your code is " + code;
+                spanDemo.Visible = true;
+            }
+        }
+
         protected void btnVerify_Click(object sender, EventArgs e)
         {
-            int attempts = (int)Session["OtpAttempts"] + 1;
-            Session["OtpAttempts"] = attempts;
+            const int MaxAttempts = 5;
 
-            if (DateTime.Now > (DateTime)Session["OtpExpiry"] || attempts > 5)
+            if (DateTime.Now > (DateTime)Session["OtpExpiry"])
             {
-                Session.Remove("PendingRole");
-                Response.Redirect("~/Login.aspx");
+                ClearPending();
+                Response.Redirect("~/Login.aspx?otp=expired");
+                return;
             }
 
             if (txtCode.Text.Trim() != (string)Session["OtpCode"])
             {
-                lblError.Text = "That code isn't right. Please try again.";
+                int attempts = (int)Session["OtpAttempts"] + 1;
+                Session["OtpAttempts"] = attempts;
+
+                if (attempts >= MaxAttempts)
+                {
+                    ClearPending();
+                    Response.Redirect("~/Login.aspx?otp=locked");
+                    return;
+                }
+
+                int left = MaxAttempts - attempts;
+                lblError.Text = "That code isn't right. You have " + left + (left == 1 ? " attempt" : " attempts") + " left.";
                 lblError.Visible = true;
                 return;
             }
@@ -48,7 +119,7 @@ namespace SamsLiquorShop
             string email = Session["PendingEmail"] as string;
 
             foreach (string k in new[] { "PendingRole", "PendingName", "PendingKey", "PendingId",
-                "PendingRemember", "PendingReturnUrl", "PendingEmail", "OtpCode", "OtpExpiry", "OtpAttempts", "OtpDemoMode" })
+                "PendingRemember", "PendingReturnUrl", "PendingEmail", "OtpCode", "OtpExpiry", "OtpAttempts", "OtpDemoMode", "OtpResends", "OtpLastSent" })
                 Session.Remove(k);
 
             if (role == "Customer") Helpers.WishlistHelper.MergeAtLogin(Session);
