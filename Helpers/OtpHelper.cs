@@ -50,6 +50,82 @@ namespace SamsLiquorShop.Helpers
             }
         }
 
+        private static string BuildCodeEmail(string toName, string code, string purpose)
+        {
+            bool isReset = (purpose ?? "").ToLowerInvariant().Contains("reset");
+
+            string first = (toName ?? "").Trim();
+            int space = first.IndexOf(' ');
+            if (space > 0) first = first.Substring(0, space);
+            string greeting = first.Length > 0 ? "Hi " + WebUtility.HtmlEncode(first) + "," : "Hi,";
+
+            string eyebrow = isReset ? "Password reset" : "Secure login";
+            string heading = isReset ? "Reset your password" : "Your login code";
+            string intro = isReset
+                ? "We received a request to reset the password on your Sam's Liquor Shop account. Enter the code below to continue."
+                : "Use the code below to finish logging in to your Sam's Liquor Shop account.";
+            string ignore = isReset
+                ? "If you didn't ask to reset your password, you can ignore this email and your password will stay the same."
+                : "If you didn't try to log in, you can ignore this email. Your account has not been accessed.";
+
+            string html = @"<!DOCTYPE html>
+<html lang=""en"">
+<head>
+<meta charset=""utf-8"" />
+<meta name=""viewport"" content=""width=device-width, initial-scale=1.0"" />
+<title>{{HEADING}}</title>
+</head>
+<body style=""margin:0;padding:0;background-color:#eef3f9;font-family:Segoe UI,Helvetica,Arial,sans-serif;color:#1d1d1f;"">
+<table role=""presentation"" width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""background-color:#eef3f9;padding:32px 12px;"">
+<tr><td align=""center"">
+  <table role=""presentation"" width=""600"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;max-width:600px;background-color:#ffffff;border-radius:10px;overflow:hidden;"">
+
+    <tr><td style=""background-color:#0057b8;padding:32px 40px;"">
+      <p style=""margin:0;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:#b9d6f7;"">{{EYEBROW}}</p>
+      <p style=""margin:6px 0 0;font-size:26px;font-weight:600;color:#ffffff;"">Sam's Liquor Shop</p>
+    </td></tr>
+
+    <tr><td style=""padding:36px 40px 8px;"">
+      <p style=""margin:0 0 16px;font-size:20px;font-weight:600;color:#0057b8;"">{{HEADING}}</p>
+      <p style=""margin:0 0 12px;font-size:15px;line-height:1.65;color:#3a3a3c;"">{{GREETING}}</p>
+      <p style=""margin:0 0 8px;font-size:15px;line-height:1.65;color:#3a3a3c;"">{{INTRO}}</p>
+    </td></tr>
+
+    <tr><td align=""center"" style=""padding:16px 40px 8px;"">
+      <table role=""presentation"" cellpadding=""0"" cellspacing=""0"" style=""width:100%;"">
+        <tr><td align=""center"" style=""background-color:#f4f8fd;border:1px solid #dce7f5;border-radius:8px;padding:22px 16px;"">
+          <p style=""margin:0 0 6px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:#6e6e73;"">Your code</p>
+          <p style=""margin:0;font-family:Consolas,'Courier New',monospace;font-size:34px;font-weight:700;letter-spacing:10px;color:#0057b8;"">{{CODE}}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <tr><td style=""padding:20px 40px 32px;"">
+      <p style=""margin:0 0 12px;font-size:14px;line-height:1.65;color:#3a3a3c;"">This code expires in 10 minutes and can only be used once.</p>
+      <p style=""margin:0;font-size:14px;line-height:1.65;color:#3a3a3c;"">{{IGNORE}}</p>
+    </td></tr>
+
+    <tr><td style=""background-color:#f4f8fd;padding:24px 40px;border-top:1px solid #dce7f5;"">
+      <p style=""margin:0 0 8px;font-size:12px;line-height:1.6;color:#6e6e73;"">For your security, Sam's Liquor Shop will never ask you for this code by phone, email or message.</p>
+      <p style=""margin:0 0 8px;font-size:12px;line-height:1.6;color:#6e6e73;"">Sam's Liquor Shop, 21 Coronation Road, Tongaat, Durban, 4399, KwaZulu-Natal</p>
+      <p style=""margin:0;font-size:12px;line-height:1.6;color:#6e6e73;"">Not for persons under the age of 18. Please drink responsibly.</p>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
+</body>
+</html>";
+
+            return html
+                .Replace("{{EYEBROW}}", eyebrow)
+                .Replace("{{HEADING}}", heading)
+                .Replace("{{GREETING}}", greeting)
+                .Replace("{{INTRO}}", intro)
+                .Replace("{{IGNORE}}", ignore)
+                .Replace("{{CODE}}", WebUtility.HtmlEncode(code));
+        }
+
         // Returns true if the email was sent (or demo mode is on).
         public static bool SendCode(string toEmail, string toName, string code, string purpose = "login")
         {
@@ -68,8 +144,7 @@ namespace SamsLiquorShop.Helpers
                             From = new { Email = Setting("BrevoSenderEmail"), Name = Setting("BrevoSenderName") },
                             To = new[] { new { Email = toEmail, Name = toName } },
                             Subject = "Your Sam's Liquor Shop " + purpose + " code",
-                            HTMLPart = "<p>Your " + purpose + " code is:</p><h2 style='font-family:monospace;letter-spacing:4px'>"
-                                        + code + "</h2><p>It expires in 10 minutes. If this wasn't you, ignore this email.</p>"
+                            HTMLPart = BuildCodeEmail(toName, code, purpose)
                         }
                     }
                 };
