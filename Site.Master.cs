@@ -74,7 +74,7 @@ namespace SamsLiquorShop
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserRole"] != null)
+            if (Context.Session != null && Session["UserRole"] != null)
             {
                 phLoggedOut.Visible = false;
                 phLoggedIn.Visible = true;
@@ -84,7 +84,8 @@ namespace SamsLiquorShop
 
             if (!IsPostBack)
             {
-                LoadNavCategories();
+                try { LoadNavCategories(); }
+                catch { /* the Shop menu is optional; never let it crash a page */ }
             }
         }
 
@@ -117,12 +118,12 @@ namespace SamsLiquorShop
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
-            int cartCount = CartHelper.GetCartCount(Session);
+            int cartCount = Context.Session != null ? CartHelper.GetCartCount(Session) : 0;
             litCartCount.Text = cartCount > 0
                 ? "<span class='cart-count-badge'>" + cartCount + "</span>"
                 : "";
 
-            int wishCount = CartHelper.GetWishlist(Session).Count();
+            int wishCount = Context.Session != null ? CartHelper.GetWishlist(Session).Count() : 0;
             litWishCount.Text = wishCount > 0
                 ? "<span class='cart-count-badge'>" + wishCount + "</span>"
                 : "";
@@ -134,6 +135,10 @@ namespace SamsLiquorShop
 
         protected void btnLogout_Click(object sender, EventArgs e)
         {
+            string noticeEmail, noticeName;
+            if (SessionWatch.Unregister(Session.SessionID, out noticeEmail, out noticeName))
+                OtpHelper.SendLoginNotice(noticeEmail, noticeName, "logout", Request.UserAgent, Request.UserHostAddress);
+
             Session.Clear();
             Response.Redirect("~/Default.aspx");
         }

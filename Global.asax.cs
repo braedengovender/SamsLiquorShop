@@ -17,5 +17,11 @@ namespace SamsLiquorShop
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        void Session_End(object sender, EventArgs e)
+        {
+            // Fires when a session times out (InProc session mode only)
+            Helpers.SessionWatch.SessionEnded(Session.SessionID);
+        }
     }
 }

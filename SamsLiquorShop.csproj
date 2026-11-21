@@ -189,6 +189,7 @@
     <Content Include="Default.aspx" />
     <Content Include="Employee\CashierNav.ascx" />
     <Content Include="Employee\Dashboard.aspx" />
+    <Content Include="Error.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="ForgotPassword.aspx" />
     <Content Include="Gallery.aspx" />
@@ -265,6 +266,7 @@
     <Content Include="Controls\SalesBrowser.ascx" />
     <Content Include="Manager\Dashboard.aspx" />
     <Content Include="Manager\ManagerNav.ascx" />
+    <Content Include="NotFound.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="Rewards.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -537,6 +539,13 @@
     <Compile Include="Employee\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Error.aspx.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Error.aspx.designer.cs">
+      <DependentUpon>Error.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ForgotPassword.aspx.cs">
       <DependentUpon>ForgotPassword.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -568,6 +577,7 @@
     <Compile Include="Helpers\PricingHelper.cs" />
     <Compile Include="Helpers\TableSchema.cs" />
     <Compile Include="Helpers\ProductDetailHelper.cs" />
+    <Compile Include="Helpers\SessionWatch.cs" />
     <Compile Include="Helpers\StockLogHelper.cs" />
     <Compile Include="Helpers\WishlistHelper.cs" />
     <Compile Include="Login.aspx.cs">
@@ -655,6 +665,13 @@
       <DependentUpon>ManagerNav.ascx</DependentUpon>
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="NotFound.aspx.cs">
+      <DependentUpon>NotFound.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="NotFound.aspx.designer.cs">
+      <DependentUpon>NotFound.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ProductImage.ashx.cs">
       <DependentUpon>ProductImage.ashx</DependentUpon>
     </Compile>
@@ -700,6 +717,9 @@
     </Compile>
     <Compile Include="ReturnPolicy.aspx.designer.cs">
       <DependentUpon>ReturnPolicy.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SessionBeacon.ashx.cs">
+      <DependentUpon>SessionBeacon.ashx</DependentUpon>
     </Compile>
     <Compile Include="Shop.aspx.cs">
       <DependentUpon>Shop.aspx</DependentUpon>
@@ -767,6 +787,7 @@
     <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.0.min.map" />
     <Content Include="SearchSuggestions.ashx" />
+    <Content Include="SessionBeacon.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

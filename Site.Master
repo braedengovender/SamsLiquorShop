@@ -1299,5 +1299,18 @@
             window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 300); });
         }
     </script>
+    <% if (Context.Session != null && Session["UserRole"] != null) { %>
+    <script>
+        // Lets the server tell "tab closed" apart from "moved to another page".
+        (function () {
+            function ping(action) {
+                try { navigator.sendBeacon('/SessionBeacon.ashx?a=' + action); } catch (e) { }
+            }
+            ping('alive');
+            setInterval(function () { ping('alive'); }, 30000);
+            window.addEventListener('pagehide', function () { ping('close'); });
+        })();
+    </script>
+    <% } %>
 </body>
 </html>
