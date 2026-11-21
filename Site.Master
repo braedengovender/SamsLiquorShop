@@ -540,6 +540,17 @@
         <%: Scripts.Render("~/Scripts/bootstrap.js") %>
     </asp:PlaceHolder>
     <script>
+
+        // Demo only: opens Google's real sign-in page in a popup. Nothing returns to the site afterwards.
+        function googleDemoSignIn() {
+            var w = 500, h = 650;
+            var left = Math.max(0, (window.screen.width - w) / 2);
+            var top = Math.max(0, (window.screen.height - h) / 2);
+            var popup = window.open('https://accounts.google.com/signin', 'googleSignIn',
+                'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top);
+            if (!popup) window.location.href = 'https://accounts.google.com/signin';
+        }
+
         function toggleTheme() {
             var current = document.documentElement.getAttribute('data-theme');
             var next = current === 'dark' ? 'light' : 'dark';
