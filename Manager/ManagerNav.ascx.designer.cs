@@ -42,6 +42,15 @@ namespace SamsLiquorShop.Manager
         protected global::System.Web.UI.HtmlControls.HtmlAnchor navProducts;
 
         /// <summary>
+        /// navCategories control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor navCategories;
+
+        /// <summary>
         /// navEmployees control.
         /// </summary>
         /// <remarks>
