@@ -43,6 +43,8 @@ namespace SamsLiquorShop.Manager
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("DASH sid=" + Session.SessionID + " new=" + Session.IsNewSession + " role=" + Session["UserRole"]);
+
             if (!AuthHelper.RequireRole(this, "Manager")) return;
 
             if (!IsPostBack)

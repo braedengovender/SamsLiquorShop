@@ -12,6 +12,13 @@ namespace SamsLiquorShop
 {
     public partial class Login : System.Web.UI.Page
     {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            // Writing to Session forces ASP.NET to issue the session cookie now,
+            // so the session is stable by the time the login button is clicked.
+            if (!IsPostBack) Session["SessionInit"] = true;
+        }
+
         protected void btnLogin_Click(object sender, EventArgs e)
         {
             string usernameOrEmail = txtUsername.Text.Trim();

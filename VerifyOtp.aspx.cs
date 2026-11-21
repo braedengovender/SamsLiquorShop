@@ -7,7 +7,11 @@ namespace SamsLiquorShop
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["PendingRole"] == null) Response.Redirect("~/Login.aspx");
+            if (Session["PendingRole"] == null || Session["OtpAttempts"] == null || Session["OtpExpiry"] == null)
+            {
+                Response.Redirect("~/Login.aspx");
+                return;
+            }
 
             if (!IsPostBack && Session["OtpDemoMode"] is bool && (bool)Session["OtpDemoMode"])
             {
@@ -54,6 +58,8 @@ namespace SamsLiquorShop
                 rememberCookie.Expires = DateTime.Now.AddDays(30);
                 Response.Cookies.Add(rememberCookie);
             }
+
+            System.Diagnostics.Debug.WriteLine("VERIFY sid=" + Session.SessionID + " role=" + Session["UserRole"]);
 
             switch (role.Trim().ToLower())
             {
