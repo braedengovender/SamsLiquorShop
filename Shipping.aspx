@@ -10,20 +10,18 @@
       <p class="section-subtext">Getting your order to your door, safely and on time.</p>
     </section>
 
-    <%-- ============ OPTIONS AT A GLANCE ============ --%>
+       <%-- ============ OPTIONS AT A GLANCE ============ --%>
     <section class="shell home-section">
       <div class="glass stats-bar">
         <div class="stat-item">
-          <div class="stat-number">Same day</div>
-          <div class="stat-label">Durban area &mdash; order before 2pm</div>
+          <div class="stat-number">Next day</div>
+          <div class="stat-label">Durban area delivery</div>
         </div>
         <div class="stat-item">
-          <%-- [CONFIRM] National lead time --%>
-          <div class="stat-number">2&ndash;4 days</div>
-          <div class="stat-label">Nationwide courier delivery</div>
+          <div class="stat-number">R70</div>
+          <div class="stat-label">Flat-rate delivery &mdash; free over R500</div>
         </div>
         <div class="stat-item">
-          <%-- [CONFIRM] Collection turnaround --%>
           <div class="stat-number">Free</div>
           <div class="stat-label">Click &amp; Collect in Tongaat</div>
         </div>
@@ -61,13 +59,12 @@
       </div>
     </section>
 
-    <%-- ============ AREAS & COSTS ============ --%>
+      <%-- ============ AREAS & COSTS ============ --%>
     <section class="shell home-section">
       <div class="section-header">
         <h2>Delivery Areas &amp; Costs</h2>
       </div>
-      <%-- [CONFIRM] All fees, thresholds and lead times below are placeholders --%>
-      <p class="section-subtext">Free delivery on all orders over R750.</p>
+      <p class="section-subtext">Flat R70 delivery &mdash; free on all orders over R500.</p>
 
       <div class="card-surface no-lift ship-table-wrap">
         <table class="ship-table">
@@ -84,24 +81,8 @@
                 <strong>Durban &amp; surrounds</strong>
                 <span class="ship-table-note">Tongaat, Umhlanga, Ballito, Durban North, CBD</span>
               </td>
-              <td>Same day, if ordered before 2pm</td>
-              <td>R55</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Greater KwaZulu-Natal</strong>
-                <span class="ship-table-note">Pietermaritzburg, Richards Bay, South Coast</span>
-              </td>
-              <td>1&ndash;2 business days</td>
-              <td>R85</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>Nationwide</strong>
-                <span class="ship-table-note">All other major centres in South Africa</span>
-              </td>
-              <td>2&ndash;4 business days</td>
-              <td>R120</td>
+              <td>Next day</td>
+              <td>R70 (free over R500)</td>
             </tr>
             <tr>
               <td>
@@ -116,8 +97,8 @@
       </div>
 
       <p class="hours-note">
-        Minimum order value for delivery is R250. We currently deliver within South Africa only &mdash;
-        we cannot ship alcohol across international borders.
+        Minimum order value for delivery is R250. We currently deliver within the Durban area only,
+        and we do not offer same-day delivery. There is no minimum order for Click &amp; Collect.
       </p>
     </section>
 
@@ -148,19 +129,15 @@
     <%-- ============ CUT-OFFS & WINDOWS ============ --%>
     <section class="shell home-section">
       <div class="section-header">
-        <h2>Cut-Off Times &amp; Delivery Windows</h2>
+       <h2>Delivery Windows</h2>
       </div>
       <p class="section-subtext">When to order, and when to expect us.</p>
 
       <div class="ship-two-col">
-        <div class="card-surface no-lift ship-panel">
-          <h3>Same-day cut-off</h3>
-          <ul class="hours-list">
-            <li><span>Mon &ndash; Sat</span><span>Order before 2pm</span></li>
-            <li><span>Sunday</span><span>Order before 12pm</span></li>
-            <li><span>Public Holidays</span><span>Order before 12pm</span></li>
-          </ul>
-          <p class="hours-note">Orders placed after cut-off go out on the next trading day.</p>
+                <div class="card-surface no-lift ship-panel">
+          <h3>Next-day delivery</h3>
+          <p>Every delivery order is delivered the next day, inside the delivery windows shown here. We don't offer same-day delivery.</p>
+          <p class="hours-note">Need it sooner? Collect from our Tongaat store &mdash; Click &amp; Collect is free and ready within 2 hours.</p>
         </div>
 
         <div class="card-surface no-lift ship-panel">
@@ -203,7 +180,7 @@
             comes back to the store and we'll contact you to rebook &mdash; no need to reorder.
           </p>
           <%-- [CONFIRM] Re-delivery fee --%>
-          <p class="hours-note">A second delivery attempt to the same address is charged at R55.</p>
+          <p class="hours-note">A second delivery attempt to the same address is charged at R70.</p>
         </div>
       </div>
     </section>

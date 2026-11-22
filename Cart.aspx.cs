@@ -687,6 +687,15 @@ namespace SamsLiquorShop
         private void CheckoutCore()
         {
             if (CartHelper.GetCart(Session).Count == 0) return;
+            // Minimum order value for delivery
+            decimal merchandiseTotal = CartHelper.GetCartTotal(Session);
+            if (merchandiseTotal < MinimumDeliveryOrder)
+            {
+                litPromoMessage.Text = "<span class='field-hint invalid'>The minimum order for delivery is R"
+                    + MinimumDeliveryOrder.ToString("N0") + ". Please add R"
+                    + (MinimumDeliveryOrder - merchandiseTotal).ToString("N2") + " more to continue.</span>";
+                return;
+            }
 
             // Re-check stock and availability before going any further
             if (!ValidateCartForCheckout())

@@ -961,7 +961,7 @@
         var chatAnswers = {
             hours: "We're open Mon–Thu 09:00–18:00, Fri–Sat 09:00–20:00, and Sun 10:00–15:00 (same on public holidays).",
             location: "You'll find us at 21 Coronation Road, Tongaat, Durban. There's a map in our footer!",
-            delivery: "Yes! We offer same-day delivery in the Durban area on orders placed before 2pm.",
+            delivery: "Yes! We deliver next day within the Durban area. Delivery is R70, free on orders over R500, with a R250 minimum order. Click & Collect from our Tongaat store is free.",
             loyalty: "Every purchase earns you points automatically once you're signed in — head to the Rewards page to see your balance and redeem discounts."
         };
 
