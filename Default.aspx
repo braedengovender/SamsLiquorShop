@@ -431,142 +431,203 @@
     </section>
 
         <script>
-        (function () {
-            var results = {
-                whisky:  { icon: '🥃', name: 'Whisky',            search: 'whisky',
-                           blurb: 'You like smooth, rich and a little bit classic. Sip it neat, on ice, or with a splash of soda.',
-                           pick: 'Try: Johnnie Walker Black Label 12yo or Jack Daniel\'s' },
-                gin:     { icon: '🍸', name: 'Gin & Tonic',       search: 'gin',
-                           blurb: 'Crisp, botanical and refreshing. You enjoy something with character that\'s still easy-drinking.',
-                           pick: 'Try: Hendrick\'s Gin with tonic and cucumber' },
-                vodka:   { icon: '🍹', name: 'Vodka & Mixers',    search: 'vodka',
-                           blurb: 'Clean, versatile and social. You like to mix it up, from a simple vodka soda to a full cocktail night.',
-                           pick: 'Try: Ciroc or Grey Goose' },
-                red:     { icon: '🍷', name: 'Red Wine',          search: 'red wine',
-                           blurb: 'Rich, warm and made for good food and long conversations.',
-                           pick: 'Try: a bold red with your next braai or dinner' },
-                white:   { icon: '🥂', name: 'White & Rosé Wine', search: 'rose',
-                           blurb: 'Light, fruity and easy-going. Perfect for warm Durban afternoons.',
-                           pick: 'Try: Four Cousins Natural Sweet Rosé or Nederburg Baronne' },
-                bubbly:  { icon: '🍾', name: 'Champagne & Bubbly', search: 'champagne',
-                           blurb: 'You\'re here for the celebration. Elegant, festive and always a good time.',
-                           pick: 'Try: Moët & Chandon Brut Impérial' },
-                beer:    { icon: '🍺', name: 'Beer & Cider',      search: 'beer',
-                           blurb: 'Cold, crisp and sociable. You keep it relaxed and easy-going.',
-                           pick: 'Try: Carling Black Label or Savanna Dry' },
-                cream:   { icon: '🍨', name: 'Cream Liqueur',     search: 'amarula',
-                           blurb: 'Sweet, smooth and indulgent. Great over ice or as a dessert in a glass.',
-                           pick: 'Try: Amarula Cream Liqueur' },
-                zero:    { icon: '🍋', name: 'Non-Alcoholic',     search: 'non-alcoholic',
-                           blurb: 'Great taste doesn\'t need proof. There are some brilliant zero-alcohol options these days.',
-                           pick: 'Try: Heineken 0.0 or JC Le Roux Le Domaine Non-Alcoholic' }
-            };
+            (function () {
+                var results = {
+                    whisky: {
+                        icon: '🥃', name: 'Whisky', zName: 'Iwiski', search: 'whisky',
+                        blurb: 'You like smooth, rich and a little bit classic. Sip it neat, on ice, or with a splash of soda.',
+                        zBlurb: 'Uthanda okushelelayo, okunothile nokuncane okwakudala. Yiphuze ngokungaxutshiwe, ngeqhwa, noma ngokufaka i-soda encane.',
+                        pick: 'Try: Johnnie Walker Black Label 12yo or Jack Daniel\'s',
+                        zPick: 'Linga: Johnnie Walker Black Label 12yo noma Jack Daniel\'s'
+                    },
+                    gin: {
+                        icon: '🍸', name: 'Gin & Tonic', zName: 'I-Gin ne-Tonic', search: 'gin',
+                        blurb: 'Crisp, botanical and refreshing. You enjoy something with character that\'s still easy-drinking.',
+                        zBlurb: 'Kuyakhahlela, kunamakha ezitshalo futhi kuyaqabula. Uthanda okunesimilo okuphuzeka kalula.',
+                        pick: 'Try: Hendrick\'s Gin with tonic and cucumber',
+                        zPick: 'Linga: Hendrick\'s Gin ne-tonic nekhukhamba'
+                    },
+                    vodka: {
+                        icon: '🍹', name: 'Vodka & Mixers', zName: 'I-Vodka Nezixubanisi', search: 'vodka',
+                        blurb: 'Clean, versatile and social. You like to mix it up, from a simple vodka soda to a full cocktail night.',
+                        zBlurb: 'Ihlanzekile, iyaguquguquka futhi ihambisana nabantu. Uthanda ukuxuba, kusukela ku-vodka ne-soda kuya ebusuku obuphelele bama-cocktail.',
+                        pick: 'Try: Ciroc or Grey Goose',
+                        zPick: 'Linga: Ciroc noma Grey Goose'
+                    },
+                    red: {
+                        icon: '🍷', name: 'Red Wine', zName: 'Iwayini Elibomvu', search: 'red wine',
+                        blurb: 'Rich, warm and made for good food and long conversations.',
+                        zBlurb: 'Elinothile, elifudumele futhi lenzelwe ukudla okuhle nezingxoxo ezinde.',
+                        pick: 'Try: a bold red with your next braai or dinner',
+                        zPick: 'Linga: iwayini elibomvu elinamandla ne-braai noma isidlo sakusihlwa esilandelayo'
+                    },
+                    white: {
+                        icon: '🥂', name: 'White & Rosé Wine', zName: 'Iwayini Elimhlophe Ne-Rosé', search: 'rose',
+                        blurb: 'Light, fruity and easy-going. Perfect for warm Durban afternoons.',
+                        zBlurb: 'Elilula, elinezithelo futhi elikhululekile. Linembile ntambama efudumele yaseThekwini.',
+                        pick: 'Try: Four Cousins Natural Sweet Rosé or Nederburg Baronne',
+                        zPick: 'Linga: Four Cousins Natural Sweet Rosé noma Nederburg Baronne'
+                    },
+                    bubbly: {
+                        icon: '🍾', name: 'Champagne & Bubbly', zName: 'I-Champagne Nesiphuzo Esinamabhamuza', search: 'champagne',
+                        blurb: 'You\'re here for the celebration. Elegant, festive and always a good time.',
+                        zBlurb: 'Ulapha ngenxa yomkhosi. Okuhle, okunemicimbi futhi njalo kuyajabulisa.',
+                        pick: 'Try: Moët & Chandon Brut Impérial',
+                        zPick: 'Linga: Moët & Chandon Brut Impérial'
+                    },
+                    beer: {
+                        icon: '🍺', name: 'Beer & Cider', zName: 'Ibhiya Nesayida', search: 'beer',
+                        blurb: 'Cold, crisp and sociable. You keep it relaxed and easy-going.',
+                        zBlurb: 'Ibandayo, ibukhali futhi ihambisana nabantu. Uyakhululeka futhi awunazo izinkinga.',
+                        pick: 'Try: Carling Black Label or Savanna Dry',
+                        zPick: 'Linga: Carling Black Label noma Savanna Dry'
+                    },
+                    cream: {
+                        icon: '🍨', name: 'Cream Liqueur', zName: 'I-Cream Liqueur', search: 'amarula',
+                        blurb: 'Sweet, smooth and indulgent. Great over ice or as a dessert in a glass.',
+                        zBlurb: 'Imnandi, ishelelayo futhi iyajabulisa. Ilunge ngeqhwa noma njengophudingi engilazini.',
+                        pick: 'Try: Amarula Cream Liqueur',
+                        zPick: 'Linga: Amarula Cream Liqueur'
+                    },
+                    zero: {
+                        icon: '🍋', name: 'Non-Alcoholic', zName: 'Okungenatshwala', search: 'non-alcoholic',
+                        blurb: 'Great taste doesn\'t need proof. There are some brilliant zero-alcohol options these days.',
+                        zBlurb: 'Ukunambitheka okuhle akudingi utshwala. Kunezinketho ezinhle kakhulu ezingenatshwala namuhla.',
+                        pick: 'Try: Heineken 0.0 or JC Le Roux Le Domaine Non-Alcoholic',
+                        zPick: 'Linga: Heineken 0.0 noma JC Le Roux Le Domaine Non-Alcoholic'
+                    }
+                };
 
-            var questions = [
-                { q: 'What\'s the occasion?', options: [
-                    { t: 'Braai with friends',  s: { beer: 2, red: 2, whisky: 1, vodka: 1 } },
-                    { t: 'Quiet night in',      s: { whisky: 2, red: 2, cream: 2 } },
-                    { t: 'A celebration',       s: { bubbly: 3, vodka: 1, white: 1 } },
-                    { t: 'Dinner party',        s: { red: 2, white: 2, gin: 1 } },
-                    { t: 'Sundowners outside',  s: { gin: 2, white: 2, beer: 1, vodka: 1 } }
-                ]},
-                { q: 'Which flavour sounds best?', options: [
-                    { t: 'Sweet and fruity',    s: { white: 2, cream: 2, vodka: 1 } },
-                    { t: 'Smooth and rich',     s: { whisky: 2, red: 2, cream: 2 } },
-                    { t: 'Crisp and refreshing', s: { gin: 2, beer: 2, white: 1, bubbly: 1 } },
-                    { t: 'Bold and smoky',      s: { whisky: 3, red: 1 } }
-                ]},
-                { q: 'How would you describe your style?', options: [
-                    { t: 'Classic and timeless', s: { whisky: 2, red: 1, bubbly: 1 } },
-                    { t: 'Adventurous',         s: { gin: 2, vodka: 1, whisky: 1 } },
-                    { t: 'Relaxed and easy-going', s: { beer: 2, white: 1, cream: 1 } },
-                    { t: 'Life of the party',   s: { vodka: 2, bubbly: 2, beer: 1 } }
-                ]},
-                { q: 'How strong do you like it?', options: [
-                    { t: 'Light and easy',      s: { beer: 2, white: 2, bubbly: 1 } },
-                    { t: 'Somewhere in the middle', s: { red: 2, gin: 1, cream: 1, vodka: 1 } },
-                    { t: 'Bring on the strong stuff', s: { whisky: 3, vodka: 1, gin: 1 } },
-                    { t: 'No alcohol for me',   s: { zero: 20 } }
-                ]},
-                { q: 'What\'s your budget per bottle?', options: [
-                    { t: 'Under R100',          s: { beer: 2, white: 2, red: 1 } },
-                    { t: 'R100 – R250',         s: { cream: 2, red: 1, white: 1, gin: 1, zero: 1 } },
-                    { t: 'R250 – R500',         s: { whisky: 2, gin: 2, vodka: 1 } },
-                    { t: 'R500 and up',         s: { bubbly: 2, whisky: 1, vodka: 1 } }
-                ]}
-            ];
+                var questions = [
+                    {
+                        q: 'What\'s the occasion?', z: 'Uyini umcimbi?', options: [
+                            { t: 'Braai with friends', z: 'I-braai nabangani', s: { beer: 2, red: 2, whisky: 1, vodka: 1 } },
+                            { t: 'Quiet night in', z: 'Ubusuku obuthule ekhaya', s: { whisky: 2, red: 2, cream: 2 } },
+                            { t: 'A celebration', z: 'Umkhosi', s: { bubbly: 3, vodka: 1, white: 1 } },
+                            { t: 'Dinner party', z: 'Isidlo sakusihlwa', s: { red: 2, white: 2, gin: 1 } },
+                            { t: 'Sundowners outside', z: 'Ukuphuza ekushoneni kwelanga ngaphandle', s: { gin: 2, white: 2, beer: 1, vodka: 1 } }
+                        ]
+                    },
+                    {
+                        q: 'Which flavour sounds best?', z: 'Iluphi uhlobo lokunambitheka oluzwakala lungcono kakhulu?', options: [
+                            { t: 'Sweet and fruity', z: 'Kumnandi kunezithelo', s: { white: 2, cream: 2, vodka: 1 } },
+                            { t: 'Smooth and rich', z: 'Kushelelayo kunothile', s: { whisky: 2, red: 2, cream: 2 } },
+                            { t: 'Crisp and refreshing', z: 'Kuyakhahlela kuyaqabula', s: { gin: 2, beer: 2, white: 1, bubbly: 1 } },
+                            { t: 'Bold and smoky', z: 'Kunamandla kunentuthu', s: { whisky: 3, red: 1 } }
+                        ]
+                    },
+                    {
+                        q: 'How would you describe your style?', z: 'Ungachaza kanjani isitayela sakho?', options: [
+                            { t: 'Classic and timeless', z: 'Sakudala nesingapheli', s: { whisky: 2, red: 1, bubbly: 1 } },
+                            { t: 'Adventurous', z: 'Othanda ukuzama', s: { gin: 2, vodka: 1, whisky: 1 } },
+                            { t: 'Relaxed and easy-going', z: 'Okhululekile futhi ongenazinkinga', s: { beer: 2, white: 1, cream: 1 } },
+                            { t: 'Life of the party', z: 'Umphefumulo womcimbi', s: { vodka: 2, bubbly: 2, beer: 1 } }
+                        ]
+                    },
+                    {
+                        q: 'How strong do you like it?', z: 'Uyithanda inamandla kangakanani?', options: [
+                            { t: 'Light and easy', z: 'Kulula futhi kuncane', s: { beer: 2, white: 2, bubbly: 1 } },
+                            { t: 'Somewhere in the middle', z: 'Maphakathi', s: { red: 2, gin: 1, cream: 1, vodka: 1 } },
+                            { t: 'Bring on the strong stuff', z: 'Letha okunamandla', s: { whisky: 3, vodka: 1, gin: 1 } },
+                            { t: 'No alcohol for me', z: 'Angisiphuzi utshwala', s: { zero: 20 } }
+                        ]
+                    },
+                    {
+                        q: 'What\'s your budget per bottle?', z: 'Ubhajethi yakho ngebhodlela ingakanani?', options: [
+                            { t: 'Under R100', z: 'Ngaphansi kuka-R100', s: { beer: 2, white: 2, red: 1 } },
+                            { t: 'R100 – R250', z: 'R100 – R250', s: { cream: 2, red: 1, white: 1, gin: 1, zero: 1 } },
+                            { t: 'R250 – R500', z: 'R250 – R500', s: { whisky: 2, gin: 2, vodka: 1 } },
+                            { t: 'R500 and up', z: 'R500 nangaphezulu', s: { bubbly: 2, whisky: 1, vodka: 1 } }
+                        ]
+                    }
+                ];
 
-            var answers = [];
+                var answers = [];
+                var ranked = [];
 
-            function $(id) { return document.getElementById(id); }
+                function $(id) { return document.getElementById(id); }
+                function zu() { return window.currentLang === 'zu'; }
+                function tr(en, z) { return zu() && z ? z : en; }
 
-            function renderQuestion() {
-                var step = answers.length;
-                var q = questions[step];
-                $('quizStepLabel').textContent = 'Question ' + (step + 1) + ' of ' + questions.length;
-                $('quizProgressFill').style.width = (step / questions.length * 100) + '%';
-                $('quizQuestionText').textContent = q.q;
-                $('quizBackBtn').style.visibility = step === 0 ? 'hidden' : 'visible';
+                function renderQuestion() {
+                    var step = answers.length;
+                    var q = questions[step];
+                    $('quizStepLabel').textContent = zu()
+                        ? 'Umbuzo ' + (step + 1) + ' kwemi-' + questions.length
+                        : 'Question ' + (step + 1) + ' of ' + questions.length;
+                    $('quizProgressFill').style.width = (step / questions.length * 100) + '%';
+                    $('quizQuestionText').textContent = tr(q.q, q.z);
+                    $('quizBackBtn').style.visibility = step === 0 ? 'hidden' : 'visible';
 
-                var box = $('quizOptions');
-                box.innerHTML = '';
-                q.options.forEach(function (opt, i) {
-                    var b = document.createElement('button');
-                    b.type = 'button';
-                    b.className = 'quiz-option';
-                    b.textContent = opt.t;
-                    b.addEventListener('click', function () { choose(i); });
-                    box.appendChild(b);
-                });
-            }
-
-            function choose(i) {
-                answers.push(i);
-                if (answers.length === questions.length) showResult();
-                else renderQuestion();
-            }
-
-            function showResult() {
-                var scores = {};
-                answers.forEach(function (ai, qi) {
-                    var s = questions[qi].options[ai].s;
-                    for (var k in s) scores[k] = (scores[k] || 0) + s[k];
-                });
-                var ranked = Object.keys(scores).sort(function (a, b) { return scores[b] - scores[a]; });
-                var top = results[ranked[0]];
-
-                $('quizResultIcon').textContent = top.icon;
-                $('quizResultName').textContent = top.name;
-                $('quizResultBlurb').textContent = top.blurb;
-                $('quizResultPick').textContent = top.pick;
-                $('quizShopLink').href = 'Shop.aspx?search=' + encodeURIComponent(top.search);
-                $('quizShopLink').textContent = 'Shop ' + top.name;
-
-                var runner = $('quizRunnerUp');
-                if (ranked[1] && ranked[0] !== 'zero') {
-                    runner.textContent = 'You might also enjoy: ' + results[ranked[1]].name;
-                    runner.style.display = 'block';
-                } else {
-                    runner.style.display = 'none';
+                    var box = $('quizOptions');
+                    box.innerHTML = '';
+                    q.options.forEach(function (opt, i) {
+                        var b = document.createElement('button');
+                        b.type = 'button';
+                        b.className = 'quiz-option';
+                        b.textContent = tr(opt.t, opt.z);
+                        b.addEventListener('click', function () { choose(i); });
+                        box.appendChild(b);
+                    });
                 }
 
-                $('quizQuestionView').style.display = 'none';
-                $('quizResultView').style.display = 'block';
-            }
+                function choose(i) {
+                    answers.push(i);
+                    if (answers.length === questions.length) showResult();
+                    else renderQuestion();
+                }
 
-            window.quizBack = function () {
-                if (answers.length > 0) { answers.pop(); renderQuestion(); }
-            };
+                function renderResult() {
+                    var top = results[ranked[0]];
+                    $('quizResultIcon').textContent = top.icon;
+                    $('quizResultName').textContent = tr(top.name, top.zName);
+                    $('quizResultBlurb').textContent = tr(top.blurb, top.zBlurb);
+                    $('quizResultPick').textContent = tr(top.pick, top.zPick);
+                    $('quizShopLink').href = 'Shop.aspx?search=' + encodeURIComponent(top.search);
+                    $('quizShopLink').textContent = (zu() ? 'Thenga ' : 'Shop ') + tr(top.name, top.zName);
 
-            window.quizRestart = function () {
-                answers = [];
-                $('quizResultView').style.display = 'none';
-                $('quizQuestionView').style.display = 'block';
-                renderQuestion();
-            };
+                    var runner = $('quizRunnerUp');
+                    if (ranked[1] && ranked[0] !== 'zero') {
+                        var next = results[ranked[1]];
+                        runner.textContent = (zu() ? 'Ungase uthande nalokhu: ' : 'You might also enjoy: ') + tr(next.name, next.zName);
+                        runner.style.display = 'block';
+                    } else {
+                        runner.style.display = 'none';
+                    }
+                }
 
-            if ($('quizOptions')) renderQuestion();
-        })();
+                function showResult() {
+                    var scores = {};
+                    answers.forEach(function (ai, qi) {
+                        var s = questions[qi].options[ai].s;
+                        for (var k in s) scores[k] = (scores[k] || 0) + s[k];
+                    });
+                    ranked = Object.keys(scores).sort(function (a, b) { return scores[b] - scores[a]; });
+                    renderResult();
+                    $('quizQuestionView').style.display = 'none';
+                    $('quizResultView').style.display = 'block';
+                }
+
+                window.quizBack = function () {
+                    if (answers.length > 0) { answers.pop(); renderQuestion(); }
+                };
+
+                window.quizRestart = function () {
+                    answers = [];
+                    $('quizResultView').style.display = 'none';
+                    $('quizQuestionView').style.display = 'block';
+                    renderQuestion();
+                };
+
+                // Redraw in the new language when the visitor switches
+                window.addEventListener('langchange', function () {
+                    if (!$('quizOptions')) return;
+                    if ($('quizResultView').style.display === 'block') renderResult();
+                    else renderQuestion();
+                });
+
+                if ($('quizOptions')) renderQuestion();
+            })();
         </script>
 
 </asp:Content>
