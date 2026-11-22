@@ -545,12 +545,12 @@ namespace SamsLiquorShop.Manager
         private void LoadActiveDiscounts()
         {
             string query = @"
-        SELECT Discount_Name, Discount_Type, Discount_Value, Discount_EndDate
-        FROM Discount
-        WHERE LTRIM(RTRIM(Discount_Status)) = 'Active'
-          AND Discount_StartDate <= GETDATE()
-          AND Discount_EndDate >= GETDATE()
-        ORDER BY Discount_EndDate ASC";
+                SELECT Discount_Name, Discount_Type, Discount_Value, Discount_EndDate
+                FROM Discount
+                WHERE Discount_Status = 'Active'
+                  AND Discount_StartDate <= GETDATE()
+                  AND Discount_EndDate >= GETDATE()
+                ORDER BY Discount_EndDate ASC";
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             using (SqlDataAdapter da = new SqlDataAdapter(query, conn))
