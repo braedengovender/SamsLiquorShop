@@ -64,6 +64,21 @@ namespace SamsLiquorShop
             if (Request.QueryString["wishlist"] == "1") chkWishlistOnly.Checked = true;
 
             LoadProducts(all);
+
+            // Deep link from the Specials page: Shop.aspx?product=123 opens that product's pop-up
+            int openId;
+            if (int.TryParse(Request.QueryString["product"], out openId) && openId > 0)
+            {
+                try
+                {
+                    ShowDetail(openId);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError("Shop: could not open product " + openId + ": " + ex);
+                    pnlDetail.Visible = false;
+                }
+            }
         }
 
         private void LoadCategories()
