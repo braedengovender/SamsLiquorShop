@@ -21,19 +21,21 @@ public class SearchSuggestions : IHttpHandler
         }
 
         string connStr = ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
-        string query = @"SELECT TOP 6
-                            p.Product_ID, p.Product_Name, p.Product_SellingPrice,
-                            p.Discount_ID AS ProductDiscountId, cat.Discount_ID AS CategoryDiscountId,
-                            pd.Discount_Type AS ProductDiscountType, pd.Discount_Value AS ProductDiscountValue,
-                            pd.Discount_Status AS ProductDiscountStatus, pd.Discount_StartDate AS ProductDiscountStart, pd.Discount_EndDate AS ProductDiscountEnd,
-                            cd.Discount_Type AS CategoryDiscountType, cd.Discount_Value AS CategoryDiscountValue,
-                            cd.Discount_Status AS CategoryDiscountStatus, cd.Discount_StartDate AS CategoryDiscountStart, cd.Discount_EndDate AS CategoryDiscountEnd
-                          FROM Product p
-                          INNER JOIN Category cat ON p.Category_ID = cat.Category_ID
-                          LEFT JOIN Discount pd ON p.Discount_ID = pd.Discount_ID
-                          LEFT JOIN Discount cd ON cat.Discount_ID = cd.Discount_ID
-                          WHERE p.Product_Status = 'Active' AND p.Product_Name LIKE @Term
-                          ORDER BY p.Product_Name";
+string query = @"SELECT TOP 6
+                    p.Product_ID, p.Product_Name, p.Product_SellingPrice,
+                    p.Discount_ID AS ProductDiscountId, cat.Discount_ID AS CategoryDiscountId,
+                    pd.Discount_Name AS ProductDiscountName,
+                    pd.Discount_Type AS ProductDiscountType, pd.Discount_Value AS ProductDiscountValue,
+                    pd.Discount_Status AS ProductDiscountStatus, pd.Discount_StartDate AS ProductDiscountStart, pd.Discount_EndDate AS ProductDiscountEnd,
+                    cd.Discount_Name AS CategoryDiscountName,
+                    cd.Discount_Type AS CategoryDiscountType, cd.Discount_Value AS CategoryDiscountValue,
+                    cd.Discount_Status AS CategoryDiscountStatus, cd.Discount_StartDate AS CategoryDiscountStart, cd.Discount_EndDate AS CategoryDiscountEnd
+                  FROM Product p
+                  INNER JOIN Category cat ON p.Category_ID = cat.Category_ID
+                  LEFT JOIN Discount pd ON p.Discount_ID = pd.Discount_ID
+                  LEFT JOIN Discount cd ON cat.Discount_ID = cd.Discount_ID
+                  WHERE p.Product_Status = 'Active' AND p.Product_Name LIKE @Term
+                  ORDER BY p.Product_Name";
 
         var sb = new StringBuilder("[");
         bool first = true;
@@ -88,6 +90,10 @@ public class SearchSuggestions : IHttpHandler
             || statusStr.Equals("true", StringComparison.OrdinalIgnoreCase)
             || statusStr.Equals("Active", StringComparison.OrdinalIgnoreCase);
         if (!isActive) return false;
+        string promoName = Convert.ToString(r[prefix + "DiscountName"]);
+        if (promoName.IndexOf("wednesday", StringComparison.OrdinalIgnoreCase) >= 0
+            && DateTime.Now.DayOfWeek != DayOfWeek.Wednesday)
+            return false;
 
         DateTime start = Convert.ToDateTime(r[prefix + "DiscountStart"]);
         DateTime end = Convert.ToDateTime(r[prefix + "DiscountEnd"]);
