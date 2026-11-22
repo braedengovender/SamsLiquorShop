@@ -60,6 +60,15 @@ namespace SamsLiquorShop
         protected global::System.Web.UI.WebControls.Panel pnlCartHasItems;
 
         /// <summary>
+        /// btnClearCart control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnClearCart;
+
+        /// <summary>
         /// rptCart control.
         /// </summary>
         /// <remarks>
@@ -427,5 +436,6 @@ namespace SamsLiquorShop
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UpdateProgress updCartProgress;
+        
     }
 }

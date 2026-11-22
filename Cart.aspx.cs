@@ -273,7 +273,14 @@ namespace SamsLiquorShop
                 rptRecommended.DataBind();
             }
         }
+        protected void btnClearCart_Click(object sender, EventArgs e)
+        {
+            CartHelper.ClearCart(Session);
+            Session["PromoCode"] = null;
 
+            // Reload the page so the cart badge in the header updates too
+            Response.Redirect("Cart.aspx");
+        }
         protected void rptCart_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int productId = Convert.ToInt32(e.CommandArgument);

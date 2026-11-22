@@ -24,7 +24,10 @@
                 <asp:Panel runat="server" ID="pnlCartHasItems">
                     <div class="cart-layout">
                         <div class="cart-items-col">
-
+                                                        <div style="text-align: right; margin: 0 0 12px;">
+                                <asp:LinkButton ID="btnClearCart" runat="server" CssClass="danger-link" OnClick="btnClearCart_Click" CausesValidation="false"
+                                    OnClientClick="return confirm('Remove all items from your cart?');">Clear entire cart</asp:LinkButton>
+                            </div>
                             <asp:Repeater ID="rptCart" runat="server" OnItemCommand="rptCart_ItemCommand">
                                 <ItemTemplate>
                                     <div class="glass cart-item-card">
