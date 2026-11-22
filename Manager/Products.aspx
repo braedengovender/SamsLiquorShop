@@ -14,8 +14,8 @@
                 </div>
                 <div class="emp-header-actions">
                     <asp:Button ID="btnDownloadLog" runat="server" Text="Download stock log" CssClass="btn-ghost" OnClick="btnDownloadLog_Click" />
-                    <asp:LinkButton ID="btnExportPdf" runat="server" CssClass="export-btn is-pdf" CommandArgument="pdf" OnCommand="btnExport_Command" ToolTip="Download as PDF"><img src="/Images/icons/pdf.svg" alt="" /> Export PDF</asp:LinkButton>
-                    <asp:LinkButton ID="btnExportExcel" runat="server" CssClass="export-btn is-excel" CommandArgument="excel" OnCommand="btnExport_Command" ToolTip="Download as Excel"><img src="/Images/icons/excel.svg" alt="" /> Export Excel</asp:LinkButton>
+                    <asp:Button ID="btnExport" runat="server" Text="Export CSV" CssClass="btn-ghost" OnClick="btnExport_Click" />
+                    <asp:Button ID="btnMarginReport" runat="server" Text="Margin report" CssClass="btn-ghost" OnClick="btnMarginReport_Click" CausesValidation="false" />
                     <asp:Button ID="btnAddNew" runat="server" Text="+ Add Product" CssClass="btn-primary" OnClick="btnAddNew_Click" />
                 </div>
             </div>
@@ -23,6 +23,9 @@
             <asp:UpdatePanel ID="upMain" runat="server">
                 <Triggers>
                     <asp:AsyncPostBackTrigger ControlID="btnAddNew" EventName="Click" />
+                    <asp:AsyncPostBackTrigger ControlID="btnMarginReport" EventName="Click" />
+                    <%-- The CSV download must be a full postback too --%>
+                    <asp:PostBackTrigger ControlID="btnMrExport" />
                     <%-- File uploads only work with a full postback --%>
                     <asp:PostBackTrigger ControlID="btnSave" />
                 </Triggers>
@@ -171,7 +174,7 @@
                                             <asp:Literal ID="litImagePreview" runat="server" />
                                             <div class="prod-image-controls">
                                                 <asp:FileUpload ID="fuImage" runat="server" CssClass="login-input" accept="image/jpeg,image/png,image/gif,image/webp" />
-                                                <span class="field-hint">JPG, PNG, GIF or WEBP, up to 2 MB. Choosing a new picture replaces the current one.</span>
+                                                <span class="field-hint">JPG, PNG, GIF or WEBP, up to 2 MB. When editing, choosing a new picture replaces the current one.</span>
                                                 <label class="emp-check">
                                                     <asp:CheckBox ID="chkRemoveImage" runat="server" />
                                                     <span>Remove the current picture</span>
@@ -262,6 +265,84 @@
                                     </asp:TemplateField>
                                     <asp:BoundField DataField="Reason" HeaderText="Reason" ItemStyle-CssClass="is-wrap" />
                                     <asp:BoundField DataField="ChangedBy" HeaderText="By" />
+                                </Columns>
+                            </asp:GridView>
+                        </div>
+                    </asp:Panel>
+
+                    <!-- MARGIN REPORT -->
+                    <asp:Panel ID="pnlMargin" runat="server" Visible="false" DefaultButton="btnMrRun">
+                        <div id="prodMarginCard" class="mgr-table-card emp-form-card">
+                            <div class="dash-card-head">
+                                <h3>Margin report</h3>
+                                <asp:LinkButton ID="btnMrClose" runat="server" CssClass="emp-action" OnClick="btnMrClose_Click" CausesValidation="false">Close</asp:LinkButton>
+                            </div>
+                            <p class="field-hint">Profit is what customers actually paid (after discounts) minus each product's current cost price. Cancelled, refunded and voided sales are left out. List margin is (price &minus; cost) &divide; price.</p>
+
+                            <div class="emp-form-grid">
+                                <div class="login-field">
+                                    <label for="<%= txtMrFrom.ClientID %>">Sales from</label>
+                                    <asp:TextBox ID="txtMrFrom" runat="server" CssClass="login-input" TextMode="Date" />
+                                </div>
+                                <div class="login-field">
+                                    <label for="<%= txtMrTo.ClientID %>">Sales to</label>
+                                    <asp:TextBox ID="txtMrTo" runat="server" CssClass="login-input" TextMode="Date" />
+                                </div>
+                                <div class="login-field">
+                                    <label for="<%= ddlMrCategory.ClientID %>">Category</label>
+                                    <asp:DropDownList ID="ddlMrCategory" runat="server" CssClass="login-input" />
+                                </div>
+                                <div class="login-field">
+                                    <label for="<%= ddlMrSort.ClientID %>">Order by</label>
+                                    <asp:DropDownList ID="ddlMrSort" runat="server" CssClass="login-input">
+                                        <asp:ListItem Text="Most profit earned" Value="profit" />
+                                        <asp:ListItem Text="Highest margin" Value="margin_hi" />
+                                        <asp:ListItem Text="Lowest margin" Value="margin_lo" />
+                                        <asp:ListItem Text="Most units sold" Value="units" />
+                                    </asp:DropDownList>
+                                </div>
+                                <div class="login-field">
+                                    <label class="emp-check">
+                                        <asp:CheckBox ID="chkMrActiveOnly" runat="server" Checked="true" />
+                                        <span>Active products only</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="emp-form-actions">
+                                <asp:Button ID="btnMrRun" runat="server" Text="Run report" CssClass="btn-primary" OnClick="btnMrRun_Click" CausesValidation="false" />
+                                <asp:Button ID="btnMrExport" runat="server" Text="Export CSV" CssClass="btn-ghost" OnClick="btnMrExport_Click" CausesValidation="false" />
+                            </div>
+
+                            <asp:Literal ID="litMrSummary" runat="server" />
+
+                            <asp:GridView ID="gvMargin" runat="server" AutoGenerateColumns="false" CssClass="dash-table emp-table"
+                                GridLines="None" AllowPaging="true" PageSize="15"
+                                EmptyDataText="No products match these filters." EmptyDataRowStyle-CssClass="dash-table-empty"
+                                OnPageIndexChanging="gvMargin_PageIndexChanging">
+                                <PagerStyle CssClass="emp-pager" />
+                                <Columns>
+                                    <asp:TemplateField HeaderText="Product" ItemStyle-CssClass="is-wrap">
+                                        <ItemTemplate>
+                                            <strong><%#: Eval("Product_Name") %></strong>
+                                            <span class="emp-sub"><%# SubLine(Eval("Product_Brand"), Eval("Product_SizeML")) %></span>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                    <asp:BoundField DataField="Category_Name" HeaderText="Category" />
+                                    <asp:BoundField DataField="Product_CostPrice" HeaderText="Cost" DataFormatString="{0:C}" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
+                                    <asp:BoundField DataField="Product_SellingPrice" HeaderText="Price" DataFormatString="{0:C}" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
+                                    <asp:TemplateField HeaderText="List margin" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num">
+                                        <ItemTemplate>
+                                            <strong><%# MarginText(Eval("MarginPct")) %></strong>
+                                            <span class='emp-badge emp-badge-<%# MarginClass(Eval("MarginPct")) %>'><%# MarginLabel(Eval("MarginPct")) %></span>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                    <asp:BoundField DataField="UnitsSold" HeaderText="Units sold" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
+                                    <asp:BoundField DataField="Revenue" HeaderText="Revenue" DataFormatString="{0:C}" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
+                                    <asp:BoundField DataField="ProfitEarned" HeaderText="Profit earned" DataFormatString="{0:C}" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
+                                    <asp:TemplateField HeaderText="Realised margin" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num">
+                                        <ItemTemplate><%# RealisedText(Eval("RealisedPct")) %></ItemTemplate>
+                                    </asp:TemplateField>
                                 </Columns>
                             </asp:GridView>
                         </div>

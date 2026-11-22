@@ -24,18 +24,22 @@ namespace SamsLiquorShop.Manager
         protected global::System.Web.UI.WebControls.Button btnDownloadLog;
 
         /// <summary>
-        /// btnExportPdf control.
+        /// btnExport control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnExportPdf;
+        protected global::System.Web.UI.WebControls.Button btnExport;
 
         /// <summary>
-        /// btnExportExcel control.
+        /// btnMarginReport control.
         /// </summary>
-        protected global::System.Web.UI.WebControls.LinkButton btnExportExcel;
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMarginReport;
 
         /// <summary>
         /// btnAddNew control.
@@ -513,6 +517,105 @@ namespace SamsLiquorShop.Manager
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvStockLog;
+
+        /// <summary>
+        /// pnlMargin control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlMargin;
+
+        /// <summary>
+        /// btnMrClose control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnMrClose;
+
+        /// <summary>
+        /// txtMrFrom control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtMrFrom;
+
+        /// <summary>
+        /// txtMrTo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtMrTo;
+
+        /// <summary>
+        /// ddlMrCategory control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlMrCategory;
+
+        /// <summary>
+        /// ddlMrSort control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlMrSort;
+
+        /// <summary>
+        /// chkMrActiveOnly control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkMrActiveOnly;
+
+        /// <summary>
+        /// btnMrRun control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMrRun;
+
+        /// <summary>
+        /// btnMrExport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMrExport;
+
+        /// <summary>
+        /// litMrSummary control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litMrSummary;
+
+        /// <summary>
+        /// gvMargin control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvMargin;
 
         /// <summary>
         /// pnlToolbar control.

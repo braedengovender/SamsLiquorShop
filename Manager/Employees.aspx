@@ -13,13 +13,17 @@
                     <p class="mgr-dash-subtext">Add, update, deactivate or remove staff accounts.</p>
                 </div>
                 <div class="emp-header-actions">
-                    <asp:LinkButton ID="btnExportPdf" runat="server" CssClass="export-btn is-pdf" CommandArgument="pdf" OnCommand="btnExport_Command" ToolTip="Download as PDF"><img src="/Images/icons/pdf.svg" alt="" /> Export PDF</asp:LinkButton>
-                    <asp:LinkButton ID="btnExportExcel" runat="server" CssClass="export-btn is-excel" CommandArgument="excel" OnCommand="btnExport_Command" ToolTip="Download as Excel"><img src="/Images/icons/excel.svg" alt="" /> Export Excel</asp:LinkButton>
+                    <asp:Button ID="btnPerfReport" runat="server" Text="Performance report" CssClass="btn-ghost" OnClick="btnPerfReport_Click" CausesValidation="false" />
+                    <asp:Button ID="btnExport" runat="server" Text="Export CSV" CssClass="btn-ghost" OnClick="btnExport_Click" />
                     <asp:Button ID="btnAddNew" runat="server" Text="+ Add Employee" CssClass="btn-primary" OnClick="btnAddNew_Click" />
                 </div>
             </div>
 
             <asp:UpdatePanel ID="upSummary" runat="server" UpdateMode="Always">
+                <Triggers>
+                    <%-- The CSV download must be a full postback --%>
+                    <asp:PostBackTrigger ControlID="btnPrExport" />
+                </Triggers>
                 <ContentTemplate>
 
                     <!-- SUMMARY CARDS -->
@@ -113,6 +117,71 @@
                         </div>
                     </asp:Panel>
 
+                    <!-- STAFF PERFORMANCE REPORT -->
+                    <asp:Panel ID="pnlReport" runat="server" Visible="false" DefaultButton="btnPrRun">
+                        <div id="empReportCard" class="mgr-table-card emp-form-card">
+                            <div class="dash-card-head">
+                                <h3>Staff performance report</h3>
+                                <asp:LinkButton ID="btnPrClose" runat="server" CssClass="emp-action" OnClick="btnPrClose_Click" CausesValidation="false">Close</asp:LinkButton>
+                            </div>
+                            <p class="field-hint">Totals come from each cashier's recorded sales in the period. Cancelled, refunded and voided sales are left out. Revenue is the sale total after discounts.</p>
+
+                            <div class="emp-form-grid">
+                                <div class="login-field">
+                                    <label for="<%= txtPrFrom.ClientID %>">Sales from</label>
+                                    <asp:TextBox ID="txtPrFrom" runat="server" CssClass="login-input" TextMode="Date" />
+                                </div>
+                                <div class="login-field">
+                                    <label for="<%= txtPrTo.ClientID %>">Sales to</label>
+                                    <asp:TextBox ID="txtPrTo" runat="server" CssClass="login-input" TextMode="Date" />
+                                </div>
+                                <div class="login-field">
+                                    <label for="<%= ddlPrStaff.ClientID %>">Staff to include</label>
+                                    <asp:DropDownList ID="ddlPrStaff" runat="server" CssClass="login-input">
+                                        <asp:ListItem Text="Active staff (plus anyone with sales)" Value="active" />
+                                        <asp:ListItem Text="Only staff with sales" Value="sales" />
+                                    </asp:DropDownList>
+                                </div>
+                            </div>
+
+                            <div class="emp-form-actions">
+                                <asp:Button ID="btnPrRun" runat="server" Text="Run report" CssClass="btn-primary" OnClick="btnPrRun_Click" CausesValidation="false" />
+                                <asp:Button ID="btnPrExport" runat="server" Text="Export CSV" CssClass="btn-ghost" OnClick="btnPrExport_Click" CausesValidation="false" />
+                            </div>
+
+                            <asp:Literal ID="litPrSummary" runat="server" />
+
+                            <asp:GridView ID="gvPerf" runat="server" AutoGenerateColumns="false" CssClass="mgr-table emp-table"
+                                GridLines="None" EmptyDataText="No staff match these filters.">
+                                <Columns>
+                                    <asp:TemplateField HeaderText="#">
+                                        <ItemTemplate><%# PerfRankText(Eval("Rank")) %></ItemTemplate>
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Employee">
+                                        <ItemTemplate>
+                                            <div class="emp-person">
+                                                <span class="emp-avatar"><%# Initials(Eval("Employee_FirstName"), Eval("Employee_LastName")) %></span>
+                                                <div>
+                                                    <strong><%#: Eval("Employee_FirstName") %> <%#: Eval("Employee_LastName") %></strong> <%# PerfTopBadge(Eval("Rank")) %>
+                                                    <span class="emp-sub"><%# PerfSub(Eval("Employee_Role"), Eval("Employee_Status")) %></span>
+                                                </div>
+                                            </div>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                    <asp:BoundField DataField="Sales" HeaderText="Sales" />
+                                    <asp:BoundField DataField="Items" HeaderText="Items sold" />
+                                    <asp:BoundField DataField="AvgSale" HeaderText="Avg sale" DataFormatString="{0:C}" />
+                                    <asp:BoundField DataField="DaysWorked" HeaderText="Days with sales" />
+                                    <asp:BoundField DataField="RevPerDay" HeaderText="Revenue / day" DataFormatString="{0:C}" />
+                                    <asp:BoundField DataField="Revenue" HeaderText="Revenue" DataFormatString="{0:C}" />
+                                    <asp:TemplateField HeaderText="Share">
+                                        <ItemTemplate><%# PerfShareText(Eval("SharePct")) %></ItemTemplate>
+                                    </asp:TemplateField>
+                                </Columns>
+                            </asp:GridView>
+                        </div>
+                    </asp:Panel>
+
                 </ContentTemplate>
             </asp:UpdatePanel>
 
@@ -146,6 +215,7 @@
                 <asp:UpdatePanel ID="upList" runat="server" UpdateMode="Always">
                     <Triggers>
                         <asp:AsyncPostBackTrigger ControlID="btnAddNew" EventName="Click" />
+                        <asp:AsyncPostBackTrigger ControlID="btnPerfReport" EventName="Click" />
                         <asp:AsyncPostBackTrigger ControlID="btnSearch" EventName="Click" />
                         <asp:AsyncPostBackTrigger ControlID="btnClear" EventName="Click" />
                         <asp:AsyncPostBackTrigger ControlID="ddlRoleFilter" EventName="SelectedIndexChanged" />

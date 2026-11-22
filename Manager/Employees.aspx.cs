@@ -254,6 +254,7 @@ namespace SamsLiquorShop.Manager
         protected void btnAddNew_Click(object sender, EventArgs e)
         {
             litMessage.Text = "";
+            pnlReport.Visible = false;
             ClearForm();
             litFormTitle.Text = "Add Employee";
             litPasswordHint.Text = "Minimum 8 characters.";
@@ -270,6 +271,8 @@ namespace SamsLiquorShop.Manager
         // ---------- UPDATE (load into form) ----------
         private void LoadForEdit(int id)
         {
+            pnlReport.Visible = false;
+
             using (SqlConnection conn = new SqlConnection(ConnStr))
             using (SqlCommand cmd = new SqlCommand(@"
                 SELECT Employee_ID, Employee_FirstName, Employee_LastName, Employee_Username,
@@ -637,38 +640,287 @@ namespace SamsLiquorShop.Manager
             RefreshAll();
         }
 
-        // ---------- EXPORT ----------
-        // Export PDF / Export Excel: the employees matching the current filters
-        protected void btnExport_Command(object sender, CommandEventArgs e)
-        {
-            DataTable dt = LoadEmployeeTable();
+        // ---------- STAFF PERFORMANCE REPORT ----------
+        private const string ValidSaleSql = "LTRIM(RTRIM(ISNULL(s.Sale_Status, ''))) NOT IN ('Cancelled', 'Canceled', 'Refunded', 'Voided', 'Void')";
 
-            var table = new ExportTable("Employees", "Staff list")
-                .Col("ID", ExportKind.Integer)
-                .Col("First Name")
-                .Col("Last Name")
-                .Col("Username")
-                .Col("Email")
-                .Col("Phone")
-                .Col("Role")
-                .Col("Status")
-                .Col("Hire Date", ExportKind.Date);
+        protected void btnPerfReport_Click(object sender, EventArgs e)
+        {
+            litMessage.Text = "";
+            pnlForm.Visible = false;
+
+            if (txtPrFrom.Text.Trim().Length == 0) txtPrFrom.Text = DateTime.Today.AddDays(-29).ToString("yyyy-MM-dd");
+            if (txtPrTo.Text.Trim().Length == 0) txtPrTo.Text = DateTime.Today.ToString("yyyy-MM-dd");
+
+            pnlReport.Visible = true;
+            RunPerfReport();
+            ScrollToElement("empReportCard", txtPrFrom.ClientID, "scrollReport");
+        }
+
+        protected void btnPrRun_Click(object sender, EventArgs e)
+        {
+            litMessage.Text = "";
+            pnlReport.Visible = true;
+            RunPerfReport();
+        }
+
+        protected void btnPrClose_Click(object sender, EventArgs e)
+        {
+            pnlReport.Visible = false;
+        }
+
+        private bool TryReadPerfDates(out DateTime from, out DateTime to)
+        {
+            from = DateTime.MinValue;
+            to = DateTime.MinValue;
+
+            if (!DateTime.TryParseExact(txtPrFrom.Text.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out from)
+                || !DateTime.TryParseExact(txtPrTo.Text.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out to))
+            {
+                ShowMessage("Choose both a \"Sales from\" and a \"Sales to\" date for the report.", false);
+                return false;
+            }
+            if (from > to)
+            {
+                ShowMessage("The \"Sales from\" date must be on or before the \"Sales to\" date.", false);
+                return false;
+            }
+            return true;
+        }
+
+        private static string KpiCard(string label, string value)
+        {
+            return "<div class=\"mgr-kpi-card\"><p class=\"mgr-kpi-label\">" + label + "</p><p class=\"mgr-kpi-value\">" + value + "</p></div>";
+        }
+
+        // One row per employee with their totals, averages and rank, best first
+        private DataView LoadPerfView(DateTime from, DateTime to)
+        {
+            string staffFilter = ddlPrStaff.SelectedValue == "sales"
+                ? "WHERE x.Sales > 0"
+                : "WHERE e.Employee_Status = 'Active' OR x.Sales > 0";
+
+            DataTable dt = new DataTable();
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(@"
+                SELECT e.Employee_ID, e.Employee_FirstName, e.Employee_LastName, e.Employee_Role, e.Employee_Status,
+                       ISNULL(x.Sales, 0) AS Sales,
+                       ISNULL(x.Revenue, 0) AS Revenue,
+                       ISNULL(x.Items, 0) AS Items,
+                       ISNULL(x.DaysWorked, 0) AS DaysWorked
+                FROM Employee e
+                LEFT JOIN (
+                    SELECT s.Employee_ID,
+                           COUNT(*) AS Sales,
+                           SUM(s.Sale_TotalAmount) AS Revenue,
+                           SUM(ISNULL(li.Items, 0)) AS Items,
+                           COUNT(DISTINCT CAST(s.Sale_DateTime AS DATE)) AS DaysWorked
+                    FROM Sale s
+                    LEFT JOIN (SELECT Sale_ID, SUM(SaleLine_Quantity) AS Items FROM SaleLine GROUP BY Sale_ID) li
+                           ON li.Sale_ID = s.Sale_ID
+                    WHERE s.Sale_DateTime >= @From AND s.Sale_DateTime < @ToExcl
+                      AND " + ValidSaleSql + @"
+                    GROUP BY s.Employee_ID
+                ) x ON x.Employee_ID = e.Employee_ID
+                " + staffFilter, conn))
+            {
+                cmd.Parameters.Add("@From", SqlDbType.DateTime).Value = from.Date;
+                cmd.Parameters.Add("@ToExcl", SqlDbType.DateTime).Value = to.Date.AddDays(1);
+
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                {
+                    da.Fill(dt);
+                }
+            }
+
+            dt.Columns.Add("AvgSale", typeof(decimal));
+            dt.Columns.Add("ItemsPerSale", typeof(decimal));
+            dt.Columns.Add("RevPerDay", typeof(decimal));
+            dt.Columns.Add("SharePct", typeof(decimal));
+            dt.Columns.Add("Rank", typeof(int));
+
+            decimal total = 0;
+            foreach (DataRow r in dt.Rows) total += Convert.ToDecimal(r["Revenue"]);
 
             foreach (DataRow r in dt.Rows)
             {
-                table.Add(
-                    r["Employee_ID"],
-                    r["Employee_FirstName"],
-                    r["Employee_LastName"],
-                    r["Employee_Username"],
-                    r["Employee_EmailAddress"],
-                    Convert.ToString(r["Employee_PhoneNumber"]),
-                    r["Employee_Role"],
-                    r["Employee_Status"],
-                    r["Employee_HireDate"]);
+                int sales = Convert.ToInt32(r["Sales"]);
+                int items = Convert.ToInt32(r["Items"]);
+                int days = Convert.ToInt32(r["DaysWorked"]);
+                decimal revenue = Convert.ToDecimal(r["Revenue"]);
+
+                r["AvgSale"] = sales > 0 ? Math.Round(revenue / sales, 2) : 0m;
+                r["ItemsPerSale"] = sales > 0 ? Math.Round((decimal)items / sales, 1) : 0m;
+                r["RevPerDay"] = days > 0 ? Math.Round(revenue / days, 2) : 0m;
+                r["SharePct"] = total > 0 ? Math.Round(revenue * 100m / total, 1) : 0m;
             }
 
-            ExportHelper.Send(Response, table, "employees", e.CommandArgument.ToString());
+            const string order = "Revenue DESC, Employee_LastName ASC, Employee_FirstName ASC";
+            int rank = 0;
+            foreach (DataRow r in dt.Select("", order))
+            {
+                if (Convert.ToInt32(r["Sales"]) > 0) r["Rank"] = ++rank;
+            }
+
+            dt.DefaultView.Sort = order;
+            return dt.DefaultView;
+        }
+
+        private void RunPerfReport()
+        {
+            DateTime from, to;
+            if (!TryReadPerfDates(out from, out to))
+            {
+                litPrSummary.Text = "";
+                gvPerf.DataSource = null;
+                gvPerf.DataBind();
+                return;
+            }
+
+            DataView dv;
+            try
+            {
+                dv = LoadPerfView(from, to);
+            }
+            catch (SqlException)
+            {
+                ShowMessage("The performance report could not be loaded. Please try again.", false);
+                return;
+            }
+
+            decimal revenue = 0;
+            int sales = 0, noSales = 0;
+            string top = "\u2014";
+
+            foreach (DataRowView v in dv)
+            {
+                revenue += Convert.ToDecimal(v["Revenue"]);
+                sales += Convert.ToInt32(v["Sales"]);
+                if (Convert.ToInt32(v["Sales"]) == 0) noSales++;
+                if (v["Rank"] != DBNull.Value && Convert.ToInt32(v["Rank"]) == 1)
+                {
+                    top = Server.HtmlEncode((Convert.ToString(v["Employee_FirstName"]) + " " + Convert.ToString(v["Employee_LastName"])).Trim());
+                }
+            }
+
+            decimal avg = sales > 0 ? revenue / sales : 0m;
+
+            litPrSummary.Text = "<div class=\"mgr-kpi-grid\">"
+                + KpiCard("Revenue", revenue.ToString("C", CultureInfo.CurrentCulture))
+                + KpiCard("Sales", sales.ToString("N0", CultureInfo.CurrentCulture))
+                + KpiCard("Average sale", avg.ToString("C", CultureInfo.CurrentCulture))
+                + KpiCard("Top performer", top)
+                + KpiCard("Staff with no sales", noSales.ToString())
+                + "</div>";
+
+            gvPerf.DataSource = dv;
+            gvPerf.DataBind();
+        }
+
+        protected string PerfRankText(object rank)
+        {
+            return (rank == null || rank == DBNull.Value) ? "\u2014" : Convert.ToString(rank);
+        }
+
+        protected string PerfTopBadge(object rank)
+        {
+            if (rank == null || rank == DBNull.Value || Convert.ToInt32(rank) != 1) return "";
+            return "<span class=\"emp-badge emp-badge-active\">Top</span>";
+        }
+
+        // "Cashier" or "Cashier · Inactive"
+        protected string PerfSub(object role, object status)
+        {
+            string r = (Convert.ToString(role) ?? "").Trim();
+            bool inactive = !(Convert.ToString(status) ?? "").Trim().Equals("Active", StringComparison.OrdinalIgnoreCase);
+            return Server.HtmlEncode(r + (inactive ? " \u00B7 Inactive" : ""));
+        }
+
+        protected string PerfShareText(object share)
+        {
+            return Convert.ToDecimal(share).ToString("0.0", CultureInfo.InvariantCulture) + "%";
+        }
+
+        protected void btnPrExport_Click(object sender, EventArgs e)
+        {
+            DateTime from, to;
+            if (!TryReadPerfDates(out from, out to))
+            {
+                pnlReport.Visible = true;
+                return;
+            }
+
+            DataView dv = LoadPerfView(from, to);
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Staff performance report," + from.ToString("yyyy-MM-dd") + " to " + to.ToString("yyyy-MM-dd"));
+            sb.AppendLine("Rank,Employee ID,First Name,Last Name,Role,Status,Sales,Items Sold,Average Sale,Days With Sales,Revenue Per Day,Revenue,Share %");
+
+            foreach (DataRowView r in dv)
+            {
+                sb.AppendLine(string.Join(",", new[]
+                {
+                    r["Rank"] == DBNull.Value ? "\"\"" : Csv(r["Rank"]),
+                    Csv(r["Employee_ID"]),
+                    Csv(r["Employee_FirstName"]),
+                    Csv(r["Employee_LastName"]),
+                    Csv(r["Employee_Role"]),
+                    Csv(r["Employee_Status"]),
+                    Csv(r["Sales"]),
+                    Csv(r["Items"]),
+                    CsvNum(Convert.ToDecimal(r["AvgSale"])),
+                    Csv(r["DaysWorked"]),
+                    CsvNum(Convert.ToDecimal(r["RevPerDay"])),
+                    CsvNum(Convert.ToDecimal(r["Revenue"])),
+                    CsvNum(Convert.ToDecimal(r["SharePct"]))
+                }));
+            }
+
+            Response.Clear();
+            Response.ContentType = "text/csv";
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.AddHeader("Content-Disposition", "attachment; filename=staff-performance-" + from.ToString("yyyyMMdd") + "-" + to.ToString("yyyyMMdd") + ".csv");
+            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            Response.Write(sb.ToString());
+            Response.End();
+        }
+
+        private static string CsvNum(decimal value)
+        {
+            return "\"" + value.ToString("0.00", CultureInfo.InvariantCulture) + "\"";
+        }
+
+        // ---------- EXPORT ----------
+        protected void btnExport_Click(object sender, EventArgs e)
+        {
+            DataTable dt = LoadEmployeeTable();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Employee ID,First Name,Last Name,Username,Email,Phone,Role,Status,Hire Date");
+
+            foreach (DataRow r in dt.Rows)
+            {
+                sb.AppendLine(string.Join(",", new[]
+                {
+                    Csv(r["Employee_ID"]),
+                    Csv(r["Employee_FirstName"]),
+                    Csv(r["Employee_LastName"]),
+                    Csv(r["Employee_Username"]),
+                    Csv(r["Employee_EmailAddress"]),
+                    Csv(r["Employee_PhoneNumber"]),
+                    Csv(r["Employee_Role"]),
+                    Csv(r["Employee_Status"]),
+                    Csv(Convert.ToDateTime(r["Employee_HireDate"]).ToString("yyyy-MM-dd"))
+                }));
+            }
+
+            Response.Clear();
+            Response.ContentType = "text/csv";
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.AddHeader("Content-Disposition", "attachment; filename=employees-" + DateTime.Today.ToString("yyyyMMdd") + ".csv");
+            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            Response.Write(sb.ToString());
+            Response.End();
         }
 
         // Quotes a CSV value and defuses spreadsheet formulas (cells starting with = + - @)
@@ -724,12 +976,25 @@ namespace SamsLiquorShop.Manager
 
         private void ScrollToForm(string focusClientId)
         {
-            string js = "var f=document.getElementById('empFormCard'); if(f){f.scrollIntoView({behavior:'smooth',block:'start'});}";
-            if (!string.IsNullOrEmpty(focusClientId))
-            {
-                js += " var i=document.getElementById('" + focusClientId + "'); if(i){setTimeout(function(){i.focus();},350);}";
-            }
-            ScriptManager.RegisterStartupScript(this, GetType(), "scrollForm", js, true);
+            ScrollToElement("empFormCard", focusClientId, "scrollForm");
+        }
+
+        // Scrolls below the sticky header, and focuses the box without letting the focus
+        // jump cancel the smooth scroll.
+        private void ScrollToElement(string elementId, string focusClientId, string key)
+        {
+            string js =
+                "(function(){" +
+                "var f=document.getElementById('" + elementId + "'); if(!f) return;" +
+                "var hdr=document.querySelector('.site-header');" +
+                "var offset=(hdr?hdr.getBoundingClientRect().height:60)+32;" +
+                "var top=f.getBoundingClientRect().top+window.pageYOffset-offset;" +
+                "window.scrollTo({top:Math.max(top,0),behavior:'smooth'});" +
+                (string.IsNullOrEmpty(focusClientId) ? "" :
+                    "var i=document.getElementById('" + focusClientId + "');" +
+                    "if(i){setTimeout(function(){i.focus({preventScroll:true});},500);}") +
+                "})();";
+            ScriptManager.RegisterStartupScript(this, GetType(), key, js, true);
         }
     }
 }

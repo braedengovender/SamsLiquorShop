@@ -17,6 +17,13 @@ namespace SamsLiquorShop.Manager
     {
         private const int MaxImageBytes = 2 * 1024 * 1024;
 
+        // List-margin bands used by the margin report
+        private const decimal VeryLowMarginPct = 10m;
+        private const decimal LowMarginPct = 20m;
+
+        // Sales that were cancelled, refunded or voided do not count towards reports
+        private const string ValidSaleSql = "LTRIM(RTRIM(ISNULL(s.Sale_Status, ''))) NOT IN ('Cancelled', 'Canceled', 'Refunded', 'Voided', 'Void')";
+
         private string ConnStr => ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
 
         private static readonly HashSet<string> AllowedSort = new HashSet<string>
@@ -97,6 +104,8 @@ namespace SamsLiquorShop.Manager
             ddlSupplier.Items.Add(new ListItem("Select a supplier", ""));
             ddlDiscount.Items.Clear();
             ddlDiscount.Items.Add(new ListItem("No discount", ""));
+            ddlMrCategory.Items.Clear();
+            ddlMrCategory.Items.Add(new ListItem("All categories", ""));
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
@@ -111,6 +120,7 @@ namespace SamsLiquorShop.Manager
                         string name = r["Category_Name"].ToString();
                         ddlCategoryFilter.Items.Add(new ListItem(name, id));
                         ddlCategory.Items.Add(new ListItem(name, id));
+                        ddlMrCategory.Items.Add(new ListItem(name, id));
                     }
                 }
 
@@ -197,7 +207,7 @@ namespace SamsLiquorShop.Manager
                         LEFT JOIN Supplier s ON s.Supplier_ID = p.Supplier_ID
                         WHERE " + string.Join(" AND ", where) + @"
                     ) t
-                                        ORDER BY " + orderBy; 
+                                        ORDER BY " + orderBy;
 
                 using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                 {
@@ -406,10 +416,14 @@ namespace SamsLiquorShop.Manager
             ClearProductForm();
             hfProductId.Value = "";
             litFormTitle.Text = "Add product";
-            litFormMeta.Text = "You can add a picture after saving, using Edit.";
+            litFormMeta.Text = "A picture is optional. You can also add or change it later using Edit.";
             phInitialStock.Visible = true;
             phStockNote.Visible = false;
-            phImage.Visible = false;
+            phImage.Visible = true;
+            litImagePreview.Text = "<span class=\"prod-preview prod-preview-empty\">No picture yet</span>";
+            chkRemoveImage.Visible = false;
+            chkRemoveImage.Checked = false;
+            pnlMargin.Visible = false;
             pnlForm.Visible = true;
 
             ScrollTo("prodFormCard", txtName.ClientID);
@@ -426,6 +440,7 @@ namespace SamsLiquorShop.Manager
         {
             pnlStock.Visible = false;
             pnlHistory.Visible = false;
+            pnlMargin.Visible = false;
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             using (SqlCommand cmd = new SqlCommand(@"
@@ -505,6 +520,9 @@ namespace SamsLiquorShop.Manager
 
             if (error != null)
             {
+                // Browsers never keep a chosen file after a failed save
+                if (fuImage.HasFile && badField != fuImage) error += " Please choose the picture again.";
+
                 ShowMessage(error, false);
                 pnlForm.Visible = true;
                 if (badField != null) badField.CssClass = "login-input invalid";
@@ -519,6 +537,12 @@ namespace SamsLiquorShop.Manager
                 if (isNew)
                 {
                     int newId = InsertProduct(p);
+
+                    // Make sure the picture really reached the database
+                    if (p.ImageBytes != null && !ImageStored(newId, p.ImageBytes.Length))
+                    {
+                        warning = " The product was added, but its picture could not be confirmed in the database. Open Edit and upload it again.";
+                    }
 
                     if (p.InitialStock > 0)
                     {
@@ -546,7 +570,8 @@ namespace SamsLiquorShop.Manager
 
             pnlForm.Visible = false;
             ClearProductForm();
-            ShowMessage(p.Name + (isNew ? " was added." : " was updated.") + (warning ?? ""), warning == null);
+            string pictureNote = (isNew && p.ImageBytes != null && warning == null) ? " The picture was saved." : "";
+            ShowMessage(p.Name + (isNew ? " was added." : " was updated.") + pictureNote + (warning ?? ""), warning == null);
             RefreshAll();
         }
 
@@ -638,23 +663,20 @@ namespace SamsLiquorShop.Manager
 
             p.Status = ddlStatus.SelectedValue;
 
-            // ----- Picture (edit only) -----
-            if (!isNew)
+            // ----- Picture (new or edit) -----
+            if (!isNew) p.RemoveImage = chkRemoveImage.Visible && chkRemoveImage.Checked;
+
+            if (fuImage.HasFile)
             {
-                p.RemoveImage = chkRemoveImage.Visible && chkRemoveImage.Checked;
+                if (fuImage.PostedFile.ContentLength > MaxImageBytes)
+                { badField = fuImage; error = "That picture is larger than 2 MB. Please choose a smaller one."; return null; }
 
-                if (fuImage.HasFile)
-                {
-                    if (fuImage.PostedFile.ContentLength > MaxImageBytes)
-                    { badField = fuImage; error = "That picture is larger than 2 MB. Please choose a smaller one."; return null; }
+                byte[] bytes = fuImage.FileBytes;
+                if (!IsSupportedImage(bytes))
+                { badField = fuImage; error = "Please choose a JPG, PNG, GIF or WEBP picture."; return null; }
 
-                    byte[] bytes = fuImage.FileBytes;
-                    if (!IsSupportedImage(bytes))
-                    { badField = fuImage; error = "Please choose a JPG, PNG, GIF or WEBP picture."; return null; }
-
-                    p.ImageBytes = bytes;
-                    p.RemoveImage = false;
-                }
+                p.ImageBytes = bytes;
+                p.RemoveImage = false;
             }
 
             // ----- Duplicates (only checked when the value is new or has changed) -----
@@ -782,19 +804,40 @@ namespace SamsLiquorShop.Manager
                     (Category_ID, Supplier_ID, Discount_ID, Product_Name, Product_Description, Product_Brand,
                      Product_Type, Product_Flavour, Product_AlcoholPercentage, Product_OriginRegion,
                      Product_Ingredients, Product_SizeML, Product_BarcodeNumber, Product_SellingPrice,
-                     Product_CostPrice, Product_QuantityInStock, Product_ReorderQuantity, Product_Status)
+                     Product_CostPrice, Product_QuantityInStock, Product_ReorderQuantity, Product_Status, Product_Image)
                 VALUES
                     (@CategoryId, @SupplierId, @DiscountId, @Name, @Description, @Brand,
                      @Type, @Flavour, @Abv, @Origin,
                      @Ingredients, @SizeMl, @Barcode, @Price,
-                     @Cost, @Stock, @Reorder, @Status);
+                     @Cost, @Stock, @Reorder, @Status, @Image);
                 SELECT CAST(SCOPE_IDENTITY() AS int);", conn))
             {
                 AddProductParameters(cmd, p);
                 cmd.Parameters.AddWithValue("@Stock", p.InitialStock);
+                cmd.Parameters.Add("@Image", SqlDbType.VarBinary, -1).Value = p.ImageBytes != null ? (object)p.ImageBytes : DBNull.Value;
 
                 conn.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar());
+            }
+        }
+
+        // True when the picture saved for this product is exactly as long as the one that was uploaded
+        private bool ImageStored(int productId, int expectedBytes)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConnStr))
+                using (SqlCommand cmd = new SqlCommand("SELECT DATALENGTH(Product_Image) FROM Product WHERE Product_ID = @Id", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", productId);
+                    conn.Open();
+                    object o = cmd.ExecuteScalar();
+                    return o != null && o != DBNull.Value && Convert.ToInt64(o) == expectedBytes;
+                }
+            }
+            catch (SqlException)
+            {
+                return false;
             }
         }
 
@@ -832,6 +875,7 @@ namespace SamsLiquorShop.Manager
         {
             pnlForm.Visible = false;
             pnlHistory.Visible = false;
+            pnlMargin.Visible = false;
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             using (SqlCommand cmd = new SqlCommand(@"
@@ -1075,6 +1119,7 @@ namespace SamsLiquorShop.Manager
         {
             pnlForm.Visible = false;
             pnlStock.Visible = false;
+            pnlMargin.Visible = false;
 
             string name = null;
             using (SqlConnection conn = new SqlConnection(ConnStr))
@@ -1223,46 +1268,299 @@ namespace SamsLiquorShop.Manager
             RefreshAll();
         }
 
-        // ---------- EXPORT / DOWNLOAD ----------
-        // Export PDF / Export Excel: the products matching the current filters
-        protected void btnExport_Command(object sender, CommandEventArgs e)
+        // ---------- MARGIN REPORT ----------
+        protected void btnMarginReport_Click(object sender, EventArgs e)
         {
-            DataTable dt = LoadProductTable();
+            litMessage.Text = "";
+            pnlForm.Visible = false;
+            pnlStock.Visible = false;
+            pnlHistory.Visible = false;
 
-            var table = new ExportTable("Products", "Stock list")
-                .Col("ID", ExportKind.Integer)
-                .Col("Name")
-                .Col("Brand")
-                .Col("Category")
-                .Col("Supplier")
-                .Col("Size (ml)", ExportKind.Integer)
-                .Col("Barcode")
-                .Col("Cost Price", ExportKind.Money)
-                .Col("Selling Price", ExportKind.Money)
-                .Col("Stock", ExportKind.Integer)
-                .Col("Reorder At", ExportKind.Integer)
-                .Col("Stock Level")
-                .Col("Status");
+            if (txtMrFrom.Text.Trim().Length == 0) txtMrFrom.Text = DateTime.Today.AddDays(-29).ToString("yyyy-MM-dd");
+            if (txtMrTo.Text.Trim().Length == 0) txtMrTo.Text = DateTime.Today.ToString("yyyy-MM-dd");
+
+            gvMargin.PageIndex = 0;
+            pnlMargin.Visible = true;
+            RunMarginReport();
+            ScrollTo("prodMarginCard", txtMrFrom.ClientID);
+        }
+
+        protected void btnMrRun_Click(object sender, EventArgs e)
+        {
+            litMessage.Text = "";
+            gvMargin.PageIndex = 0;
+            pnlMargin.Visible = true;
+            RunMarginReport();
+        }
+
+        protected void btnMrClose_Click(object sender, EventArgs e)
+        {
+            pnlMargin.Visible = false;
+        }
+
+        protected void gvMargin_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvMargin.PageIndex = e.NewPageIndex;
+            RunMarginReport();
+        }
+
+        private bool TryReadMarginDates(out DateTime from, out DateTime to)
+        {
+            from = DateTime.MinValue;
+            to = DateTime.MinValue;
+
+            if (!DateTime.TryParseExact(txtMrFrom.Text.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out from)
+                || !DateTime.TryParseExact(txtMrTo.Text.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out to))
+            {
+                ShowMessage("Choose both a \"Sales from\" and a \"Sales to\" date for the margin report.", false);
+                return false;
+            }
+            if (from > to)
+            {
+                ShowMessage("The \"Sales from\" date must be on or before the \"Sales to\" date.", false);
+                return false;
+            }
+            return true;
+        }
+
+        private static string KpiCard(string label, string value)
+        {
+            return "<div class=\"mgr-kpi-card\"><p class=\"mgr-kpi-label\">" + label + "</p><p class=\"mgr-kpi-value\">" + value + "</p></div>";
+        }
+
+        private DataTable LoadMarginTable(DateTime from, DateTime to)
+        {
+            var where = new List<string> { "1 = 1" };
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                cmd.Connection = conn;
+                cmd.Parameters.Add("@From", SqlDbType.DateTime).Value = from.Date;
+                cmd.Parameters.Add("@ToExcl", SqlDbType.DateTime).Value = to.Date.AddDays(1);
+
+                int categoryId;
+                if (int.TryParse(ddlMrCategory.SelectedValue, out categoryId))
+                {
+                    where.Add("p.Category_ID = @CategoryId");
+                    cmd.Parameters.AddWithValue("@CategoryId", categoryId);
+                }
+                if (chkMrActiveOnly.Checked) where.Add("p.Product_Status = 'Active'");
+
+                string orderBy;
+                switch (ddlMrSort.SelectedValue)
+                {
+                    case "margin_hi": orderBy = "MarginPct DESC"; break;
+                    case "margin_lo": orderBy = "MarginPct ASC"; break;
+                    case "units": orderBy = "UnitsSold DESC"; break;
+                    default: orderBy = "ProfitEarned DESC"; break;
+                }
+                orderBy += ", Product_Name, Product_ID";
+
+                cmd.CommandText = @"
+                    SELECT * FROM (
+                        SELECT p.Product_ID, p.Product_Name, ISNULL(p.Product_Brand, '') AS Product_Brand,
+                               p.Product_SizeML, p.Product_Status,
+                               ISNULL(c.Category_Name, 'Uncategorised') AS Category_Name,
+                               p.Product_CostPrice, p.Product_SellingPrice,
+                               CASE WHEN p.Product_SellingPrice > 0
+                                    THEN (p.Product_SellingPrice - p.Product_CostPrice) * 100.0 / p.Product_SellingPrice
+                                    ELSE 0 END AS MarginPct,
+                               ISNULL(x.Units, 0) AS UnitsSold,
+                               ISNULL(x.Revenue, 0) AS Revenue,
+                               ISNULL(x.Revenue, 0) - ISNULL(x.Units, 0) * p.Product_CostPrice AS ProfitEarned,
+                               CASE WHEN ISNULL(x.Revenue, 0) > 0
+                                    THEN (x.Revenue - x.Units * p.Product_CostPrice) * 100.0 / x.Revenue
+                                    ELSE NULL END AS RealisedPct
+                        FROM Product p
+                        LEFT JOIN Category c ON c.Category_ID = p.Category_ID
+                        LEFT JOIN (
+                            SELECT sl.Product_ID,
+                                   SUM(sl.SaleLine_Quantity) AS Units,
+                                   SUM(sl.SaleLine_Subtotal) AS Revenue
+                            FROM SaleLine sl
+                            INNER JOIN Sale s ON s.Sale_ID = sl.Sale_ID
+                            WHERE s.Sale_DateTime >= @From AND s.Sale_DateTime < @ToExcl
+                              AND " + ValidSaleSql + @"
+                            GROUP BY sl.Product_ID
+                        ) x ON x.Product_ID = p.Product_ID
+                        WHERE " + string.Join(" AND ", where) + @"
+                    ) t
+                    ORDER BY " + orderBy;
+
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                {
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+                    return dt;
+                }
+            }
+        }
+
+        private void RunMarginReport()
+        {
+            DateTime from, to;
+            if (!TryReadMarginDates(out from, out to))
+            {
+                litMrSummary.Text = "";
+                gvMargin.DataSource = null;
+                gvMargin.DataBind();
+                return;
+            }
+
+            DataTable dt;
+            try
+            {
+                dt = LoadMarginTable(from, to);
+            }
+            catch (SqlException)
+            {
+                ShowMessage("The margin report could not be loaded. Please try again.", false);
+                return;
+            }
+
+            decimal revenue = 0, cost = 0;
+            int lowMargin = 0, noSales = 0;
+            foreach (DataRow r in dt.Rows)
+            {
+                long units = Convert.ToInt64(r["UnitsSold"]);
+                revenue += Convert.ToDecimal(r["Revenue"]);
+                cost += units * Convert.ToDecimal(r["Product_CostPrice"]);
+                if (Convert.ToDecimal(r["MarginPct"]) < LowMarginPct) lowMargin++;
+                if (units == 0) noSales++;
+            }
+
+            decimal profit = revenue - cost;
+            string realised = revenue > 0
+                ? (profit * 100m / revenue).ToString("0.0", CultureInfo.InvariantCulture) + "%"
+                : "\u2014";
+
+            litMrSummary.Text = "<div class=\"mgr-kpi-grid\">"
+                + KpiCard("Revenue", revenue.ToString("C", CultureInfo.CurrentCulture))
+                + KpiCard("Cost of goods sold", cost.ToString("C", CultureInfo.CurrentCulture))
+                + KpiCard("Gross profit", profit.ToString("C", CultureInfo.CurrentCulture))
+                + KpiCard("Realised margin", realised)
+                + KpiCard("Under " + LowMarginPct.ToString("0") + "% list margin", lowMargin.ToString())
+                + KpiCard("No sales in period", noSales.ToString())
+                + "</div>";
+
+            int pages = (int)Math.Ceiling(dt.Rows.Count / (double)gvMargin.PageSize);
+            if (pages > 0 && gvMargin.PageIndex >= pages) gvMargin.PageIndex = pages - 1;
+
+            gvMargin.DataSource = dt;
+            gvMargin.DataBind();
+        }
+
+        protected string MarginText(object pct)
+        {
+            return Convert.ToDecimal(pct).ToString("0.0", CultureInfo.InvariantCulture) + "%";
+        }
+
+        // "inactive" (red) = very low, "low" (amber), "active" (green) = healthy
+        protected string MarginClass(object pct)
+        {
+            decimal m = Convert.ToDecimal(pct);
+            if (m < VeryLowMarginPct) return "inactive";
+            return m < LowMarginPct ? "low" : "active";
+        }
+
+        protected string MarginLabel(object pct)
+        {
+            string cls = MarginClass(pct);
+            return cls == "inactive" ? "Very low" : (cls == "low" ? "Low" : "Healthy");
+        }
+
+        protected string RealisedText(object pct)
+        {
+            if (pct == null || pct == DBNull.Value) return "\u2014";
+            return Convert.ToDecimal(pct).ToString("0.0", CultureInfo.InvariantCulture) + "%";
+        }
+
+        protected void btnMrExport_Click(object sender, EventArgs e)
+        {
+            DateTime from, to;
+            if (!TryReadMarginDates(out from, out to))
+            {
+                pnlMargin.Visible = true;
+                return;
+            }
+
+            DataTable dt = LoadMarginTable(from, to);
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Margin report," + from.ToString("yyyy-MM-dd") + " to " + to.ToString("yyyy-MM-dd"));
+            sb.AppendLine("Product ID,Name,Brand,Size (ml),Category,Status,Cost Price,Selling Price,List Margin %,Units Sold,Revenue,Profit Earned,Realised Margin %");
 
             foreach (DataRow r in dt.Rows)
             {
-                table.Add(
-                    r["Product_ID"],
-                    r["Product_Name"],
-                    r["Product_Brand"],
-                    r["Category_Name"],
-                    r["Supplier_Name"],
-                    r["Product_SizeML"],
-                    Convert.ToString(r["Product_BarcodeNumber"]),
-                    r["Product_CostPrice"],
-                    r["Product_SellingPrice"],
-                    r["Product_QuantityInStock"],
-                    r["Product_ReorderQuantity"],
-                    StockLabel(r["Product_QuantityInStock"], r["Product_ReorderQuantity"]),
-                    r["Product_Status"]);
+                sb.AppendLine(string.Join(",", new[]
+                {
+                    Csv(r["Product_ID"]),
+                    Csv(r["Product_Name"]),
+                    Csv(r["Product_Brand"]),
+                    Csv(r["Product_SizeML"]),
+                    Csv(r["Category_Name"]),
+                    Csv(r["Product_Status"]),
+                    CsvNum(Convert.ToDecimal(r["Product_CostPrice"])),
+                    CsvNum(Convert.ToDecimal(r["Product_SellingPrice"])),
+                    CsvNum(Convert.ToDecimal(r["MarginPct"])),
+                    Csv(r["UnitsSold"]),
+                    CsvNum(Convert.ToDecimal(r["Revenue"])),
+                    CsvNum(Convert.ToDecimal(r["ProfitEarned"])),
+                    r["RealisedPct"] == DBNull.Value ? "\"\"" : CsvNum(Convert.ToDecimal(r["RealisedPct"]))
+                }));
             }
 
-            ExportHelper.Send(Response, table, "products", e.CommandArgument.ToString());
+            Response.Clear();
+            Response.ContentType = "text/csv";
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.AddHeader("Content-Disposition", "attachment; filename=margin-report-" + from.ToString("yyyyMMdd") + "-" + to.ToString("yyyyMMdd") + ".csv");
+            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            Response.Write(sb.ToString());
+            Response.End();
+        }
+
+        // Numbers are written as-is (the text Csv() would put an apostrophe in front of a negative profit)
+        private static string CsvNum(decimal value)
+        {
+            return "\"" + value.ToString("0.00", CultureInfo.InvariantCulture) + "\"";
+        }
+
+        // ---------- EXPORT / DOWNLOAD ----------
+        protected void btnExport_Click(object sender, EventArgs e)
+        {
+            DataTable dt = LoadProductTable();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Product ID,Name,Brand,Category,Supplier,Size (ml),Barcode,Cost Price,Selling Price,Stock,Reorder At,Stock Level,Status");
+
+            foreach (DataRow r in dt.Rows)
+            {
+                sb.AppendLine(string.Join(",", new[]
+                {
+                    Csv(r["Product_ID"]),
+                    Csv(r["Product_Name"]),
+                    Csv(r["Product_Brand"]),
+                    Csv(r["Category_Name"]),
+                    Csv(r["Supplier_Name"]),
+                    Csv(r["Product_SizeML"]),
+                    Csv(r["Product_BarcodeNumber"]),
+                    Csv(Convert.ToDecimal(r["Product_CostPrice"]).ToString("0.00", CultureInfo.InvariantCulture)),
+                    Csv(Convert.ToDecimal(r["Product_SellingPrice"]).ToString("0.00", CultureInfo.InvariantCulture)),
+                    Csv(r["Product_QuantityInStock"]),
+                    Csv(r["Product_ReorderQuantity"]),
+                    Csv(StockLabel(r["Product_QuantityInStock"], r["Product_ReorderQuantity"])),
+                    Csv(r["Product_Status"])
+                }));
+            }
+
+            Response.Clear();
+            Response.ContentType = "text/csv";
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.AddHeader("Content-Disposition", "attachment; filename=products-" + DateTime.Today.ToString("yyyyMMdd") + ".csv");
+            Response.BinaryWrite(Encoding.UTF8.GetPreamble());
+            Response.Write(sb.ToString());
+            Response.End();
         }
 
         protected void btnDownloadLog_Click(object sender, EventArgs e)
@@ -1389,11 +1687,19 @@ namespace SamsLiquorShop.Manager
 
         private void ScrollTo(string elementId, string focusClientId)
         {
-            string js = "var f=document.getElementById('" + elementId + "'); if(f){f.scrollIntoView({behavior:'smooth',block:'start'});}";
-            if (!string.IsNullOrEmpty(focusClientId))
-            {
-                js += " var i=document.getElementById('" + focusClientId + "'); if(i){setTimeout(function(){i.focus();},350);}";
-            }
+            // Scrolls below the sticky header, and focuses the box without letting the focus
+            // jump cancel the smooth scroll.
+            string js =
+                "(function(){" +
+                "var f=document.getElementById('" + elementId + "'); if(!f) return;" +
+                "var hdr=document.querySelector('.site-header');" +
+                "var offset=(hdr?hdr.getBoundingClientRect().height:60)+32;" +
+                "var top=f.getBoundingClientRect().top+window.pageYOffset-offset;" +
+                "window.scrollTo({top:Math.max(top,0),behavior:'smooth'});" +
+                (string.IsNullOrEmpty(focusClientId) ? "" :
+                    "var i=document.getElementById('" + focusClientId + "');" +
+                    "if(i){setTimeout(function(){i.focus({preventScroll:true});},500);}") +
+                "})();";
             ScriptManager.RegisterStartupScript(this, GetType(), "scrollTo", js, true);
         }
     }
