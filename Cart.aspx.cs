@@ -689,11 +689,11 @@ namespace SamsLiquorShop
             if (CartHelper.GetCart(Session).Count == 0) return;
             // Minimum order value for delivery
             decimal merchandiseTotal = CartHelper.GetCartTotal(Session);
-            if (merchandiseTotal < MinimumDeliveryOrder)
+            if (merchandiseTotal < MinDeliveryOrder)
             {
                 litPromoMessage.Text = "<span class='field-hint invalid'>The minimum order for delivery is R"
-                    + MinimumDeliveryOrder.ToString("N0") + ". Please add R"
-                    + (MinimumDeliveryOrder - merchandiseTotal).ToString("N2") + " more to continue.</span>";
+                    + MinDeliveryOrder.ToString("N0") + ". Please add R"
+                    + (MinDeliveryOrder - merchandiseTotal).ToString("N2") + " more to continue.</span>";
                 return;
             }
 
