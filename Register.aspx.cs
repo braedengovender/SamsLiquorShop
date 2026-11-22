@@ -80,6 +80,35 @@ namespace SamsLiquorShop
             args.IsValid = chkTerms.Checked;
         }
 
+        // DEMO ID photo check: real file checks only, no actual OCR / ID matching.
+        protected void cvIdPhoto_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            args.IsValid = false;
+
+            if (!fuIdPhoto.HasFile) return;
+
+            string ext = System.IO.Path.GetExtension(fuIdPhoto.FileName).ToLowerInvariant();
+            if (ext != ".jpg" && ext != ".jpeg" && ext != ".png") return;
+
+            if (fuIdPhoto.PostedFile.ContentLength > 5 * 1024 * 1024) return;
+
+            try
+            {
+                using (var img = System.Drawing.Image.FromStream(fuIdPhoto.PostedFile.InputStream))
+                {
+                    bool realFormat = img.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Jpeg)
+                                   || img.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Png);
+
+                    args.IsValid = realFormat && img.Width >= 400 && img.Height >= 250;
+                }
+            }
+            catch (ArgumentException)
+            {
+                // Not a valid image file (e.g. renamed .exe).
+                args.IsValid = false;
+            }
+        }
+
         // ---------- Create the account ----------
         protected void btnRegister_Click(object sender, EventArgs e)
         {

@@ -416,15 +416,15 @@
     <section class="shell home-section">
       <div class="glass stats-bar">
         <div class="stat-item">
-          <p class="stat-number">100+</p>
+          <p class="stat-number" data-count="100" data-suffix="+">100+</p>
           <p class="stat-label">Unique products listed on our website</p>
         </div>
         <div class="stat-item">
-          <p class="stat-number">10,000+</p>
+          <p class="stat-number" data-count="10000" data-suffix="+">10,000+</p>
           <p class="stat-label">Sales made</p>
         </div>
         <div class="stat-item">
-          <p class="stat-number">2000+</p>
+          <p class="stat-number" data-count="2000" data-suffix="+">2,000+</p>
           <p class="stat-label">Subscribed newsletter customers</p>
         </div>
       </div>
@@ -627,6 +627,52 @@
                 });
 
                 if ($('quizOptions')) renderQuestion();
+            })();
+        </script>
+
+        <script>
+            // Stats count up the first time they scroll into view
+            (function () {
+                var DURATION_MS = 4000;
+                var nums = document.querySelectorAll('.stat-number[data-count]');
+                if (!nums.length) return;
+
+                function format(n) {
+                    return Math.round(n).toLocaleString('en-ZA').replace(/\u00a0/g, ',');
+                }
+
+                function animate(el) {
+                    var target = Number(el.getAttribute('data-count'));
+                    var suffix = el.getAttribute('data-suffix') || '';
+                    var start = null;
+
+                    function step(ts) {
+                        if (start === null) start = ts;
+                        var p = Math.min((ts - start) / DURATION_MS, 1);
+                        var eased = p;   // constant speed
+                        el.textContent = format(target * eased) + suffix;
+                        if (p < 1) requestAnimationFrame(step);
+                    }
+                    requestAnimationFrame(step);
+                }
+
+                var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (reduce || !('IntersectionObserver' in window)) return;   // leave the final numbers showing
+
+                // Start from zero so there's no flash of the final number
+                nums.forEach(function (el) {
+                    el.textContent = '0' + (el.getAttribute('data-suffix') || '');
+                });
+
+                var observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (!entry.isIntersecting) return;
+                        animate(entry.target);
+                        observer.unobserve(entry.target);   // only count up once
+                    });
+                }, { threshold: 0.6 });
+
+                nums.forEach(function (el) { observer.observe(el); });
             })();
         </script>
 
