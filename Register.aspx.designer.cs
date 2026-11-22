@@ -69,6 +69,33 @@ namespace SamsLiquorShop
         protected global::System.Web.UI.WebControls.TextBox txtPhone;
 
         /// <summary>
+        /// fuIdPhoto control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload fuIdPhoto;
+
+        /// <summary>
+        /// hdnIdPhotoOk control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnIdPhotoOk;
+
+        /// <summary>
+        /// cvIdPhoto control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvIdPhoto;
+
+        /// <summary>
         /// txtEmail control.
         /// </summary>
         /// <remarks>

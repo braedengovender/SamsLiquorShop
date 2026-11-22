@@ -45,6 +45,42 @@
                         </div>
 
                         <div class="login-field">
+                            <label for="fuIdPhoto">Photo of your ID <span class="register-optional">(JPG or PNG, max 5 MB)</span></label>
+                            <asp:FileUpload ID="fuIdPhoto" runat="server" ClientIDMode="Static" CssClass="login-input" accept="image/jpeg,image/png" onchange="onIdPhotoChange(this)" />
+                            <asp:HiddenField ID="hdnIdPhotoOk" runat="server" ClientIDMode="Static" Value="0" />
+
+                            <div id="idScan" class="id-scan" style="display:none;">
+                                <img id="idScanThumb" class="id-scan-thumb" alt="ID preview" />
+                                <div class="id-scan-info">
+                                    <div id="idScanStatus" class="id-scan-status"></div>
+                                    <div id="idScanBarWrap" class="id-scan-bar"><div id="idScanBarFill"></div></div>
+                                    <div id="idScanResult" class="id-scan-result"></div>
+                                    <div class="id-scan-demo">Demo mode: no real image analysis is performed.</div>
+                                </div>
+                            </div>
+
+                            <asp:CustomValidator ID="cvIdPhoto" runat="server" CssClass="field-error" Display="Dynamic"
+                                ErrorMessage="Please upload a clear photo of your ID and wait for it to be verified."
+                                ClientValidationFunction="validateIdPhoto" OnServerValidate="cvIdPhoto_ServerValidate"
+                                ValidationGroup="RegisterForm" />
+                        </div>
+
+                        <style>
+                            .id-scan { display:flex; gap:14px; align-items:flex-start; margin-top:10px; padding:12px; border:1px solid var(--glass-border); border-radius:14px; background:#fff; }
+                            .id-scan-thumb { width:110px; height:72px; object-fit:cover; border-radius:8px; border:1px solid var(--glass-border); }
+                            .id-scan-info { flex:1; min-width:0; }
+                            .id-scan-status { font-weight:600; font-size:0.92rem; margin-bottom:6px; }
+                            .id-scan-status.ok { color:#1a7f37; }
+                            .id-scan-status.fail { color:#c0392b; }
+                            .id-scan-bar { height:6px; background:#e8ecf2; border-radius:3px; overflow:hidden; }
+                            #idScanBarFill { height:100%; width:0; background:#4285F4; transition:width .6s ease; }
+                            .id-scan-result { font-size:0.85rem; margin-top:8px; }
+                            .id-scan-result div { display:flex; gap:8px; padding:2px 0; }
+                            .id-scan-result span:first-child { color:#6b7280; min-width:110px; }
+                            .id-scan-demo { font-size:0.72rem; color:#9ca3af; margin-top:8px; }
+                        </style>
+
+                        <div class="login-field">
                             <label for="txtEmail">Email address</label>
                             <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" TextMode="Email" MaxLength="256" autocomplete="email" />
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Email is required." ValidationGroup="RegisterForm" />
@@ -563,7 +599,163 @@
                         }
                     }
 
+                    // ---------- Demo ID photo "AI" check ----------
+                    var ID_MAX_BYTES = 5 * 1024 * 1024;
+                    var ID_MIN_W = 400, ID_MIN_H = 250;
+                    var idScanTimer = null;
+
+                    function idEl(id) { return document.getElementById(id); }
+
+                    function validateIdPhoto(src, args) {
+                        args.IsValid = idEl('hdnIdPhotoOk').value === '1';
+                    }
+
+                    function getIdFormValues() {
+                        return {
+                            first: idEl('<%= txtFirstName.ClientID %>').value.trim(),
+                            last: idEl('<%= txtLastName.ClientID %>').value.trim(),
+                            id: idEl('txtIdNumber').value.trim()
+                        };
+                    }
+
+                    function resetIdScan(clearFile) {
+                        clearTimeout(idScanTimer);
+                        idEl('hdnIdPhotoOk').value = '0';
+                        idEl('idScan').style.display = 'none';
+                        idEl('idScanResult').innerHTML = '';
+                        idEl('idScanBarFill').style.width = '0';
+                        if (clearFile) idEl('fuIdPhoto').value = '';
+                    }
+
+                    function showIdStatus(text, cls, showBar) {
+                        var s = idEl('idScanStatus');
+                        s.textContent = text;
+                        s.className = 'id-scan-status' + (cls ? ' ' + cls : '');
+                        idEl('idScanBarWrap').style.display = showBar ? 'block' : 'none';
+                    }
+
+                    function failIdScan(message) {
+                        resetIdScan(true);
+                        idEl('idScanThumb').style.display = 'none';
+                        idEl('idScan').style.display = 'flex';
+                        showIdStatus(message, 'fail', false);
+                    }
+
+                    function idDobText(id) {
+                        var yy = parseInt(id.substring(0, 2), 10);
+                        var mm = parseInt(id.substring(2, 4), 10);
+                        var dd = parseInt(id.substring(4, 6), 10);
+                        var fullYear = (yy > new Date().getFullYear() % 100 ? 1900 : 2000) + yy;
+                        var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                        return dd + ' ' + months[mm - 1] + ' ' + fullYear;
+                    }
+
+                    function onIdPhotoChange(input) {
+                        var file = input.files && input.files[0];
+                        resetIdScan(false);
+                        if (!file) return;
+
+                        var v = getIdFormValues();
+                        var hint = idEl('idNumberHint');
+                        if (!v.first || !v.last || v.id.length !== 13 || hint.className.indexOf('invalid') !== -1) {
+                            failIdScan('Enter your first name, last name and a valid ID number above, then choose your photo again.');
+                            return;
+                        }
+                        if (!/^image\/(jpeg|png)$/.test(file.type)) {
+                            failIdScan('Please upload a JPG or PNG image.');
+                            return;
+                        }
+                        if (file.size > ID_MAX_BYTES) {
+                            failIdScan('That image is too large. Maximum size is 5 MB.');
+                            return;
+                        }
+
+                        var url = URL.createObjectURL(file);
+                        var img = new Image();
+                        img.onerror = function () {
+                            URL.revokeObjectURL(url);
+                            failIdScan("We couldn't read that image. Please try another photo.");
+                        };
+                        img.onload = function () {
+                            if (img.width < ID_MIN_W || img.height < ID_MIN_H) {
+                                URL.revokeObjectURL(url);
+                                failIdScan('That image is too small or low-resolution. Please upload a clearer photo of your ID.');
+                                return;
+                            }
+                            var thumb = idEl('idScanThumb');
+                            thumb.src = url;
+                            thumb.style.display = 'block';
+                            runIdScan(file, v);
+                        };
+                        img.src = url;
+                    }
+
+                    function runIdScan(file, v) {
+                        var steps = [
+                            'Uploading image...',
+                            'Analysing your ID...',
+                            'Reading name and ID number...',
+                            'Matching against your details...'
+                        ];
+                        var i = 0;
+                        idEl('idScan').style.display = 'flex';
+                        idEl('idScanResult').innerHTML = '';
+                        idEl('idScanBarFill').style.width = '0';
+
+                        function next() {
+                            if (i < steps.length) {
+                                showIdStatus(steps[i], '', true);
+                                idEl('idScanBarFill').style.width = (((i + 1) / steps.length) * 100) + '%';
+                                i++;
+                                idScanTimer = setTimeout(next, 750);
+                            } else {
+                                finishIdScan(file, v);
+                            }
+                        }
+                        next();
+                    }
+
+                    function addIdRow(container, label, value) {
+                        var row = document.createElement('div');
+                        var a = document.createElement('span');
+                        var b = document.createElement('span');
+                        a.textContent = label;
+                        b.textContent = value;
+                        row.appendChild(a);
+                        row.appendChild(b);
+                        container.appendChild(row);
+                    }
+
+                    function finishIdScan(file, v) {
+                        // Demo: "extracted" values are the ones the user typed.
+                        var confidence = (94 + (file.size % 50) / 10).toFixed(1);
+                        var out = idEl('idScanResult');
+                        out.innerHTML = '';
+                        addIdRow(out, 'Name on ID', v.first + ' ' + v.last);
+                        addIdRow(out, 'ID number', v.id);
+                        addIdRow(out, 'Date of birth', idDobText(v.id));
+                        addIdRow(out, 'Match confidence', confidence + '%');
+
+                        showIdStatus('ID verified \u2713', 'ok', false);
+                        idEl('hdnIdPhotoOk').value = '1';
+                    }
+
+                    // If the user edits the typed details after verifying, the check no longer applies.
+                    function watchIdDetails() {
+                        var ids = ['<%= txtFirstName.ClientID %>', '<%= txtLastName.ClientID %>', 'txtIdNumber'];
+                        ids.forEach(function (id) {
+                            var el = idEl(id);
+                            if (!el) return;
+                            el.addEventListener('input', function () {
+                                if (idEl('idScan').style.display !== 'none' || idEl('hdnIdPhotoOk').value === '1') {
+                                    resetIdScan(true);
+                                }
+                            });
+                        });
+                    }
+
                     window.addEventListener('load', initAddressAutocomplete);
+                    window.addEventListener('load', watchIdDetails);
                 </script>
             </div>
         </div>
