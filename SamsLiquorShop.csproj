@@ -306,6 +306,7 @@
     <Content Include="Account\Web.config" />
     <Content Include="EmailSecrets.config" />
     <Content Include="ProductImage.ashx" />
+    <Content Include="ChatbotReply.ashx" />
     <Content Include="OtpSecrets.config" />
     <None Include="Properties\PublishProfiles\IST-WST-Group-15 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
@@ -570,6 +571,9 @@
     <Compile Include="Helpers\PromoHelper.cs" />
     <Compile Include="Helpers\ReceiptHelper.cs" />
     <Compile Include="Helpers\RecaptchaHelper.cs" />
+    <Compile Include="ChatbotReply.ashx.cs">
+      <DependentUpon>ChatbotReply.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Customer\Receipt.aspx.cs">
       <DependentUpon>Receipt.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

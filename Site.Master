@@ -313,6 +313,8 @@
             <button type="button" class="quick-reply" onclick="askQuick('location')">Where are you located?</button>
             <button type="button" class="quick-reply" onclick="askQuick('delivery')">Do you deliver?</button>
             <button type="button" class="quick-reply" onclick="askQuick('loyalty')">How does the loyalty card work?</button>
+            <button type="button" class="quick-reply" onclick="askServer('What specials do you have?')">Today's specials</button>
+            <button type="button" class="quick-reply" onclick="askServer('How many points do I have?')">My points</button>
           </div>
         </div>
         <div class="chatbot-input-row">
@@ -1004,11 +1006,14 @@
 
             setTimeout(function () {
                 var text = userMsg.textContent.toLowerCase();
-                var reply = "Thanks for your message! One of our team will get back to you shortly.";
+                var reply = null;
                 if (text.indexOf('hour') !== -1 || text.indexOf('open') !== -1) reply = chatAnswers.hours;
-                else if (text.indexOf('where') !== -1 || text.indexOf('locat') !== -1 || text.indexOf('address') !== -1) reply = chatAnswers.location;
+                else if ((text.indexOf('where') !== -1 && text.indexOf('order') === -1) || text.indexOf('locat') !== -1 || text.indexOf('address') !== -1) reply = chatAnswers.location;
                 else if (text.indexOf('deliver') !== -1) reply = chatAnswers.delivery;
-                else if (text.indexOf('loyal') !== -1 || text.indexOf('reward') !== -1) reply = chatAnswers.loyalty;
+                else if ((text.indexOf('loyal') !== -1 || text.indexOf('reward') !== -1) && text.indexOf('my ') === -1) reply = chatAnswers.loyalty;
+
+                // Anything that isn't a store-info question is answered from the database (ChatbotReply.ashx)
+                if (reply === null) { askServer(userMsg.textContent, true); return; }
 
                 var botMsg = document.createElement('div');
                 botMsg.className = 'chatbot-msg bot';
@@ -1019,6 +1024,86 @@
 
             messages.scrollTop = messages.scrollHeight;
             return false;
+        }
+
+        // Asks ChatbotReply.ashx (products, prices, stock, specials, categories, the customer's points and last order).
+        // alreadyShown = the user's message bubble is already on screen. Everything is added with textContent,
+        // so nothing in a message or product name can inject HTML.
+        function askServer(question, alreadyShown) {
+            var messages = document.getElementById('chatbotMessages');
+
+            if (!alreadyShown) {
+                var userMsg = document.createElement('div');
+                userMsg.className = 'chatbot-msg user';
+                userMsg.textContent = question;
+                messages.appendChild(userMsg);
+            }
+
+            var typing = document.createElement('div');
+            typing.className = 'chatbot-msg bot chatbot-typing';
+            typing.textContent = 'Typing…';
+            messages.appendChild(typing);
+            messages.scrollTop = messages.scrollHeight;
+
+            fetch('/ChatbotReply.ashx?q=' + encodeURIComponent(question), { credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (data) { typing.remove(); showServerReply(data); })
+                .catch(function () {
+                    typing.remove();
+                    showServerReply({ reply: "Thanks for your message! One of our team will get back to you shortly." });
+                });
+        }
+
+        function showServerReply(data) {
+            var messages = document.getElementById('chatbotMessages');
+            var bot = document.createElement('div');
+            bot.className = 'chatbot-msg bot';
+
+            var p = document.createElement('div');
+            p.textContent = data.reply || '';
+            bot.appendChild(p);
+
+            (data.products || []).forEach(function (prod) {
+                var card = document.createElement('a');
+                card.className = 'chatbot-product';
+                card.href = prod.url;
+                var img = document.createElement('img');
+                img.src = prod.image;
+                img.alt = '';
+                img.loading = 'lazy';
+                var info = document.createElement('span');
+                info.className = 'chatbot-product-info';
+                var name = document.createElement('strong');
+                name.textContent = prod.name;
+                var price = document.createElement('span');
+                price.className = 'chatbot-product-price';
+                price.textContent = prod.price + ' ';
+                if (prod.oldPrice) {
+                    var old = document.createElement('s');
+                    old.textContent = prod.oldPrice;
+                    price.appendChild(old);
+                }
+                var stock = document.createElement('span');
+                stock.className = 'chatbot-product-stock' + (prod.stock === 'Out of stock' ? ' is-out' : '');
+                stock.textContent = prod.stock;
+                info.appendChild(name);
+                info.appendChild(price);
+                info.appendChild(stock);
+                card.appendChild(img);
+                card.appendChild(info);
+                bot.appendChild(card);
+            });
+
+            if (data.link && data.link.url) {
+                var a = document.createElement('a');
+                a.className = 'chatbot-link';
+                a.href = data.link.url;
+                a.textContent = data.link.text + ' →';
+                bot.appendChild(a);
+            }
+
+            messages.appendChild(bot);
+            messages.scrollTop = messages.scrollHeight;
         }
 
         function showCookieBanner() {
