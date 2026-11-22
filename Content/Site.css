@@ -6006,6 +6006,17 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     pointer-events: none;
 }
 
+/* Wishlist image: same colours in light and dark mode (no invert filter) */
+.wish-img {
+    width: 20px;
+    height: 20px;
+    max-width: none;
+    display: block;
+    object-fit: contain;
+    pointer-events: none;
+    filter: none;
+}
+
 .rating {
     display: flex;
     align-items: center;

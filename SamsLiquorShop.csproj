@@ -224,6 +224,7 @@
     <Content Include="Images\icons\moon.png" />
     <Content Include="Images\icons\search.png" />
     <Content Include="Images\icons\sun.png" />
+    <Content Include="Images\icons\wishlist.png" />
     <Content Include="Images\logo-cropped.png" />
     <Content Include="Images\logo-spaced.png" />
     <Content Include="Images\logo.png" />
