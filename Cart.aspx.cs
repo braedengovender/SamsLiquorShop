@@ -15,12 +15,16 @@ namespace SamsLiquorShop
     {
         private string ConnStr => ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
         private const decimal FreeDeliveryThreshold = 500m;
-        private const decimal DeliveryFee = 60m;
+        private const decimal DeliveryFee = 70m;
+        private const decimal MinDeliveryOrder = 250m;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            litCartMessage.Text = "";
+
             if (!IsPostBack)
             {
+                ValidateCartForCheckout();   // trims quantities / removes unavailable items and tells the customer
                 BindCart();
             }
         }
@@ -70,18 +74,27 @@ namespace SamsLiquorShop
             decimal subtotal = CartHelper.GetCartTotal(Session);
             decimal deliveryFee = subtotal >= FreeDeliveryThreshold ? 0m : DeliveryFee;
 
-            decimal discountPercent = 0m;
-            string promoCode = Session["PromoCode"] as string;
-            if (!string.IsNullOrEmpty(promoCode))
-            {
-                discountPercent = GetPromoDiscount(promoCode);
-            }
-
-            decimal discountAmount = Math.Round(subtotal * discountPercent / 100m, 2);
-            decimal grandTotal = subtotal - discountAmount + deliveryFee;
+            decimal discountAmount = GetPromoAmount(subtotal);
+            decimal grandTotal = subtotal - discountAmount;   // delivery is added at checkout (collection is free)
 
             litSubtotal.Text = "R" + subtotal.ToString("N2");
-            litDelivery.Text = deliveryFee == 0 ? "Free" : "R" + deliveryFee.ToString("N2");
+            if (subtotal < MinDeliveryOrder)
+            {
+                litDelivery.Text = "Collection only";
+                litDeliveryHint.Text = "<p class='cart-delivery-hint'>Add R"
+                    + (MinDeliveryOrder - subtotal).ToString("N2") + " more to unlock delivery.</p>";
+            }
+            else if (deliveryFee == 0)
+            {
+                litDelivery.Text = "Free";
+                litDeliveryHint.Text = "";
+            }
+            else
+            {
+                litDelivery.Text = "R" + deliveryFee.ToString("N2");
+                litDeliveryHint.Text = "<p class='cart-delivery-hint'>Add R"
+                    + (FreeDeliveryThreshold - subtotal).ToString("N2") + " more for free delivery.</p>";
+            }
 
             if (discountAmount > 0)
             {
@@ -97,18 +110,33 @@ namespace SamsLiquorShop
             BindPoints();
         }
 
-        // Placeholder promo logic — swap this for a real Promo/Discount table lookup when you have one.
-        private decimal GetPromoDiscount(string code)
+        // Promo discount in rand for the code held in Session, re-checked against the current cart and customer.
+        // A code that stops being valid (cart dropped under the minimum, customer logged out) is removed.
+        private decimal GetPromoAmount(decimal goodsTotal)
         {
-            switch (code.Trim().ToUpperInvariant())
-            {
-                case "SAVE10": return 10m;
-                case "SAVE20": return 20m;
-                default: return 0m;
-            }
+            string code = Session["PromoCode"] as string;
+            if (string.IsNullOrEmpty(code)) return 0m;
+
+            PromoHelper.PromoResult result = PromoHelper.Validate(code, CurrentCustomerId(), goodsTotal);
+            if (result.IsValid) return result.DiscountAmount;
+
+            if (!result.IsError) Session["PromoCode"] = null;   // keep the code if it was only a database hiccup
+            litPromoMessage.Text = "<span class='field-hint invalid'>" + Server.HtmlEncode(result.Message)
+                + (result.IsError ? "" : " The code was removed.") + "</span>";
+            return 0m;
         }
 
         private void LoadRecommended()
+        {
+            try { LoadRecommendedCore(); }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                pnlRecommended.Visible = false;   // the cart still works without recommendations
+            }
+        }
+
+        private void LoadRecommendedCore()
         {
             var cart = CartHelper.GetCart(Session);
             var cartIds = new HashSet<int>(cart.Select(c => c.ProductId));
@@ -255,10 +283,10 @@ namespace SamsLiquorShop
             switch (e.CommandName)
             {
                 case "Increment":
-                    if (item != null) CartHelper.UpdateQuantity(Session, productId, item.Quantity + 1);
+                    if (item != null) SetQuantity(productId, item.Quantity + 1);
                     break;
                 case "Decrement":
-                    if (item != null) CartHelper.UpdateQuantity(Session, productId, item.Quantity - 1);
+                    if (item != null) SetQuantity(productId, item.Quantity - 1);
                     break;
                 case "RemoveItem":
                     CartHelper.RemoveFromCart(Session, productId);
@@ -321,21 +349,239 @@ namespace SamsLiquorShop
 
         protected void btnApplyPromo_Click(object sender, EventArgs e)
         {
-            string code = txtPromoCode.Text.Trim();
-            decimal discount = GetPromoDiscount(code);
+            string code = (txtPromoCode.Text ?? "").Trim();
 
-            if (discount > 0)
+            if (code.Length == 0)
             {
-                Session["PromoCode"] = code;
-                litPromoMessage.Text = "<span class='field-hint valid'>Promo code applied: " + discount + "% off</span>";
+                litPromoMessage.Text = "<span class='field-hint invalid'>Please enter a promo code.</span>";
+                return;
+            }
+            if (code.Length > 20 || !System.Text.RegularExpressions.Regex.IsMatch(code, "^[A-Za-z0-9_-]+$"))
+            {
+                litPromoMessage.Text = "<span class='field-hint invalid'>Promo codes only contain letters, numbers, - and _.</span>";
+                return;
+            }
+            PromoHelper.PromoResult promo = PromoHelper.Validate(code, CurrentCustomerId(), CartHelper.GetCartTotal(Session));
+
+            if (promo.IsValid)
+            {
+                Session["PromoCode"] = promo.Code;
+                litPromoMessage.Text = "<span class='field-hint valid'>" + Server.HtmlEncode(promo.Message) + "</span>";
             }
             else
             {
                 Session["PromoCode"] = null;
-                litPromoMessage.Text = "<span class='field-hint invalid'>That promo code isn't valid.</span>";
+                litPromoMessage.Text = "<span class='field-hint invalid'>" + Server.HtmlEncode(promo.Message) + "</span>";
             }
 
             BindCart();
+        }
+
+        // ---------- Quantity, stock and error handling ----------
+        private const int MaxPerLine = 99;
+        private readonly Dictionary<int, int> _stockCache = new Dictionary<int, int>();
+
+        private void LogError(Exception ex)
+        {
+            System.Diagnostics.Trace.TraceError(ex.ToString());
+        }
+
+        // html must already be encoded
+        private void ShowMessage(string html, bool isError)
+        {
+            litCartMessage.Text = "<div class='field-hint " + (isError ? "invalid" : "valid") + "' role='alert'>" + html + "</div>";
+        }
+
+        // Stock per product; inactive or missing products count as 0. Throws on a database error.
+        private Dictionary<int, int> LoadStock(IEnumerable<int> productIds)
+        {
+            var result = new Dictionary<int, int>();
+            var ids = productIds.Distinct().ToList();
+            if (ids.Count == 0) return result;
+
+            string sql = "SELECT Product_ID, Product_QuantityInStock, Product_Status FROM Product WHERE Product_ID IN (" + string.Join(",", ids) + ")";
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                conn.Open();
+                using (SqlDataReader r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        bool active = string.Equals(Convert.ToString(r[2]).Trim(), "Active", StringComparison.OrdinalIgnoreCase);
+                        int stock = r.IsDBNull(1) ? 0 : Convert.ToInt32(r[1]);
+                        result[Convert.ToInt32(r[0])] = active ? Math.Max(stock, 0) : 0;
+                    }
+                }
+            }
+            return result;
+        }
+
+        // Cached per request. Loads the whole cart in one query. Throws on a database error.
+        private int GetStock(int productId)
+        {
+            int s;
+            if (_stockCache.TryGetValue(productId, out s)) return s;
+
+            var ids = CartHelper.GetCart(Session).Select(c => c.ProductId).ToList();
+            if (!ids.Contains(productId)) ids.Add(productId);
+            foreach (var kv in LoadStock(ids)) _stockCache[kv.Key] = kv.Value;
+
+            return _stockCache.TryGetValue(productId, out s) ? s : 0;
+        }
+
+        protected bool CanIncrease(object productId, object quantity)
+        {
+            try
+            {
+                int max = Math.Min(GetStock(Convert.ToInt32(productId)), MaxPerLine);
+                return Convert.ToInt32(quantity) < max;
+            }
+            catch (Exception ex) { LogError(ex); return true; }   // the server re-validates on click anyway
+        }
+
+        protected string StockNoteHtml(object productId, object quantity)
+        {
+            try
+            {
+                int stock = GetStock(Convert.ToInt32(productId));
+                int qty = Convert.ToInt32(quantity);
+                int max = Math.Min(stock, MaxPerLine);
+
+                if (stock <= 0) return "<p class='field-hint invalid'>Out of stock - this item will be removed at checkout.</p>";
+                if (qty >= max) return "<p class='field-hint invalid'>Maximum available (" + max + ") is in your cart.</p>";
+                if (stock <= 5) return "<p class='field-hint'>Only " + stock + " left in stock.</p>";
+            }
+            catch (Exception ex) { LogError(ex); }
+            return "";
+        }
+
+        // The one place a cart quantity changes, so every rule lives here
+        private void SetQuantity(int productId, int requested)
+        {
+            try
+            {
+                var item = CartHelper.GetCart(Session).FirstOrDefault(c => c.ProductId == productId);
+                if (item == null) return;
+
+                int stock = GetStock(productId);
+                string name = Server.HtmlEncode(item.ProductName);
+
+                if (stock <= 0)
+                {
+                    CartHelper.RemoveFromCart(Session, productId);
+                    ShowMessage(name + " is out of stock and was removed from your cart.", true);
+                    return;
+                }
+
+                if (requested < 1)
+                {
+                    ShowMessage("Quantity must be at least 1. Use Remove to take an item out of your cart.", true);
+                    return;
+                }
+
+                int max = Math.Min(stock, MaxPerLine);
+                if (requested > max)
+                {
+                    CartHelper.UpdateQuantity(Session, productId, max);
+                    ShowMessage("Only " + max + " available for " + name + ". Your quantity was set to " + max + ".", true);
+                    return;
+                }
+
+                CartHelper.UpdateQuantity(Session, productId, requested);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                ShowMessage("We couldn't update your cart right now. Please try again.", true);
+            }
+        }
+
+        protected void txtQty_TextChanged(object sender, EventArgs e)
+        {
+            var box = (TextBox)sender;
+            var row = (RepeaterItem)box.NamingContainer;
+            var hf = row.FindControl("hfProductId") as HiddenField;
+
+            int productId, qty;
+            if (hf == null || !int.TryParse(hf.Value, out productId))
+            {
+                ShowMessage("Something went wrong updating that item. Please try again.", true);
+            }
+            else if (!int.TryParse((box.Text ?? "").Trim(), out qty))
+            {
+                ShowMessage("Please enter a whole number for the quantity.", true);
+            }
+            else
+            {
+                SetQuantity(productId, qty);
+            }
+
+            BindCart();   // resets the box to the real quantity
+        }
+
+        // Trims quantities / removes unavailable items. Returns true only when the cart is ready for checkout.
+        private bool ValidateCartForCheckout()
+        {
+            try
+            {
+                var cart = CartHelper.GetCart(Session).ToList();
+                if (cart.Count == 0) return true;
+
+                var stock = LoadStock(cart.Select(c => c.ProductId));
+                foreach (var kv in stock) _stockCache[kv.Key] = kv.Value;
+
+                var notes = new List<string>();
+                foreach (var item in cart)
+                {
+                    int s;
+                    if (!stock.TryGetValue(item.ProductId, out s)) s = 0;
+                    int max = Math.Min(s, MaxPerLine);
+                    string name = Server.HtmlEncode(item.ProductName);
+
+                    if (max <= 0)
+                    {
+                        CartHelper.RemoveFromCart(Session, item.ProductId);
+                        notes.Add(name + " is no longer available and was removed from your cart.");
+                    }
+                    else if (item.Quantity > max)
+                    {
+                        CartHelper.UpdateQuantity(Session, item.ProductId, max);
+                        notes.Add("Only " + max + " of " + name + " available. Your quantity was reduced.");
+                    }
+                }
+
+                if (notes.Count > 0)
+                {
+                    ShowMessage(string.Join("<br />", notes) + "<br />Please review your cart and try again.", true);
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                ShowMessage("We couldn't check stock levels right now. Please try again in a moment.", true);
+                return false;
+            }
+        }
+
+        private void AddFromDetail(int id, ProductDetailHelper.ProductDetail d)
+        {
+            try
+            {
+                var inCart = CartHelper.GetCart(Session).FirstOrDefault(c => c.ProductId == id);
+                int current = inCart != null ? inCart.Quantity : 0;
+                int max = Math.Min(d.Stock, MaxPerLine);
+
+                if (current >= max) return;   // the button is already disabled in this case
+                CartHelper.AddToCart(Session, id, d.Name, d.FinalPrice);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                ShowMessage("We couldn't add that item right now. Please try again.", true);
+            }
         }
 
         // ---------- Loyalty points + checkout (rules copied from the POS) ----------
@@ -356,12 +602,8 @@ namespace SamsLiquorShop
             decimal subtotal = CartHelper.GetCartTotal(Session);
             decimal delivery = subtotal >= FreeDeliveryThreshold ? 0m : DeliveryFee;
 
-            decimal discountPercent = 0m;
-            string promoCode = Session["PromoCode"] as string;
-            if (!string.IsNullOrEmpty(promoCode)) discountPercent = GetPromoDiscount(promoCode);
-
-            decimal discount = Math.Round(subtotal * discountPercent / 100m, 2);
-            return new CartTotals { Merchandise = subtotal - discount, Grand = subtotal - discount + delivery };
+            decimal discount = GetPromoAmount(subtotal);
+            return new CartTotals { Merchandise = subtotal - discount, Grand = subtotal - discount };
         }
 
         private int? CurrentCustomerId()
@@ -432,7 +674,26 @@ namespace SamsLiquorShop
 
         protected void btnCheckout_Click(object sender, EventArgs e)
         {
+            try { CheckoutCore(); }
+            catch (System.Threading.ThreadAbortException) { throw; }   // Response.Redirect
+            catch (Exception ex)
+            {
+                LogError(ex);
+                ShowMessage("We couldn't start checkout right now. Please try again in a moment.", true);
+                BindCart();
+            }
+        }
+
+        private void CheckoutCore()
+        {
             if (CartHelper.GetCart(Session).Count == 0) return;
+
+            // Re-check stock and availability before going any further
+            if (!ValidateCartForCheckout())
+            {
+                BindCart();
+                return;
+            }
 
             // Not logged in: ask them to log in or sign up
             if (Session["UserRole"] == null)
@@ -441,24 +702,7 @@ namespace SamsLiquorShop
                 return;
             }
 
-            // Logged in: offer to pay with points if they can cover the whole order (POS rule)
-            int? customerId = CurrentCustomerId();
-            int balance;
-            bool active;
-            if (customerId.HasValue && TryLoadLoyalty(customerId.Value, out balance, out active) && active)
-            {
-                CartTotals t = ComputeTotals();
-                int needed = (int)Math.Ceiling(t.Grand);
-
-                if (t.Grand > 0m && balance >= needed)
-                {
-                    litPointsPromptText.Text = "You have " + balance.ToString("N0") + " loyalty points. This order comes to R" + t.Grand.ToString("N2")
-                        + ", so you can use " + needed.ToString("N0") + " points to get it free. Orders paid with points don't earn new points.";
-                    pnlPointsPrompt.Visible = true;
-                    return;
-                }
-            }
-
+            // Loyalty points are chosen on the checkout page, once delivery or collection is known
             ContinueToCheckout(false);
         }
 
@@ -564,8 +808,10 @@ namespace SamsLiquorShop
             var inCart = CartHelper.GetCart(Session).FirstOrDefault(c => c.ProductId == productId);
             litDetailMsg.Text = inCart != null ? "<div class='shop-cart-toast'>You have " + inCart.Quantity + " in your cart.</div>" : "";
 
-            btnDetailAdd.Text = d.Stock > 0 ? (inCart != null ? "Add another to cart" : "Add to Cart") : "Out of Stock";
-            btnDetailAdd.Enabled = d.Stock > 0;
+            btnDetailAdd.Text = d.Stock <= 0 ? "Out of Stock"
+                : (inCart != null && inCart.Quantity >= Math.Min(d.Stock, MaxPerLine)) ? "Maximum in cart"
+                : (inCart != null ? "Add another to cart" : "Add to Cart");
+            btnDetailAdd.Enabled = d.Stock > 0 && (inCart == null || inCart.Quantity < Math.Min(d.Stock, MaxPerLine));
             btnDetailWish.Text = CartHelper.GetWishlist(Session).Contains(productId) ? "Remove from wishlist" : "Add to wishlist";
 
             pnlDetail.Visible = true;
@@ -582,7 +828,7 @@ namespace SamsLiquorShop
             ProductDetailHelper.ProductDetail d = ProductDetailHelper.Get(ConnStr, id);
 
             if (d != null && d.Stock > 0)
-                CartHelper.AddToCart(Session, id, d.Name, d.FinalPrice);
+                AddFromDetail(id, d);
 
             BindCart();       // refresh the cart, totals and the badge numbers behind the pop-up
             ShowDetail(id);

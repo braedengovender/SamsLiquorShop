@@ -7407,3 +7407,37 @@ textarea.login-input {
         transition: none;
     }
 }
+
+/* Quantity stepper: hide the browser's native number spinner */
+.qty-stepper-input::-webkit-outer-spin-button,
+.qty-stepper-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.qty-stepper-input {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Order summary lines: don't squash long values */
+.cart-summary-line {
+    gap: 16px;
+    align-items: baseline;
+}
+
+    .cart-summary-line > span:first-child {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .cart-summary-line > span:last-child {
+        text-align: right;
+        min-width: 0;
+    }
+.cart-delivery-hint {
+    margin: -6px 0 12px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    text-align: right;
+}

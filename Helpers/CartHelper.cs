@@ -17,6 +17,7 @@ namespace SamsLiquorShop.Helpers
 
     public static class CartHelper
     {
+        public const int MaxPerLine = 99;
         private const string CartSessionKey = "Cart";
         private const string WishlistSessionKey = "Wishlist";
 
@@ -29,18 +30,18 @@ namespace SamsLiquorShop.Helpers
             return (List<CartItem>)session[CartSessionKey];
         }
 
-        public static void AddToCart(System.Web.SessionState.HttpSessionState session, int productId, string name, decimal price, int quantity = 1)
+        public static void AddToCart(System.Web.SessionState.HttpSessionState session, int productId, string name, decimal price, int quantity = 1, int maxQuantity = MaxPerLine)
         {
             var cart = GetCart(session);
             var existing = cart.FirstOrDefault(c => c.ProductId == productId);
 
             if (existing != null)
             {
-                existing.Quantity += quantity;
+                existing.Quantity = Math.Min(existing.Quantity + quantity, maxQuantity);
             }
             else
             {
-                cart.Add(new CartItem { ProductId = productId, ProductName = name, UnitPrice = price, Quantity = quantity });
+                cart.Add(new CartItem { ProductId = productId, ProductName = name, UnitPrice = price, Quantity = Math.Min(quantity, maxQuantity) });
             }
         }
 
@@ -74,7 +75,7 @@ namespace SamsLiquorShop.Helpers
             if (quantity <= 0)
                 cart.Remove(item);
             else
-                item.Quantity = quantity;
+                item.Quantity = Math.Min(quantity, MaxPerLine);
         }
 
         public static void RemoveFromCart(System.Web.SessionState.HttpSessionState session, int productId)

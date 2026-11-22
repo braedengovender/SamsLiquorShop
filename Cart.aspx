@@ -12,6 +12,8 @@
         <asp:UpdatePanel ID="upnlCart" runat="server">
             <ContentTemplate>
 
+                <asp:Literal ID="litCartMessage" runat="server" />
+
                 <asp:Panel runat="server" ID="pnlCartEmpty" Visible="false">
                     <div class="glass cart-empty">
                         <p>Your cart is empty.</p>
@@ -35,6 +37,7 @@
                                         <div class="cart-item-details">
                                             <asp:LinkButton runat="server" CommandName="ViewProduct" CommandArgument='<%# Eval("ProductId") %>' CssClass="cart-item-name cart-item-name-link"><%# Eval("ProductName") %></asp:LinkButton>
                                             <p class="cart-item-price"><%# CartPriceHtml(Eval("ShelfPrice"), Eval("UnitPrice"), " each") %></p>
+                                            <%# StockNoteHtml(Eval("ProductId"), Eval("Quantity")) %>
                                             <div class="cart-item-actions-row">
                                                 <asp:LinkButton runat="server" CommandName="MoveToWishlist" CommandArgument='<%# Eval("ProductId") %>'>Move to wishlist</asp:LinkButton>
                                                 <asp:LinkButton runat="server" CommandName="SaveForLater" CommandArgument='<%# Eval("ProductId") %>'>Save for later</asp:LinkButton>
@@ -43,9 +46,12 @@
                                         </div>
                                         <div class="cart-item-side">
                                             <div class="qty-stepper">
-                                                <asp:LinkButton runat="server" CommandName="Decrement" CommandArgument='<%# Eval("ProductId") %>'>&minus;</asp:LinkButton>
-                                                <asp:TextBox runat="server" CssClass="qty-stepper-input" Text='<%# Eval("Quantity") %>' ReadOnly="true" />
-                                                <asp:LinkButton runat="server" CommandName="Increment" CommandArgument='<%# Eval("ProductId") %>'>+</asp:LinkButton>
+                                                <asp:LinkButton runat="server" CommandName="Decrement" CommandArgument='<%# Eval("ProductId") %>' Enabled='<%# Convert.ToInt32(Eval("Quantity")) > 1 %>'>&minus;</asp:LinkButton>
+                                                <asp:HiddenField ID="hfProductId" runat="server" Value='<%# Eval("ProductId") %>' />
+                                                <asp:TextBox ID="txtQty" runat="server" CssClass="qty-stepper-input" TextMode="Number" min="1"
+                                                    Text='<%# Eval("Quantity") %>' AutoPostBack="true" OnTextChanged="txtQty_TextChanged"
+                                                    ToolTip="Type a quantity" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" />
+                                                <asp:LinkButton runat="server" CommandName="Increment" CommandArgument='<%# Eval("ProductId") %>' Enabled='<%# CanIncrease(Eval("ProductId"), Eval("Quantity")) %>'>+</asp:LinkButton>
                                             </div>
                                             <span class="cart-item-line-total">R<%# (Convert.ToDecimal(Eval("UnitPrice")) * Convert.ToInt32(Eval("Quantity"))).ToString("N2") %></span>
                                         </div>
@@ -85,20 +91,21 @@
                                     <span>Estimated Delivery</span>
                                     <span><asp:Literal ID="litDelivery" runat="server" /></span>
                                 </div>
+                                <asp:Literal ID="litDeliveryHint" runat="server" />
                                 <asp:Panel runat="server" ID="pnlDiscountLine" Visible="false" CssClass="cart-summary-line cart-summary-discount">
                                     <span>Discount</span>
                                     <span><asp:Literal ID="litDiscount" runat="server" /></span>
                                 </asp:Panel>
 
                                 <div class="cart-summary-promo">
-                                    <asp:TextBox ID="txtPromoCode" runat="server" CssClass="login-input" placeholder="Promo code" />
+                                    <asp:TextBox ID="txtPromoCode" runat="server" CssClass="login-input" placeholder="Promo code" MaxLength="20" />
                                     <asp:Button ID="btnApplyPromo" runat="server" Text="Apply" CssClass="btn-ghost" OnClick="btnApplyPromo_Click" />
                                 </div>
                                 <asp:Literal ID="litPromoMessage" runat="server" />
 
                                 <div class="cart-summary-divider"></div>
                                 <div class="cart-summary-line cart-summary-total-line">
-                                    <span>Total</span>
+                                    <span>Total (excl. delivery)</span>
                                     <span><asp:Literal ID="litGrandTotal" runat="server" /></span>
                                 </div>
 
@@ -110,7 +117,8 @@
                                     <p class="cart-secure-title"><span class="lock-icon">&#128274;</span> Secure checkout</p>
                                     <ul class="cart-secure-list">
                                         <li>Many ways to pay</li>
-                                        <li>Fast, reliable delivery</li>
+                                        <li>Next-day delivery in Durban: R70, free over R500 (min. order R250)</li>
+                                        <li>Free click &amp; collect, no minimum</li>
                                     </ul>
                                     <p class="cart-secure-note">Placing an item in your shopping cart does not reserve that item or price. We only reserve stock for your order once payment is received. Delivery dates shown are estimates and will be confirmed at checkout.</p>
                                 </div>

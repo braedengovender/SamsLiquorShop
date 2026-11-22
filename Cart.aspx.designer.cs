@@ -33,6 +33,15 @@ namespace SamsLiquorShop
         protected global::System.Web.UI.UpdatePanel upnlCart;
 
         /// <summary>
+        /// litCartMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litCartMessage;
+
+        /// <summary>
         /// pnlCartEmpty control.
         /// </summary>
         /// <remarks>
@@ -94,6 +103,15 @@ namespace SamsLiquorShop
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litDelivery;
+
+        /// <summary>
+        /// litDeliveryHint control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litDeliveryHint;
 
         /// <summary>
         /// pnlDiscountLine control.
