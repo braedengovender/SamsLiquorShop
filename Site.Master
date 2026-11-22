@@ -404,7 +404,6 @@
                   <div class="dropdown-menu">
                   <a href="ResponsibleDrinking.aspx">Responsible Drinking Support</a>
                   <a href="FAQ.aspx">FAQ</a>
-                  <a href="Shipping.aspx">Shipping & Delivery Info</a>
                   <a href="ReturnPolicy.aspx">Returns & Refunds</a>
                   <a href="/Legal.aspx">Legal & Policies</a>
                 
@@ -509,12 +508,12 @@
               <div class="footer-col">
                 <h3>Your Account</h3>
                 <ul>
-                  <li><a href="Account/Profile.aspx">My Profile</a></li>
-                  <li><a href="Account/Orders.aspx">My Orders</a></li>
-                  <li><a href="WishList.aspx">Wish List</a></li>
-                  <li><a href="Account/Settings.aspx">Settings</a></li>
-                  <li><a href="Loyalty.aspx">Loyalty & Rewards</a></li>
-                  <li><a href="Loyalty.aspx#card">Get the Loyalty Card</a></li>
+                  <li><a runat="server" href="~/Customer/Dashboard.aspx">My Profile</a></li>
+                  <li><a runat="server" href="~/Customer/Orders.aspx">My Orders</a></li>
+                  <li><a runat="server" href="~/Shop.aspx?wishlist=1">Wish List</a></li>
+                  <li><a runat="server" href="~/Customer/Dashboard.aspx">Settings</a></li>
+                  <li><a runat="server" href="~/Rewards.aspx">Loyalty & Rewards</a></li>
+                  <li><a runat="server" href="~/Rewards.aspx#card">Get the Loyalty Card</a></li>
                 </ul>
               </div>
 
