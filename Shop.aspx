@@ -7,6 +7,7 @@
         <div class="shop-search">
             <img src="/Images/icons/search.png" alt="" class="nav-icon search-bar-icon-img shop-search-icon" width="18" height="18" />
             <asp:TextBox ID="txtSearch" runat="server" CssClass="shop-search-input" placeholder="Search by name, brand, type, flavour, ingredients, category..." autocomplete="off" aria-label="Search products" />
+            <button type="button" id="shopSearchGo" class="shop-search-go">Search</button>
             <button type="button" id="shopSearchClear" class="shop-search-clear" aria-label="Clear search" style="display:none">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
             </button>
@@ -32,6 +33,11 @@
 
                 <!-- FILTER SIDEBAR -->
                 <aside class="shop-filters">
+
+                    <div class="shop-filters-head">
+                        <h2>Filters</h2>
+                        <asp:LinkButton ID="LinkButton1" runat="server" CssClass="shop-clear-link" OnClick="btnClearFilters_Click">Clear all</asp:LinkButton>
+                    </div>
 
                     <div class="shop-filter-block">
                         <h3>Specials</h3>
@@ -84,8 +90,6 @@
                         <h3>Origin</h3>
                         <asp:CheckBoxList ID="cblOrigins" runat="server" CssClass="shop-category-list shop-check-scroll" RepeatLayout="UnorderedList" RepeatDirection="Vertical" AutoPostBack="true" OnSelectedIndexChanged="Filter_Changed" />
                     </div>
-
-                    <asp:LinkButton ID="btnClearFilters" runat="server" CssClass="shop-clear-link" OnClick="btnClearFilters_Click">Clear all filters</asp:LinkButton>
                 </aside>
 
                 <!-- PRODUCT GRID -->
@@ -212,7 +216,9 @@
                     input.value = ''; sync();
                     clearTimeout(searchTimer); fire(); input.focus();
                 });
-                window.shopSyncSearch = sync;   // server calls this after "Clear all filters"
+                var go = el('shopSearchGo');
+                if (go) go.addEventListener('click', function () { clearTimeout(searchTimer); fire(); });
+                window.shopSyncSearch = sync;
                 sync();
             }
 

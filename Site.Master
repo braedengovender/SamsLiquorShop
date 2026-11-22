@@ -137,6 +137,67 @@
         [data-theme="dark"] img.theme-light-only {
             display: none;
         }
+
+                /* --- Footer bottom bar --- */
+        .footer-bottom { margin-top: 24px; margin-bottom: 24px; }
+        .footer-bar { padding: 20px 28px; border-radius: 20px; }
+        .footer-bar-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px 32px;
+            flex-wrap: wrap;
+        }
+        .footer-pay { display: flex; align-items: center; gap: 12px; }
+        .footer-pay-label, .footer-copy, .footer-rd span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .pay-icons { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; }
+        .pay-icons svg { display: block; width: 48px; height: 30px; }
+        .footer-secure {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .footer-secure svg { color: var(--accent-amber-dark); }
+        [data-theme="dark"] .footer-secure svg { color: var(--accent-amber); }
+        .footer-rd {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(128, 128, 128, 0.25);
+            text-align: center;
+        }
+        .footer-rd img { max-width: 100%; max-height: 110px; width: auto; height: auto; border-radius: 8px; }
+        .footer-copy { margin: 16px 0 0; text-align: center; }
+
+        .lang-switch {
+            display: inline-flex;
+            padding: 3px;
+            border-radius: 999px;
+            background: rgba(128, 128, 128, 0.15);
+        }
+        .lang-switch button {
+            border: none;
+            cursor: pointer;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .lang-switch button.is-active { background: var(--accent); color: #fff; }
+
+        @media (max-width: 760px) {
+            .footer-bar-row, .footer-pay { justify-content: center; text-align: center; }
+            .footer-rd { flex-direction: column; gap: 8px; }
+        }
     </style>
 </head>
 <body>
@@ -400,7 +461,7 @@
         </div>
 
         <section class="shell site-footer-main">
-          <div class="footer-top">
+          <div class="glass footer-card footer-top">
               <div class="footer-brand">
                 <img src="/Images/logo-cropped.png" alt="Sam's Liquor Shop" class="footer-logo" />
                 <p class="footer-tagline">Durban's trusted liquor store — spirits, wine and more, delivered right.</p>
@@ -476,62 +537,89 @@
                 <p class="hours-note">Trading hours may vary in accordance with liquor licensing regulations.</p>
               </div>
             </div>
-
-          <div class="footer-newsletter-band">
-            <div class="newsletter-band-text">
-              <h3>Be the first to know!</h3>
-              <p>Sign up for our newsletter for the latest deals and what's new.</p>
-            </div>
-            <div class="footer-newsletter-form" id="footerNewsletterForm">
-              <div class="footer-field">
-                <input type="text" placeholder="First name" id="footerFirstName" class="footer-input" />
-                <span class="field-error" id="footerFirstNameError"></span>
-              </div>
-              <div class="footer-field">
-                <input type="text" placeholder="Last name" id="footerLastName" class="footer-input" />
-                <span class="field-error" id="footerLastNameError"></span>
-              </div>
-              <div class="footer-field footer-field-email">
-                <input type="email" placeholder="Email address" id="footerEmail" class="footer-input" />
-                <span class="field-error" id="footerEmailError"></span>
-               </div>
-              <button type="button" class="btn-primary" onclick="submitFooterNewsletter(event)">Sign Up</button>
-            </div>
-            <p id="footerNewsletterSuccess" class="footer-newsletter-success" style="display:none;">&#10003; You're subscribed — thanks for joining!</p>
-            <p class="footer-newsletter-privacy">How do we use your information? Read our <a href="/Legal.aspx#privacy">privacy policy</a>.</p>
-          </div>
         </section>
 
-        <footer class="shell footer-stack">
-          <div class="glass footer-credit">
-            <p>&copy; 2026 Sam's Liquor Shop - All Rights Reserved. Designed by The Byte Club.</p>
-          </div>
-          <div class="glass footer-responsible">
-            <img src="/Images/responsible-drinking.jpg" alt="Please drink responsibly" class="theme-light-only" />
-            <img src="/Images/responsible-drinking-dark.svg" alt="Please drink responsibly" class="theme-dark-only" />
-          </div>
-          <div class="glass footer-info">
-            <div class="footer-security">
-              <span class="lock-icon">&#128274;</span>
-              <span>100% Secure Checkout</span>
+        <section class="shell footer-newsletter-section">
+          <div class="glass footer-card footer-newsletter-band">
+                <div class="newsletter-band-text">
+                    <h3>Be the first to know!</h3>
+                    <p>Sign up for our newsletter for the latest deals and what's new.</p>
+                </div>
+                <div class="footer-newsletter-form" id="footerNewsletterForm">
+                    <div class="footer-field">
+                        <input type="text" placeholder="First name" id="footerFirstName" class="footer-input" />
+                        <span class="field-error" id="footerFirstNameError"></span>
+                    </div>
+                    <div class="footer-field">
+                        <input type="text" placeholder="Last name" id="footerLastName" class="footer-input" />
+                        <span class="field-error" id="footerLastNameError"></span>
+                    </div>
+                    <div class="footer-field footer-field-email">
+                        <input type="email" placeholder="Email address" id="footerEmail" class="footer-input" />
+                        <span class="field-error" id="footerEmailError"></span>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="submitFooterNewsletter(event)">Sign Up</button>
+                </div>
+                <p id="footerNewsletterSuccess" class="footer-newsletter-success" style="display: none;">&#10003; You're subscribed — thanks for joining!</p>
+                <p class="footer-newsletter-privacy">How do we use your information? Read our <a href="/Legal.aspx#privacy">privacy policy</a>.</p>
             </div>
-            <div class="footer-payments">
-              <span class="payments-label">Approved payment methods</span>
-              <div class="payment-icons">
-                <img src="/Images/payments/visa.svg" alt="Visa" />
-                <img src="/Images/payments/mastercard.svg" alt="Mastercard" />
-                <img src="/Images/payments/debit.svg" alt="Debit Card" />
-              </div>
+        </section>
+
+        <footer class="shell footer-bottom">
+            <div class="glass footer-bar">
+                <div class="footer-bar-row">
+                    <div class="footer-pay">
+                        <span class="footer-pay-label">We accept</span>
+                        <ul class="pay-icons">
+                            <li title="Visa">
+                                <svg viewBox="0 0 48 30" role="img" aria-label="Visa">
+                                    <rect width="48" height="30" rx="4" fill="#fff" stroke="#d9dce3" />
+                                    <text x="24" y="21" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="900" font-style="italic" fill="#1a1f71">VISA</text></svg>
+                            </li>
+                            <li title="Mastercard">
+                                <svg viewBox="0 0 48 30" role="img" aria-label="Mastercard">
+                                    <rect width="48" height="30" rx="4" fill="#fff" stroke="#d9dce3" />
+                                    <circle cx="19" cy="15" r="8" fill="#eb001b" />
+                                    <circle cx="29" cy="15" r="8" fill="#f79e1b" />
+                                    <path d="M24 8.8a8 8 0 0 1 0 12.4a8 8 0 0 1 0-12.4z" fill="#ff5f00" />
+                                </svg>
+                            </li>
+                            <li title="Debit card">
+                                <svg viewBox="0 0 48 30" role="img" aria-label="Debit card">
+                                    <rect width="48" height="30" rx="4" fill="#fff" stroke="#d9dce3" />
+                                    <rect y="7" width="48" height="6" fill="#3a4256" />
+                                    <rect x="6" y="18" width="14" height="4" rx="1" fill="#c9a24b" />
+                                </svg>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-secure">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="4" y="11" width="16" height="10" rx="2" />
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                        </svg>
+                        <span>100% Secure Checkout</span>
+                    </div>
+
+                    <div class="lang-switch" role="group" aria-label="Language">
+                        <button type="button" class="is-active" data-lang="en" aria-pressed="true">English</button>
+                        <button type="button" data-lang="zu" aria-pressed="false">isiZulu</button>
+                    </div>
+                </div>
+
+                <div class="footer-bar-row footer-bar-row-bottom">
+                    <p class="footer-copy">
+                        &copy; 2026 Sam's Liquor Shop. <span>All Rights Reserved.</span> Designed by The Byte Club.
+                    </p>
+                    <div class="footer-rd">
+                        <span>Please drink responsibly. Not for persons under 18.</span>
+                        <img src="/Images/responsible-drinking.jpg" alt="Please drink responsibly" class="theme-light-only" />
+                        <img src="/Images/responsible-drinking-dark.svg" alt="Please drink responsibly" class="theme-dark-only" />
+                    </div>
+                </div>
             </div>
-            <div class="footer-lang">
-              <span>English</span>
-              <button type="button" id="langToggle" class="lang-toggle" onclick="toggleLang()">
-                <span class="lang-knob"></span>
-              </button>
-              <span>isiZulu</span>
-            </div>
-          </div>
-</footer>
+        </footer>
     </form>
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/Scripts/bootstrap.js") %>
@@ -955,10 +1043,167 @@
             }
         });
 
-        function toggleLang() {
-            document.getElementById('langToggle').classList.toggle('active');
-            // hook translation logic here later
+        // ===== English / isiZulu =====
+        // Add a line here for any text you want translated. The key is the exact English text.
+        var ZU = {
+            // Navigation
+            'Shop': 'Thenga', 'Specials': 'Okukhethekile', 'Shipping': 'Ukulethwa', 'Rewards': 'Imivuzo',
+            'About Us': 'Mayelana Nathi', 'Our Story': 'Indaba Yethu', 'Blog & Newsletter': 'Ibhulogi Neyunyuziletha',
+            'Sustainability': 'Ukuzimela', 'Advice & Help': 'Izeluleko Nosizo', 'FAQ': 'Imibuzo Evame Ukubuzwa',
+            'Contact': 'Xhumana Nathi', 'View All Products': 'Buka Yonke Imikhiqizo',
+            'Responsible Drinking Support': 'Usizo Lokuphuza Ngokuzibophezela',
+            'Shipping & Delivery Info': 'Ulwazi Lokulethwa', 'Returns & Refunds': 'Ukubuyisa Nokubuyiselwa Kwemali',
+            'Legal & Policies': 'Okusemthethweni Nezinqubomgomo',
+            'Log in': 'Ngena', 'Register': 'Bhalisa', 'Log out': 'Phuma',
+            // Footer columns
+            'Your Account': 'I-akhawunti Yakho', 'Support': 'Usizo', 'Trading Hours': 'Amahora Okuhweba',
+            'All Products': 'Yonke Imikhiqizo', 'Gift Ideas & Accessories': 'Imibono Yezipho Nezisetshenziswa',
+            'My Profile': 'Iphrofayili Yami', 'My Orders': 'Ama-oda Ami', 'Wish List': 'Uhlu Lwezifiso',
+            'Settings': 'Izilungiselelo', 'Loyalty & Rewards': 'Ukwethembeka Nemivuzo',
+            'Get the Loyalty Card': 'Thola Ikhadi Lokwethembeka',
+            'Delivery Policy': 'Inqubomgomo Yokulethwa', 'Return Policy': 'Inqubomgomo Yokubuyisa',
+            'Privacy Policy': 'Inqubomgomo Yobumfihlo', 'Cookies Policy': 'Inqubomgomo Yamakhukhi',
+            'Terms & Conditions': 'Imigomo Nemibandela', 'Website Terms of Use': 'Imigomo Yokusebenzisa Iwebhusayithi',
+            'Mon – Thu': 'Msombuluko – Lwesine', 'Fri – Sat': 'Lwesihlanu – Mgqibelo',
+            'Sunday': 'Sonto', 'Public Holidays': 'Amaholidi Omphakathi',
+            'Trading hours may vary in accordance with liquor licensing regulations.': 'Amahora okuhweba angahluka ngokwemithetho yamalayisense otshwala.',
+            "Durban's trusted liquor store — spirits, wine and more, delivered right.": 'Isitolo sotshwala esethembekile saseThekwini — utshwala obunamandla, iwayini nokuningi, kuletshwa kahle.',
+            // Newsletter band
+            'Be the first to know!': 'Yiba owokuqala ukwazi!',
+            "Sign up for our newsletter for the latest deals and what's new.": 'Bhalisela iyunyuziletha yethu ukuze uthole amanani amasha nezindaba zakamuva.',
+            'Sign Up': 'Bhalisa',
+            // Bottom bar
+            'We accept': 'Samukela', '100% Secure Checkout': 'Ukukhokha Okuphephe 100%',
+            'All Rights Reserved.': 'Wonke Amalungelo Agodliwe.',
+            'Please drink responsibly. Not for persons under 18.': 'Sicela uphuze ngokuzibophezela. Akwabangaphansi kweminyaka engu-18.'
+        };
+        var ZU_PLACEHOLDERS = {
+            'First name': 'Igama', 'Last name': 'Isibongo', 'Email address': 'Ikheli le-imeyili',
+            'Search for products...': 'Sesha imikhiqizo...'
+        };
+        Object.assign(ZU, {
+            // Hero
+            'Good times': 'Izikhathi ezinhle', 'start here.': 'ziqala lapha.',
+            'Discover your favourites, explore something new, and enjoy great drinks at great prices.': 'Thola owuthandayo, hlola okusha, futhi onandise iziphuzo ezinhle ngamanani amahle.',
+            'Shop Now': 'Thenga Manje', 'View Specials': 'Buka Okukhethekile',
+            // About
+            'Get to Know Us': 'Sazi Kangcono', "Discover Sam's World": 'Hlola Umhlaba kaSam',
+            '21 Years in Tongaat': 'Iminyaka Engu-21 eTongaat',
+            "From a corner shop to Durban's trusted name in spirits, wine and more.": 'Kusukela esitolo esisekhoneni kuya egameni elithenjwayo laseThekwini kutshwala, iwayini nokuningi.',
+            'Loyalty That Pays': 'Ukwethembeka Okukhokhelayo',
+            'Earn points on every order and unlock extra discounts along the way.': 'Zuza amaphuzu kuzo zonke izi-oda bese uvula izaphulelo ezengeziwe ngendlela.',
+            'Drop by for expert recommendations and same-day collection.': 'Beka kuthi uthole iziphakamiso zochwepheshe nokuthatha ngosuku olufanayo.',
+            // Sections
+            "Featured at Sam's": 'Okukhethiwe KuSam', 'View all →': 'Buka konke →',
+            'Shop Promotions': 'Izikhangiso Zesitolo',
+            'Priced to leave our stores. Here while stocks last.': 'Amanani enzelwe ukuphuma esitolo. Alapha inqobo nje uma isitoko sisekhona.',
+            'Non-Alcoholic Favourites': 'Okuthandwayo Okungenatshwala',
+            'Shop by Category': 'Thenga Ngesigaba',
+            'Beer & Ciders': 'Ibhiya Nesayida', 'Wine': 'Iwayini', 'Whiskey': 'Iwiski', 'Spirits': 'Utshwala Obunamandla',
+            'Non-Alcoholic Beverages': 'Iziphuzo Ezingenatshwala', 'Accessories & Barware': 'Izisetshenziswa Nempahla Yebha',
+            'Snacks & Food': 'Ukudla Okulula Nokudla', 'Tobacco & Vaping': 'Ugwayi Ne-Vaping',
+            // Guides
+            'Expert Guides & Resources': 'Imihlahlandlela Nezinsiza Zochwepheshe',
+            'How to Host a Wine Tasting Party': 'Indlela Yokwenza Umcimbi Wokunambitha Iwayini',
+            'How Whiskey Is Made': 'Indlela Iwiski Eyenziwa Ngayo',
+            '20 Perfect Spritzes & Shandies to Try Now': 'Ama-Spritz Nama-Shandy Ayi-20 Aphelele Okufanele Uwazame',
+            'The Ultimate Summer Cocktails Guide': 'Umhlahlandlela Omkhulu Wama-Cocktail Asehlobo',
+            'PnP Wine & Food Festival — Durban': 'Umkhosi Wewayini Nokudla we-PnP — eThekwini',
+            'World Drinks Awards': 'Imiklomelo Yeziphuzo Yomhlaba',
+            'International Spirits & Wine Festival': 'Umkhosi Wamazwe Ngamazwe Wotshwala Newayini',
+            'A Guide to Great Cocktails': 'Umhlahlandlela Wama-Cocktail Amahle',
+            'Best Wine Farms in Constantia, Cape Town': 'Amapulazi Ewayini Aphambili eConstantia, eKapa',
+            "What's on the Drinks Menu for 2026": 'Okuku-menyu Yeziphuzo ka-2026',
+            '8 Cocktail Trends to Look Forward to in 2026': 'Izitayela Ezi-8 Zama-Cocktail Okufanele Uzilindele ngo-2026',
+            // Blog
+            'From Our Blog': 'Evela Kubhulogi Yethu',
+            '5 Wines to Try This Summer': 'Amawayini Ama-5 Okufanele Uwazame Kuleli Hlobo',
+            'Our top picks for warm Durban evenings, from crisp whites to light rosés.': 'Esikukhethe kakhulu kwamalanga ntambama afudumele aseThekwini, kusuka kumawayini amhlophe amnandi kuya kuma-rosé alula.',
+            'How to Host the Perfect Braai': 'Indlela Yokwenza I-Braai Ephelele',
+            'Drinks pairings, timing tips, and a playlist to keep the evening going.': 'Ukuhlanganisa iziphuzo, amathiphu esikhathi, nohlu lwezingoma ukuze kuqhubeke kahle ubusuku.',
+            'Behind the Bar: Meet Our Spirits Buyer': 'Ngemuva Kwebha: Hlangana Nomthengi Wethu Wotshwala',
+            "We sat down with our head buyer to talk rare finds and what's coming next.": 'Sihlale phansi nomthengi wethu omkhulu sikhuluma ngokutholakala okuyivelakancane nokuzayo.',
+            "Gin 101: A Beginner's Guide": 'I-Gin 101: Umhlahlandlela Wabaqalayo',
+            'Botanicals, styles, and how to build your first proper gin and tonic.': 'Izitshalo, izitayela, nokuthi wenza kanjani i-gin ne-tonic yakho yokuqala efanele.',
+            'Low & No: Our Favourite Alcohol-Free Picks': 'Okuncane Nokungekho: Esikuthandayo Okungenatshwala',
+            "Great taste doesn't need proof — our top zero-proof serves for any occasion.": 'Ukunambitheka okuhle akudingi amandla otshwala — ukukhetha kwethu okungenatshwala kunoma yisiphi isikhathi.',
+            // Quiz (static parts)
+            'Find My Drink': 'Thola Isiphuzo Sami',
+            'Five quick questions to match you with your perfect pour.': 'Imibuzo emihlanu esheshayo yokukuhlanganisa nesiphuzo osifanele.',
+            'Not sure what to pour?': 'Awuqiniseki ukuthi uthulule ini?',
+            "Answer five quick questions and we'll match you with a drink you'll love.": 'Phendula imibuzo emihlanu esheshayo sizokuhlanganisa nesiphuzo ozosithanda.',
+            '← Back': '← Emuva', 'Your match': 'Okukufanele', 'Shop now': 'Thenga manje', 'Retake quiz': 'Phinda imibuzo',
+            'Please enjoy responsibly. You must be 18 or older to purchase alcohol.': 'Sicela unambithe ngokuzibophezela. Kufanele ube neminyaka engu-18 noma ngaphezulu ukuze uthenge utshwala.',
+            // Reviews + stats
+            'Featured Reviews': 'Ukubuyekezwa Okuhamba Phambili',
+            'Best selection in Durban, hands down. Fast delivery too.': 'Ukukhetha okuhle kakhulu eThekwini, akunakuphikiswa. Ukulethwa okusheshayo nako.',
+            'Love the rewards program, and the staff always know their stuff.': 'Ngiyawuthanda uhlelo lwemivuzo, futhi abasebenzi bahlala bewazi umsebenzi wabo.',
+            'My go-to for gifts. The gift sets are always a hit.': 'Yilapho ngiya khona ngezipho. Amasethi ezipho ahlala ethandwa kakhulu.',
+            'Unique products listed on our website': 'Imikhiqizo eyingqayizivele edweliswe kuwebhusayithi yethu',
+            'Sales made': 'Ukuthengiswa okwenziwe', 'Subscribed newsletter customers': 'Amakhasimende abhalisele iyunyuziletha'
+        });
+        var langOriginals = new WeakMap();
+
+        function translateTextIn(root, lang) {
+            var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+                acceptNode: function (n) {
+                    var p = n.parentNode && n.parentNode.nodeName;
+                    return (p === 'SCRIPT' || p === 'STYLE') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+                }
+            });
+            var node;
+            while ((node = walker.nextNode())) {
+                var raw = node.nodeValue, current = raw.trim();
+                if (!current) continue;
+                var key = langOriginals.has(node) ? langOriginals.get(node) : current;
+                if (!langOriginals.has(node)) {
+                    if (!ZU[key]) continue;
+                    langOriginals.set(node, key);
+                }
+                node.nodeValue = raw.replace(current, lang === 'zu' ? ZU[key] : key);
+            }
         }
+
+        function translatePlaceholders(lang) {
+            document.querySelectorAll('[placeholder]').forEach(function (el) {
+                var en = el.getAttribute('data-ph-en') || el.getAttribute('placeholder');
+                if (!ZU_PLACEHOLDERS[en]) return;
+                el.setAttribute('data-ph-en', en);
+                el.setAttribute('placeholder', lang === 'zu' ? ZU_PLACEHOLDERS[en] : en);
+            });
+        }
+
+        function applyLang(lang) {
+            window.currentLang = lang;
+            document.documentElement.lang = lang === 'zu' ? 'zu' : 'en';
+            ['header.site-header', '.body-content', '.site-footer-main', '.footer-newsletter-section', 'footer.footer-bottom'].forEach(function (sel) {
+                var root = document.querySelector(sel);
+                if (root) translateTextIn(root, lang);
+            });
+            translatePlaceholders(lang);
+            document.querySelectorAll('.lang-switch button').forEach(function (b) {
+                var on = b.getAttribute('data-lang') === lang;
+                b.classList.toggle('is-active', on);
+                b.setAttribute('aria-pressed', on ? 'true' : 'false');
+            });
+            window.dispatchEvent(new Event('langchange'));   // lets script-built content (the quiz) redraw
+        }
+
+        function setLang(lang) {
+            try { localStorage.setItem('lang', lang); } catch (ex) { }
+            applyLang(lang);
+        }
+
+        document.addEventListener('click', function (e) {
+            var b = e.target.closest ? e.target.closest('.lang-switch button') : null;
+            if (b) setLang(b.getAttribute('data-lang'));
+        });
+
+        window.addEventListener('DOMContentLoaded', function () {
+            var saved = 'en';
+            try { saved = localStorage.getItem('lang') || 'en'; } catch (ex) { }
+            if (saved === 'zu') applyLang('zu');
+        });
 
         function submitFooterNewsletter(e) {
             e.preventDefault();

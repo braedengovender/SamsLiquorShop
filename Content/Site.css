@@ -7442,3 +7442,390 @@ textarea.login-input {
     color: var(--text-secondary);
     text-align: right;
 }
+
+/* ===== Shop: modern search bar + filter sidebar card ===== */
+
+/* --- Search bar --- */
+.shop-search-wrap {
+    margin-top: 32px;
+}
+
+.shop-search {
+    height: 60px;
+    gap: 12px;
+    padding: 0 8px 0 22px;
+    background: #fff;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    box-shadow: 0 4px 18px rgba(20, 40, 80, 0.07);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+    .shop-search:focus-within {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.14), 0 6px 22px rgba(20, 40, 80, 0.10);
+    }
+
+.shop-search-icon {
+    opacity: 0.55;
+}
+
+.shop-search-input,
+.shop-search-input:focus {
+    box-shadow: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.shop-search-clear {
+    order: 2;
+    width: 30px;
+    height: 30px;
+}
+
+.shop-search-go {
+    order: 3;
+    height: 44px;
+    padding: 0 28px;
+    border: none;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+    .shop-search-go:hover {
+        background: #006edb;
+    }
+
+    .shop-search-go:active {
+        transform: scale(0.97);
+    }
+
+@media (max-width: 560px) {
+    .shop-search-go {
+        display: none;
+    }
+}
+
+[data-theme="dark"] .shop-search {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* --- Sidebar card --- */
+.shop-filters {
+    position: sticky;
+    top: 110px;
+    gap: 0;
+    padding: 4px 22px 8px;
+    background: #fff;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 18px rgba(20, 40, 80, 0.06);
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.shop-filters-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0 14px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+    .shop-filters-head h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+.shop-filters .shop-clear-link {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--bg-tint-blue);
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+    .shop-filters .shop-clear-link:hover {
+        background: var(--accent);
+        color: #fff;
+        text-decoration: none;
+    }
+
+.shop-filter-block {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+    .shop-filter-block:last-of-type {
+        border-bottom: none;
+    }
+
+    .shop-filter-block h3 {
+        margin: 0 0 12px;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+/* Checkbox lists */
+.shop-category-list {
+    gap: 2px;
+}
+
+    .shop-category-list li {
+        padding: 6px 4px;
+        border-radius: 8px;
+        transition: background 0.15s ease;
+    }
+
+        .shop-category-list li:hover {
+            background: var(--bg-tint-blue);
+        }
+
+    .shop-category-list input[type="checkbox"],
+    .shop-sale-toggle input {
+        width: 17px;
+        height: 17px;
+        accent-color: var(--accent);
+    }
+
+    .shop-category-list label {
+        flex: 1;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .shop-category-list input:checked + label {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+.shop-check-scroll {
+    overflow-x: hidden;
+}
+
+/* Specials toggles */
+.shop-sale-toggle {
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+    transition: background 0.15s ease;
+}
+
+    .shop-sale-toggle:hover {
+        background: var(--bg-tint-blue);
+    }
+
+    .shop-sale-toggle label {
+        flex: 1;
+    }
+
+/* Range sliders */
+.range-input::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.range-input::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.range-readout {
+    gap: 8px;
+    margin-top: 10px;
+    font-family: inherit;
+}
+
+    .range-readout span {
+        padding: 5px 12px;
+        border: 1px solid var(--glass-border);
+        border-radius: 8px;
+        background: var(--bg-tint-blue);
+        color: var(--text-primary);
+        font-size: 0.78rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+    }
+
+/* Mobile: normal flow, no sticky */
+@media (max-width: 900px) {
+    .shop-filters {
+        position: static;
+        max-height: none;
+        overflow: visible;
+    }
+}
+
+[data-theme="dark"] .shop-filters {
+    background: #10131c;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .shop-category-list li:hover,
+[data-theme="dark"] .shop-sale-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .range-readout span {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .shop-filters .shop-clear-link {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* --- Footer cards (link columns + newsletter) --- */
+.site-footer-main {
+    margin-top: 80px;
+    padding-top: 0;
+    border-top: none;
+}
+
+.footer-newsletter-section {
+    margin-top: 24px;
+}
+
+.footer-card.footer-top,
+.footer-card.footer-newsletter-band {
+    padding: 32px;
+    border-radius: 20px;
+}
+
+@media (max-width: 760px) {
+    .footer-card.footer-top,
+    .footer-card.footer-newsletter-band {
+        padding: 22px;
+    }
+}
+
+/* --- Footer bottom bar --- */
+.footer-bottom {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.footer-bar {
+    padding: 20px 28px;
+    border-radius: 20px;
+}
+
+.footer-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 32px;
+    flex-wrap: wrap;
+}
+
+.footer-pay {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-pay-label, .footer-copy {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.pay-icons {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+    .pay-icons svg {
+        display: block;
+        width: 48px;
+        height: 30px;
+    }
+
+.footer-secure {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+    .footer-secure svg {
+        color: var(--accent-amber-dark);
+    }
+
+[data-theme="dark"] .footer-secure svg {
+    color: var(--accent-amber);
+}
+
+/* Responsible drinking banner: its own full-width row, as large as the bar allows */
+.footer-rd {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(128, 128, 128, 0.25);
+    text-align: center;
+}
+
+    .footer-rd img {
+        max-width: 100%;
+        max-height: 110px;
+        width: auto;
+        height: auto;
+        border-radius: 8px;
+    }
+
+.footer-copy {
+    margin: 16px 0 0;
+    text-align: center;
+}
+
+.lang-switch {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgba(128, 128, 128, 0.15);
+}
+
+    .lang-switch button {
+        border: none;
+        cursor: pointer;
+        padding: 6px 16px;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--text-secondary);
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+        .lang-switch button.is-active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+@media (max-width: 760px) {
+    .footer-bar-row, .footer-pay {
+        justify-content: center;
+        text-align: center;
+    }
+}
