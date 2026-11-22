@@ -37,11 +37,11 @@
         <div class="faq-list">
           <details class="card-surface faq-item">
             <summary>How long does delivery take?</summary>
-            <p>We aim for next-day delivery on most orders. As an estimate, please allow between 1 and 3 business days for your order to arrive, depending on your location. Please refer to our <a href="Shipping.aspx">Shipping &amp; Delivery page</a> for full details.</p>
+                       <p>Delivery is next day, within the Durban area only. We don't offer same-day delivery or delivery outside Durban. Click &amp; Collect from our Tongaat store is ready within 2 hours. Please refer to our <a href="Shipping.aspx">Shipping &amp; Delivery page</a> for full details.</p>
           </details>
           <details class="card-surface faq-item">
             <summary>Is delivery free?</summary>
-            <p>Yes &mdash; delivery is free on all orders over R500. Below this threshold, delivery costs range from R55 to R120 depending on your area. You can also use your loyalty points to pay for your order, including any delivery fee.</p>
+                       <p>Delivery is a flat R70, and it's free on orders over R500. Click &amp; Collect is always free.</p>
           </details>
           <details class="card-surface faq-item">
             <summary>Can I collect my order in store instead?</summary>

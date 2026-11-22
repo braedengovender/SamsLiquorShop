@@ -15,7 +15,8 @@ namespace SamsLiquorShop
     {
         private string ConnStr => ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
         private const decimal FreeDeliveryThreshold = 500m;
-        private const decimal DeliveryFee = 60m;
+        private const decimal DeliveryFee = 70m;
+        private const decimal MinimumDeliveryOrder = 250m;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -433,6 +434,15 @@ namespace SamsLiquorShop
         protected void btnCheckout_Click(object sender, EventArgs e)
         {
             if (CartHelper.GetCart(Session).Count == 0) return;
+            // Minimum order value for delivery
+            decimal merchandiseTotal = CartHelper.GetCartTotal(Session);
+            if (merchandiseTotal < MinimumDeliveryOrder)
+            {
+                litPromoMessage.Text = "<span class='field-hint invalid'>The minimum order for delivery is R"
+                    + MinimumDeliveryOrder.ToString("N0") + ". Please add R"
+                    + (MinimumDeliveryOrder - merchandiseTotal).ToString("N2") + " more to continue.</span>";
+                return;
+            }
 
             // Not logged in: ask them to log in or sign up
             if (Session["UserRole"] == null)

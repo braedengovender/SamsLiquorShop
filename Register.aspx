@@ -10,7 +10,7 @@
 
                     <p class="login-eyebrow">Join Sam's Liquor Shop</p>
                     <h1 class="login-heading">Create your account</h1>
-                    <p class="login-subtext">You must be 18 or older to register. We deliver within South Africa only.</p>
+                    <p class="login-subtext">You must be 18 or older to register. We deliver within the Durban area only.</p>
 
                     <div class="register-section">
                         <h3 class="register-section-title">Personal Details</h3>

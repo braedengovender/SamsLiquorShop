@@ -58,7 +58,7 @@
         <div class="card-surface timeline-step">
           <span class="timeline-year">2022</span>
           <h3>Online & delivery</h3>
-          <p>Sam's goes digital, bringing same-day Durban delivery and click &amp; collect to the same trusted range.</p>
+          <p>Sam's goes digital, bringing next-day Durban delivery and click &amp; collect to the same trusted range.</p>
         </div>
         <div class="card-surface timeline-step">
           <span class="timeline-year">2026</span>
@@ -124,7 +124,7 @@
           <ul>
             <li>100+ products across beer, wine, spirits, RTDs and gifts</li>
             <li>Loyalty points on every order, automatically</li>
-            <li>Same-day delivery across the greater Durban area</li>
+            <li>Next-day delivery across the greater Durban area</li>
           </ul>
         </div>
       </div>
