@@ -214,6 +214,9 @@
     <Content Include="Images\categories\wine.jpg" />
     <Content Include="Images\chatbot-icon.png" />
     <Content Include="Images\hero-drink.jpg" />
+    <Content Include="Images\hero-drink2.jpg" />
+    <Content Include="Images\hero-drink3.jpg" />
+    <Content Include="Images\hero-drink4.jpg" />
     <Content Include="Images\icons\emptycart.png" />
     <Content Include="Images\icons\excel.svg" />
     <Content Include="Images\icons\pdf.svg" />

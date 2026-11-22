@@ -14,7 +14,12 @@
           </div>
         </div>
         <div class="hero-image-wrap">
-          <img src="Images/hero-drink.jpg" alt="Featured drinks" class="hero-image" />
+          <div class="hero-slides" id="heroSlides">
+            <img src="Images/hero-drink.jpg" alt="Featured drinks" class="hero-image hero-slide is-active" />
+            <img src="Images/hero-drink2.jpg" alt="Whisky and spirits" class="hero-image hero-slide" />
+            <img src="Images/hero-drink3.jpg" alt="Wine and champagne" class="hero-image hero-slide" />
+            <img src="Images/hero-drink4.jpg" alt="Cocktails and mixers" class="hero-image hero-slide" />
+          </div>
         </div>
       </div>
     </section>
@@ -673,6 +678,80 @@
                 }, { threshold: 0.6 });
 
                 nums.forEach(function (el) { observer.observe(el); });
+            })();
+        </script>
+
+        <script>
+            // Hero image slideshow
+            (function () {
+                var INTERVAL_MS = 7000;   // time each image stays up
+                var box = document.getElementById('heroSlides');
+                if (!box) return;
+                var slides = box.querySelectorAll('.hero-slide');
+                if (slides.length < 2) return;
+
+                var dots = document.createElement('div');
+                dots.className = 'hero-dots';
+                box.appendChild(dots);
+
+                var current = 0, timer = null;
+
+                function show(i) {
+                    slides[current].classList.remove('is-active');
+                    dots.children[current].classList.remove('is-active');
+                    current = (i + slides.length) % slides.length;
+                    slides[current].classList.add('is-active');
+                    dots.children[current].classList.add('is-active');
+                }
+
+                function start() {
+                    clearInterval(timer);
+                    timer = setInterval(function () { show(current + 1); }, INTERVAL_MS);
+                }
+
+                for (var i = 0; i < slides.length; i++) {
+                    var d = document.createElement('button');
+                    d.type = 'button';
+                    d.setAttribute('aria-label', 'Show image ' + (i + 1));
+                    (function (n) {
+                        d.addEventListener('click', function () { show(n); start(); });
+                    })(i);
+                    dots.appendChild(d);
+                }
+                dots.children[0].classList.add('is-active');
+
+                // Left / right arrows
+                function makeArrow(cls, label, path, dir) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'hero-arrow ' + cls;
+                    b.setAttribute('aria-label', label);
+                    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + path + '" /></svg>';
+                    b.addEventListener('click', function () { show(current + dir); start(); });
+                    box.appendChild(b);
+                }
+                makeArrow('hero-prev', 'Previous image', 'M15 5l-7 7 7 7', -1);
+                makeArrow('hero-next', 'Next image', 'M9 5l7 7-7 7', 1);
+
+                // Swipe on touch screens
+                var touchX = null;
+                box.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+                box.addEventListener('touchend', function (e) {
+                    if (touchX === null) return;
+                    var dx = e.changedTouches[0].clientX - touchX;
+                    touchX = null;
+                    if (Math.abs(dx) > 40) { show(current + (dx < 0 ? 1 : -1)); start(); }
+                });
+
+                // Arrow keys when the slideshow has focus
+                box.tabIndex = 0;
+                box.addEventListener('keydown', function (e) {
+                    if (e.key === 'ArrowLeft') { show(current - 1); start(); }
+                    else if (e.key === 'ArrowRight') { show(current + 1); start(); }
+                });
+
+                var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (!reduce) start();
             })();
         </script>
 
