@@ -225,9 +225,6 @@
         <a href="Blog.aspx" class="card-surface guide-card">
           <p>Blog &amp; Newsletter</p><span class="arrow">&rarr;</span>
         </a>
-        <a href="Gallery.aspx" class="card-surface guide-card">
-          <p>Gallery</p><span class="arrow">&rarr;</span>
-        </a>
         <a href="ResponsibleDrinking.aspx" class="card-surface guide-card">
           <p>Responsible Drinking Support</p><span class="arrow">&rarr;</span>
         </a>

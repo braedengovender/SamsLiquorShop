@@ -110,9 +110,6 @@
         <a href="Sustainability.aspx" class="card-surface guide-card">
           <p>Sustainability</p><span class="arrow">&rarr;</span>
         </a>
-        <a href="Gallery.aspx" class="card-surface guide-card">
-          <p>Gallery</p><span class="arrow">&rarr;</span>
-        </a>
         <a href="Contact.aspx" class="card-surface guide-card">
           <p>Contact Us</p><span class="arrow">&rarr;</span>
         </a>
