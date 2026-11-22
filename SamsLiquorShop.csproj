@@ -565,6 +565,7 @@
     <Compile Include="Helpers\OtpHelper.cs" />
     <Compile Include="Helpers\PromoHelper.cs" />
     <Compile Include="Helpers\ReceiptHelper.cs" />
+    <Compile Include="Helpers\RecaptchaHelper.cs" />
     <Compile Include="Customer\Receipt.aspx.cs">
       <DependentUpon>Receipt.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

@@ -41,6 +41,14 @@ namespace SamsLiquorShop
 
         protected void btnLogin_Click(object sender, EventArgs e)
         {
+            // reCAPTCHA first: bots are stopped before any password is checked
+            if (!Helpers.RecaptchaHelper.Verify(Request.Form["g-recaptcha-response"], Request.UserHostAddress))
+            {
+                lblError.Text = Helpers.RecaptchaHelper.FailMessage;
+                lblError.Visible = true;
+                return;
+            }
+
             string usernameOrEmail = txtUsername.Text.Trim();
             string password = txtPassword.Text;
 

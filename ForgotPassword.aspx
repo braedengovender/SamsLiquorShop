@@ -15,6 +15,8 @@
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Email is required." ValidationGroup="EmailForm" />
                 </div>
                 <asp:Label ID="lblEmailError" runat="server" CssClass="field-error login-server-error" Visible="false"></asp:Label>
+                <%-- reCAPTCHA "I'm not a robot" box (drawn by the script in Site.Master; checked in Helpers/RecaptchaHelper.cs) --%>
+                <div class="g-recaptcha login-recaptcha" data-sitekey="<%= SamsLiquorShop.Helpers.RecaptchaHelper.SiteKey %>"></div>
                 <asp:Button ID="btnSend" runat="server" Text="Send code" CssClass="btn-primary login-submit" ValidationGroup="EmailForm" OnClick="btnSend_Click" />
                 <p class="login-register-text"><a href="Login.aspx">Back to login</a></p>
             </asp:Panel>

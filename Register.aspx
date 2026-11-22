@@ -317,6 +317,9 @@
                             <asp:CustomValidator ID="cvTerms" runat="server" CssClass="field-error" Display="Dynamic" ErrorMessage="You must accept the Terms &amp; Conditions to continue." OnServerValidate="cvTerms_ServerValidate" ValidationGroup="RegisterForm" />
                         </div>
 
+                        <%-- reCAPTCHA "I'm not a robot" box (drawn by the script in Site.Master; checked in Helpers/RecaptchaHelper.cs) --%>
+                        <div class="g-recaptcha login-recaptcha" data-sitekey="<%= SamsLiquorShop.Helpers.RecaptchaHelper.SiteKey %>"></div>
+
                         <asp:Button ID="btnRegister" runat="server" Text="Create account" CssClass="btn-primary login-submit" ValidationGroup="RegisterForm" OnClick="btnRegister_Click" />
                         <asp:Label ID="lblError" runat="server" CssClass="field-error"></asp:Label>
                         <div class="login-divider"><span>or</span></div>

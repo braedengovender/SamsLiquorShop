@@ -8004,3 +8004,17 @@ textarea.login-input {
         text-align: center;
     }
 }
+
+/* ===== reCAPTCHA box (Login, Register, Forgot password) ===== */
+.login-recaptcha {
+    margin: 14px 0 16px;
+    min-height: 78px;
+}
+
+/* Google's box is a fixed 304px wide; shrink it on very narrow phones so it doesn't overflow */
+@media (max-width: 360px) {
+    .login-recaptcha {
+        transform: scale(0.88);
+        transform-origin: left top;
+    }
+}

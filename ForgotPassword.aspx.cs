@@ -31,6 +31,14 @@ namespace SamsLiquorShop
             string email = txtEmail.Text.Trim();
             if (email.Length == 0) return;
 
+            // reCAPTCHA: stops bots from spamming people's inboxes with reset codes
+            if (!Helpers.RecaptchaHelper.Verify(Request.Form["g-recaptcha-response"], Request.UserHostAddress))
+            {
+                lblEmailError.Text = Helpers.RecaptchaHelper.FailMessage;
+                lblEmailError.Visible = true;
+                return;
+            }
+
             ClearReset();
             string table = null;
             object id = null;

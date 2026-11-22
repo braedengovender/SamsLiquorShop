@@ -53,6 +53,9 @@
 
             <asp:Label ID="lblError" runat="server" CssClass="field-error login-server-error" Visible="false"></asp:Label>
 
+            <%-- reCAPTCHA "I'm not a robot" box (drawn by the script in Site.Master; checked in Helpers/RecaptchaHelper.cs) --%>
+            <div class="g-recaptcha login-recaptcha" data-sitekey="<%= SamsLiquorShop.Helpers.RecaptchaHelper.SiteKey %>"></div>
+
             <asp:Button ID="btnLogin" runat="server" Text="Log In" CssClass="btn-primary login-submit" OnClick="btnLogin_Click" OnClientClick="return validateLoginForm();" />
 
             <div class="login-divider"><span>or</span></div>

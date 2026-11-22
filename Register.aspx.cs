@@ -115,6 +115,13 @@ namespace SamsLiquorShop
             lblError.Text = "";
             if (!Page.IsValid) return;
 
+            // reCAPTCHA: checked before an email code is sent or an account is created
+            if (!RecaptchaHelper.Verify(Request.Form["g-recaptcha-response"], Request.UserHostAddress))
+            {
+                lblError.Text = RecaptchaHelper.FailMessage;
+                return;
+            }
+
             if (txtPassword.Text != txtConfirmPassword.Text)
             {
                 lblError.Text = "Passwords do not match.";
