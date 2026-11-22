@@ -547,7 +547,7 @@ namespace SamsLiquorShop.Manager
             string query = @"
                 SELECT Discount_Name, Discount_Type, Discount_Value, Discount_EndDate
                 FROM Discount
-                WHERE Discount_Status = 'Active'
+                WHERE LTRIM(RTRIM(Discount_Status)) = 'Active'
                   AND Discount_StartDate <= GETDATE()
                   AND Discount_EndDate >= GETDATE()
                 ORDER BY Discount_EndDate ASC";
