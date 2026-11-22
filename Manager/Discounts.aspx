@@ -10,7 +10,7 @@
             <div class="mgr-header-row emp-header-flex">
                 <div>
                     <h1>Manage Discounts</h1>
-                    <p class="mgr-dash-subtext">See every promotion, add new ones, extend or shorten an end date, and switch discounts off. Click a discount to see the products it applies to.</p>
+                    <p class="mgr-dash-subtext">See every promotion and promo code, add new ones, extend or shorten an end date, and switch discounts off. Click a discount to see the products it applies to.</p>
                 </div>
                 <div class="emp-header-actions">
                     <asp:Button ID="btnAddNew" runat="server" Text="+ Add Discount" CssClass="btn-primary" OnClick="btnAddNew_Click" CausesValidation="false" />
@@ -65,6 +65,11 @@
                                     <div><span class="mgr-kpi-label">Amount</span><strong><asp:Literal ID="litRoAmount" runat="server" /></strong></div>
                                     <div><span class="mgr-kpi-label">Starts</span><strong><asp:Literal ID="litRoStart" runat="server" /></strong></div>
                                     <div><span class="mgr-kpi-label">Status</span><strong><asp:Literal ID="litRoStatus" runat="server" /></strong></div>
+                                    <asp:PlaceHolder ID="phRoPromo" runat="server">
+                                        <div><span class="mgr-kpi-label">Promo code</span><strong><asp:Literal ID="litRoCode" runat="server" /></strong></div>
+                                        <div><span class="mgr-kpi-label">Minimum spend</span><strong><asp:Literal ID="litRoMinSpend" runat="server" /></strong></div>
+                                        <div><span class="mgr-kpi-label">Who can use it</span><strong><asp:Literal ID="litRoRule" runat="server" /></strong></div>
+                                    </asp:PlaceHolder>
                                 </div>
                                 <p class="field-hint">Only the end date of an existing discount can be changed. To stop a discount, use Deactivate in the list.</p>
                             </asp:PlaceHolder>
@@ -99,6 +104,29 @@
                                         <label for="<%= txtStartDate.ClientID %>">Start date</label>
                                         <asp:TextBox ID="txtStartDate" runat="server" CssClass="login-input" TextMode="Date" />
                                     </div>
+
+                                    <!-- Promo code fields (Discount_Code, Discount_MinSpend, Discount_Rule) -->
+                                    <asp:PlaceHolder ID="phPromoFields" runat="server">
+                                        <div class="login-field">
+                                            <label for="<%= txtCode.ClientID %>">Promo code <span class="register-optional">(optional)</span></label>
+                                            <asp:TextBox ID="txtCode" runat="server" CssClass="login-input" placeholder="e.g. SPEND500" autocomplete="off" style="text-transform:uppercase" />
+                                            <span class="field-hint">Leave empty for a normal product discount. With a code, customers type it in the cart and it comes off the whole order.</span>
+                                        </div>
+                                        <div class="login-field">
+                                            <label for="<%= txtMinSpend.ClientID %>">Minimum spend (R) <span class="register-optional">(optional)</span></label>
+                                            <asp:TextBox ID="txtMinSpend" runat="server" CssClass="login-input" placeholder="e.g. 500" inputmode="decimal" />
+                                            <span class="field-hint">Cart total needed before the code works. Only used with a promo code.</span>
+                                        </div>
+                                        <div class="login-field">
+                                            <label for="<%= ddlRule.ClientID %>">Who can use it</label>
+                                            <asp:DropDownList ID="ddlRule" runat="server" CssClass="login-input">
+                                                <asp:ListItem Text="Anyone" Value="" />
+                                                <asp:ListItem Text="Students only (.ac.za email)" Value="Student" />
+                                                <asp:ListItem Text="First order only" Value="FirstOrder" />
+                                            </asp:DropDownList>
+                                            <span class="field-hint">Student and first-order rules need a promo code.</span>
+                                        </div>
+                                    </asp:PlaceHolder>
                                 </asp:PlaceHolder>
 
                                 <div class="login-field">
@@ -109,7 +137,7 @@
 
                                 <asp:PlaceHolder ID="phAddStatus" runat="server">
                                     <div class="login-field emp-form-wide">
-                                        <span class="field-hint">New discounts are saved as Active. Link products to it in Manage Products (Discount drop-down).</span>
+                                        <span class="field-hint">New discounts are saved as Active. Without a promo code, link products to it in Manage Products (Discount drop-down). With a promo code, don't link products: the code already takes money off the whole order.</span>
                                     </div>
                                 </asp:PlaceHolder>
                             </div>
@@ -135,6 +163,7 @@
                                 <div><span class="mgr-kpi-label">Status</span><strong><asp:Literal ID="litProdStatus" runat="server" /></strong></div>
                                 <div><span class="mgr-kpi-label">Products</span><strong><asp:Literal ID="litProdCount" runat="server" /></strong></div>
                                 <div><span class="mgr-kpi-label">Whole categories</span><strong><asp:Literal ID="litProdCategories" runat="server" /></strong></div>
+                                <div><span class="mgr-kpi-label">Promo code</span><strong><asp:Literal ID="litProdCode" runat="server" /></strong></div>
                             </div>
 
                             <asp:Literal ID="litProdNote" runat="server" />
@@ -170,13 +199,15 @@
                     <div class="mgr-table-card">
                         <asp:Panel ID="pnlToolbar" runat="server" DefaultButton="btnSearch">
                             <div class="emp-toolbar">
-                                <asp:TextBox ID="txtSearch" runat="server" CssClass="login-input" placeholder="Search by discount name..." autocomplete="off" />
+                                <asp:TextBox ID="txtSearch" runat="server" CssClass="login-input" placeholder="Search by discount name or code..." autocomplete="off" />
                                 <asp:DropDownList ID="ddlStatusFilter" runat="server" CssClass="login-input emp-select" AutoPostBack="true" OnSelectedIndexChanged="Filter_Changed">
                                     <asp:ListItem Text="All discounts" Value="" />
                                     <asp:ListItem Text="Running now" Value="running" />
                                     <asp:ListItem Text="Scheduled" Value="scheduled" />
                                     <asp:ListItem Text="Ended" Value="ended" />
                                     <asp:ListItem Text="Inactive" Value="inactive" />
+                                    <asp:ListItem Text="Promo codes only" Value="code" />
+                                    <asp:ListItem Text="Product discounts only" Value="nocode" />
                                 </asp:DropDownList>
                                 <asp:Button ID="btnSearch" runat="server" Text="Search" CssClass="btn-primary" OnClick="btnSearch_Click" />
                                 <asp:Button ID="btnClear" runat="server" Text="Clear" CssClass="btn-ghost" OnClick="btnClear_Click" />
@@ -203,6 +234,12 @@
                                 <asp:TemplateField HeaderText="Amount" SortExpression="Discount_Value">
                                     <ItemTemplate><%#: AmountText(Eval("Discount_Type"), Eval("Discount_Value")) %></ItemTemplate>
                                 </asp:TemplateField>
+                                <asp:TemplateField HeaderText="Promo code" SortExpression="Discount_Code">
+                                    <ItemTemplate>
+                                        <%# CodeText(Eval("Discount_Code")) %>
+                                        <%# PromoSub(Eval("Discount_MinSpend"), Eval("Discount_Rule")) %>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Starts" SortExpression="Discount_StartDate">
                                     <ItemTemplate><%#: DateText(Eval("Discount_StartDate")) %></ItemTemplate>
                                 </asp:TemplateField>
@@ -211,8 +248,7 @@
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Applies to" SortExpression="ProductCount">
                                     <ItemTemplate>
-                                        <%# Eval("ProductCount") %> product<%# Convert.ToInt32(Eval("ProductCount")) == 1 ? "" : "s" %>
-                                        <%# CategorySub(Eval("CategoryCount")) %>
+                                        <%# AppliesText(Eval("Discount_Code"), Eval("ProductCount"), Eval("CategoryCount")) %>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Status">

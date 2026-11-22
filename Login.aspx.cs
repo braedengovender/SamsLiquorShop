@@ -31,6 +31,11 @@ namespace SamsLiquorShop
                     lblError.Text = "Your login code expired. Please log in again.";
                     lblError.Visible = true;
                 }
+                else if (Request.QueryString["account"] == "deactivated")
+                {
+                    lblError.Text = "Your profile has been deactivated and you've been logged out. Contact us if you'd like it switched back on.";
+                    lblError.Visible = true;
+                }
             }
         }
 
@@ -134,8 +139,33 @@ namespace SamsLiquorShop
                 return;
             }
 
-            lblError.Text = "Invalid email/username or password.";
+            lblError.Text = IsDeactivatedCustomer(usernameOrEmail, password, connStr)
+                ? "This profile has been deactivated. Contact us if you'd like it switched back on."
+                : "Invalid email/username or password.";
             lblError.Visible = true;
+        }
+
+        /// <summary>True when the details are right but the customer profile is no longer Active.</summary>
+        private static bool IsDeactivatedCustomer(string login, string password, string connStr)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connStr))
+                using (SqlCommand cmd = new SqlCommand(@"
+                    SELECT COUNT(*) FROM Customer
+                    WHERE (Customer_Username = @Login OR Customer_EmailAddress = @Login)
+                      AND Customer_Password = @Password AND Customer_Status <> 'Active'", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Login", login);
+                    cmd.Parameters.AddWithValue("@Password", password);
+                    conn.Open();
+                    return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+                }
+            }
+            catch (SqlException)
+            {
+                return false;
+            }
         }
     }
 }

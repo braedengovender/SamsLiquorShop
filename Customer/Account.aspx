@@ -135,6 +135,44 @@
                     </div>
                 </div>
             </asp:Panel>
+
+            <!-- DEACTIVATE PROFILE -->
+            <asp:Panel ID="pnlDeactivate" runat="server" DefaultButton="btnDeactivate">
+                <div class="mgr-table-card emp-form-card acct-danger-card">
+                    <div class="dash-card-head"><h3>Deactivate My Profile</h3></div>
+
+                    <p class="mgr-dash-subtext">If you deactivate your profile:</p>
+                    <ul class="field-hint">
+                        <li>You'll be logged out straight away and won't be able to log in again.</li>
+                        <li>Orders you've already placed will still be processed and delivered.</li>
+                        <li>Your order history is kept for our records. Contact us if you want your profile switched back on.</li>
+                    </ul>
+
+                    <div class="emp-form-grid">
+                        <div class="login-field">
+                            <label for="<%= txtDeactivatePassword.ClientID %>">Enter your password to confirm</label>
+                            <asp:TextBox ID="txtDeactivatePassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="current-password" />
+                        </div>
+                    </div>
+
+                    <div class="emp-form-actions">
+                        <asp:LinkButton ID="btnDeactivate" runat="server" CssClass="btn-primary emp-btn-danger" OnClick="btnDeactivate_Click" CausesValidation="false"
+                            OnClientClick="return dashConfirm(this, 'Deactivate your profile?', 'You will be logged out and will not be able to log in to this profile again. This cannot be undone online.', 'Deactivate', true);">Deactivate my profile</asp:LinkButton>
+                    </div>
+                </div>
+            </asp:Panel>
         </div>
     </section>
+
+    <!-- CONFIRMATION DIALOG (opened by dashConfirm() in Site.Master) -->
+    <div class="emp-modal" id="dashModal" aria-hidden="true">
+        <div class="emp-modal-card" role="dialog" aria-modal="true" aria-labelledby="dashModalTitle">
+            <h3 id="dashModalTitle">Confirm</h3>
+            <p id="dashModalText"></p>
+            <div class="emp-modal-actions">
+                <button type="button" class="btn-ghost" onclick="dashModalClose()">Cancel</button>
+                <button type="button" class="btn-primary" id="dashModalOk">Confirm</button>
+            </div>
+        </div>
+    </div>
 </asp:Content>

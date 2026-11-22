@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
+using SamsLiquorShop.Helpers;
 
 namespace SamsLiquorShop.Customer
 {
@@ -16,7 +17,7 @@ namespace SamsLiquorShop.Customer
         {
             txtFirstName, txtLastName, txtIdNumber, txtPhone, txtUsername, txtEmail,
             txtUnitNumber, txtUnitName, txtStreetNumber, txtStreetName, txtSuburb, txtCity, txtPostalCode,
-            txtCurrentPassword, txtNewPassword, txtConfirmPassword
+            txtCurrentPassword, txtNewPassword, txtConfirmPassword, txtDeactivatePassword
         };
 
         protected void Page_Load(object sender, EventArgs e)
@@ -51,6 +52,7 @@ namespace SamsLiquorShop.Customer
                             ShowMessage("Your account could not be found.", false);
                             pnlDetails.Visible = false;
                             pnlPassword.Visible = false;
+                            pnlDeactivate.Visible = false;
                             return;
                         }
 
@@ -262,6 +264,55 @@ namespace SamsLiquorShop.Customer
             txtNewPassword.Text = "";
             txtConfirmPassword.Text = "";
             ShowMessage("Your password has been updated.", true);
+        }
+
+        // ---------- DEACTIVATE PROFILE ----------
+        protected void btnDeactivate_Click(object sender, EventArgs e)
+        {
+            ClearInvalid();
+
+            string password = txtDeactivatePassword.Text;
+            if (password.Length == 0)
+            {
+                txtDeactivatePassword.CssClass = "login-input invalid";
+                ShowMessage("Please enter your password to deactivate your profile.", false);
+                return;
+            }
+
+            int rows;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConnStr))
+                using (SqlCommand cmd = new SqlCommand(@"
+                    UPDATE Customer SET Customer_Status = 'Inactive'
+                    WHERE Customer_ID = @Id AND Customer_Password = @Pw AND Customer_Status = 'Active'", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", CustomerId);
+                    cmd.Parameters.AddWithValue("@Pw", password);
+                    conn.Open();
+                    rows = cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException ex)
+            {
+                ShowMessage("Your profile could not be deactivated: " + ex.Message, false);
+                return;
+            }
+
+            if (rows == 0)
+            {
+                txtDeactivatePassword.Text = "";
+                txtDeactivatePassword.CssClass = "login-input invalid";
+                ShowMessage("Your password is incorrect. Your profile has not been deactivated.", false);
+                return;
+            }
+
+            // Log the customer out (same steps as the Log out button, minus the logout email)
+            string ignoredEmail, ignoredName;
+            SessionWatch.Unregister(Session.SessionID, out ignoredEmail, out ignoredName);
+            Session.Clear();
+            Response.Redirect("~/Login.aspx?account=deactivated", false);
+            Context.ApplicationInstance.CompleteRequest();
         }
 
         // ---------- HELPERS ----------

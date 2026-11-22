@@ -38,6 +38,25 @@ namespace SamsLiquorShop
                     }
                 }
             }
+
+            // Customer pages: the profile must still be Active (it may have been deactivated in another session)
+            if (requiredRole == "Customer" && session["CustomerID"] != null)
+            {
+                string cs = ConfigurationManager.ConnectionStrings["GroupWst15ConnectionString"].ConnectionString;
+                using (var conn = new SqlConnection(cs))
+                using (var cmd = new SqlCommand(
+                    "SELECT COUNT(*) FROM Customer WHERE Customer_ID = @Id AND Customer_Status = 'Active'", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", Convert.ToInt32(session["CustomerID"]));
+                    conn.Open();
+                    if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                    {
+                        session.Abandon();
+                        page.Response.Redirect("~/Login.aspx?account=deactivated");
+                        return false;
+                    }
+                }
+            }
             return true;
         }
     }

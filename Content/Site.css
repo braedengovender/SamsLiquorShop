@@ -7047,6 +7047,29 @@ textarea.login-input {
     margin: 0 0 14px;
 }
 
+.disc-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: 0.03em;
+}
+
+/* Customer account: deactivate profile */
+.acct-danger-card {
+    border: 1px solid rgba(215, 0, 21, 0.35);
+}
+
+    .acct-danger-card .dash-card-head h3 {
+        color: #d70015;
+    }
+
+    .acct-danger-card ul {
+        margin: 0 0 14px;
+        padding-left: 20px;
+    }
+
+[data-theme="dark"] .acct-danger-card .dash-card-head h3 {
+    color: #ff6961;
+}
+
 .sup-section-title {
     font-size: 0.78rem;
     text-transform: uppercase;

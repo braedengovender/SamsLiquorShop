@@ -37,5 +37,32 @@ namespace SamsLiquorShop.Customer
         protected global::System.Web.UI.WebControls.TextBox txtNewPassword;
         protected global::System.Web.UI.WebControls.TextBox txtConfirmPassword;
         protected global::System.Web.UI.WebControls.Button btnChangePassword;
+
+        /// <summary>
+        /// pnlDeactivate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlDeactivate;
+
+        /// <summary>
+        /// txtDeactivatePassword control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtDeactivatePassword;
+
+        /// <summary>
+        /// btnDeactivate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnDeactivate;
     }
 }

@@ -20,6 +20,8 @@ namespace SamsLiquorShop.Manager
     /// - Edit an existing discount: ONLY the end date can change
     /// - Deactivate / reactivate (status change)
     /// Deleting discounts is deliberately not offered.
+    /// Promo codes (Discount_Code, Discount_MinSpend, Discount_Rule) are typed in the cart and
+    /// checked by PromoHelper; they come off the whole order rather than individual products.
     /// A discount reaches a product either directly (Product.Discount_ID) or through
     /// the product's category (Category.Discount_ID). A product's own discount wins over its category's.
     /// </summary>
@@ -29,8 +31,13 @@ namespace SamsLiquorShop.Manager
 
         private static readonly HashSet<string> AllowedSort = new HashSet<string>
         {
-            "Discount_Name", "Discount_Value", "Discount_StartDate", "Discount_EndDate", "ProductCount"
+            "Discount_Name", "Discount_Value", "Discount_StartDate", "Discount_EndDate", "ProductCount", "Discount_Code"
         };
+
+        /// <summary>Rules PromoHelper understands. Any other value would make the code unusable.</summary>
+        private static readonly string[] KnownRules = { "Student", "FirstOrder" };
+
+        private static readonly Regex CodeFormat = new Regex("^[A-Z0-9_-]{3,20}$");
 
         private static readonly string[] RequiredColumns =
         {
@@ -45,6 +52,12 @@ namespace SamsLiquorShop.Manager
         private TableSchema.Column EndCol => Schema.Find("Discount_EndDate");
         private TableSchema.Column StartCol => Schema.Find("Discount_StartDate");
         private TableSchema.Column ValueCol => Schema.Find("Discount_Value");
+
+        // New promo columns (optional, so the page still works on a database without them)
+        private TableSchema.Column CodeCol => Schema.Find("Discount_Code");
+        private TableSchema.Column MinSpendCol => Schema.Find("Discount_MinSpend");
+        private TableSchema.Column RuleCol => Schema.Find("Discount_Rule");
+        private bool HasPromoCols => CodeCol != null && MinSpendCol != null && RuleCol != null;
 
         /// <summary>Optional description column (Discount_Description, Discount_Desc, ...), or null.</summary>
         private TableSchema.Column DescCol
@@ -99,6 +112,17 @@ namespace SamsLiquorShop.Manager
                 txtName.MaxLength = Schema.Find("Discount_Name").TextLimit(100);
                 phDescription.Visible = DescCol != null;
                 if (DescCol != null) txtDescription.MaxLength = DescCol.TextLimit(500);
+
+                phPromoFields.Visible = HasPromoCols;
+                phRoPromo.Visible = HasPromoCols;
+                if (HasPromoCols) txtCode.MaxLength = Math.Min(20, CodeCol.TextLimit(20));
+                if (!HasPromoCols)
+                {
+                    ListItem codeItem = ddlStatusFilter.Items.FindByValue("code");
+                    ListItem noCodeItem = ddlStatusFilter.Items.FindByValue("nocode");
+                    if (codeItem != null) ddlStatusFilter.Items.Remove(codeItem);
+                    if (noCodeItem != null) ddlStatusFilter.Items.Remove(noCodeItem);
+                }
             }
             catch (Exception ex)
             {
@@ -177,14 +201,25 @@ namespace SamsLiquorShop.Manager
                 : "CAST(NULL AS NVARCHAR(MAX))";
         }
 
+        /// <summary>SELECT list for the promo columns (NULLs when a column doesn't exist yet).</summary>
+        private string PromoSelect(string alias)
+        {
+            string code = CodeCol != null ? "CAST(" + alias + TableSchema.Q(CodeCol.Name) + " AS NVARCHAR(50))" : "CAST(NULL AS NVARCHAR(50))";
+            string min = MinSpendCol != null ? "CAST(" + alias + TableSchema.Q(MinSpendCol.Name) + " AS DECIMAL(18,2))" : "CAST(NULL AS DECIMAL(18,2))";
+            string rule = RuleCol != null ? "CAST(" + alias + TableSchema.Q(RuleCol.Name) + " AS NVARCHAR(50))" : "CAST(NULL AS NVARCHAR(50))";
+            return code + " AS Discount_Code, " + min + " AS Discount_MinSpend, " + rule + " AS Discount_Rule";
+        }
+
         private DataTable LoadAllDiscounts(string search)
         {
             string sort = AllowedSort.Contains(SortField) ? SortField : "Discount_StartDate";
+            if (sort == "Discount_Code" && CodeCol == null) sort = "Discount_StartDate";
             string dir = SortDir == "ASC" ? "ASC" : "DESC";
 
             string sql = @"
                 SELECT d.Discount_ID, d.Discount_Name, d.Discount_Type, d.Discount_Value, d.Discount_Status,
                        d.Discount_StartDate, d.Discount_EndDate, " + DescSelect("d.") + @" AS Discount_Description,
+                       " + PromoSelect("d.") + @",
                        (SELECT COUNT(*) FROM Product p
                         INNER JOIN Category c ON c.Category_ID = p.Category_ID
                         WHERE p.Discount_ID = d.Discount_ID
@@ -202,6 +237,7 @@ namespace SamsLiquorShop.Manager
                 {
                     sql += " WHERE d.Discount_Name LIKE @Search";
                     if (DescCol != null) sql += " OR " + DescSelect("d.") + " LIKE @Search";
+                    if (CodeCol != null) sql += " OR d." + TableSchema.Q(CodeCol.Name) + " LIKE @Search";
                     cmd.Parameters.AddWithValue("@Search", "%" + search + "%");
                 }
                 sql += " ORDER BY " + sort + " " + dir + ", d.Discount_Name ASC";
@@ -259,7 +295,13 @@ namespace SamsLiquorShop.Manager
             {
                 shown = all.Clone();
                 foreach (DataRow r in all.Rows)
-                    if ((string)r["StatusKey"] == filter) shown.ImportRow(r);
+                {
+                    bool hasCode = Convert.ToString(r["Discount_Code"]).Trim().Length > 0;
+                    bool match = filter == "code" ? hasCode
+                               : filter == "nocode" ? !hasCode
+                               : (string)r["StatusKey"] == filter;
+                    if (match) shown.ImportRow(r);
+                }
             }
 
             gvDiscounts.DataSource = shown;
@@ -432,12 +474,20 @@ namespace SamsLiquorShop.Manager
             litProdCount.Text = products.Rows.Count.ToString("N0");
             litProdCategories.Text = categoryNames.Count == 0 ? "None" : Server.HtmlEncode(string.Join(", ", categoryNames));
 
+            string code = Convert.ToString(d["Discount_Code"]).Trim();
+            litProdCode.Text = code.Length == 0 ? "None" : Server.HtmlEncode(code + PromoConditions(d["Discount_MinSpend"], d["Discount_Rule"], " (", ")"));
+
             string note = "";
+            if (code.Length > 0)
+            {
+                note = "This is a promo code: customers enter " + code + " in the cart and it comes off the whole order"
+                     + (products.Rows.Count > 0 ? ". The products below are ALSO linked to it, so they get the discount twice. Unlink them in Manage Products." : ", so it doesn't need any products linked.");
+            }
             if (overridden > 0)
             {
-                note = overridden == 1
+                note += (note.Length > 0 ? " " : "") + (overridden == 1
                     ? "1 product in the linked categories has its own discount, which takes priority, so it isn't listed."
-                    : overridden + " products in the linked categories have their own discount, which takes priority, so they aren't listed.";
+                    : overridden + " products in the linked categories have their own discount, which takes priority, so they aren't listed.");
             }
             if (status.Key != "running")
             {
@@ -480,7 +530,7 @@ namespace SamsLiquorShop.Manager
             using (SqlConnection conn = new SqlConnection(ConnStr))
             using (SqlCommand cmd = new SqlCommand(@"
                 SELECT Discount_ID, Discount_Name, Discount_Type, Discount_Value, Discount_Status,
-                       Discount_StartDate, Discount_EndDate
+                       Discount_StartDate, Discount_EndDate, " + PromoSelect("") + @"
                 FROM Discount WHERE Discount_ID = @Id", conn))
             {
                 cmd.Parameters.AddWithValue("@Id", id);
@@ -500,6 +550,9 @@ namespace SamsLiquorShop.Manager
             txtDescription.Text = "";
             txtValue.Text = "";
             ddlType.SelectedIndex = 0;
+            txtCode.Text = "";
+            txtMinSpend.Text = "";
+            ddlRule.SelectedIndex = 0;
             txtStartDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
             txtEndDate.Text = DateTime.Today.AddDays(30).ToString("yyyy-MM-dd");
             txtStartDate.Attributes["min"] = DateTime.Today.ToString("yyyy-MM-dd");
@@ -550,6 +603,11 @@ namespace SamsLiquorShop.Manager
             litRoAmount.Text = Server.HtmlEncode(AmountText(d["Discount_Type"], d["Discount_Value"]));
             litRoStart.Text = Server.HtmlEncode(DateText(d["Discount_StartDate"]));
             litRoStatus.Text = "<span class=\"emp-badge emp-badge-" + status.Css + "\">" + Server.HtmlEncode(status.Label) + "</span>";
+
+            string roCode = Convert.ToString(d["Discount_Code"]).Trim();
+            litRoCode.Text = roCode.Length == 0 ? "None (product discount)" : Server.HtmlEncode(roCode);
+            litRoMinSpend.Text = d["Discount_MinSpend"] == DBNull.Value ? "None" : Server.HtmlEncode(Convert.ToDecimal(d["Discount_MinSpend"]).ToString("C"));
+            litRoRule.Text = Server.HtmlEncode(RuleText(d["Discount_Rule"]));
 
             txtEndDate.Text = d["Discount_EndDate"] == DBNull.Value ? "" : Convert.ToDateTime(d["Discount_EndDate"]).ToString("yyyy-MM-dd");
             DateTime minEnd = MinAllowedEnd(d["Discount_StartDate"]);
@@ -742,6 +800,52 @@ namespace SamsLiquorShop.Manager
                 if (value > 10000) { ShowFormError("A rand discount can be at most R10 000.", txtValue); return; }
             }
 
+            // ----- Promo code, minimum spend and rule -----
+            string code = "";
+            decimal? minSpend = null;
+            string rule = "";
+            if (HasPromoCols)
+            {
+                code = Regex.Replace(txtCode.Text ?? "", @"\s+", "").ToUpperInvariant();
+                string minText = (txtMinSpend.Text ?? "").Trim().Replace(",", ".").TrimStart('R', 'r').Trim().Replace(" ", "");
+                rule = ddlRule.SelectedValue ?? "";
+                int codeMax = Math.Min(20, CodeCol.TextLimit(20));
+
+                if (code.Length > 0)
+                {
+                    if (code.Length < 3 || code.Length > codeMax)
+                    { ShowFormError("The promo code must be 3 to " + codeMax + " characters.", txtCode); return; }
+                    if (!CodeFormat.IsMatch(code))
+                    { ShowFormError("The promo code can only use letters, numbers, - and _ (no spaces).", txtCode); return; }
+                }
+
+                if (minText.Length > 0)
+                {
+                    decimal m;
+                    if (!decimal.TryParse(minText, NumberStyles.Number, CultureInfo.InvariantCulture, out m))
+                    { ShowFormError("The minimum spend must be a number, e.g. 500.", txtMinSpend); return; }
+                    if (decimal.Round(m, 2) != m) { ShowFormError("The minimum spend can have at most 2 decimal places.", txtMinSpend); return; }
+                    if (m <= 0) { ShowFormError("The minimum spend must be more than R0, or leave it empty.", txtMinSpend); return; }
+                    if (m > 100000) { ShowFormError("The minimum spend can be at most R100 000.", txtMinSpend); return; }
+                    minSpend = m;
+                }
+
+                if (rule.Length > 0 && !KnownRules.Contains(rule))
+                { ShowFormError("Please choose who can use this discount.", ddlRule); return; }
+
+                if (code.Length == 0 && (minSpend.HasValue || rule.Length > 0))
+                {
+                    ShowFormError("A minimum spend or a Student / First order rule only works with a promo code. Enter a code, or clear those fields.", txtCode);
+                    return;
+                }
+
+                if (code.Length > 0 && !isPercent && minSpend.HasValue && value >= minSpend.Value)
+                {
+                    ShowFormError("For a rand-off code the minimum spend must be more than the discount (R" + value.ToString("N2") + ").", txtMinSpend);
+                    return;
+                }
+            }
+
             // ----- Dates -----
             DateTime start, end;
             if (!TryParseDate(txtStartDate.Text, out start)) { ShowFormError("Please choose a valid start date.", txtStartDate); return; }
@@ -754,10 +858,22 @@ namespace SamsLiquorShop.Manager
             try
             {
                 if (NameTaken(name)) { ShowFormError("A discount called \"" + name + "\" already exists.", txtName); return; }
+                if (code.Length > 0 && CodeTaken(code)) { ShowFormError("The promo code " + code + " is already used by another discount.", txtCode); return; }
+                if (rule.Length > 0 && RuleTaken(rule, start, end))
+                {
+                    ShowFormError("Another active " + RuleText(rule).ToLowerInvariant() + " code already runs during these dates. Customers are only shown one, so deactivate the old one first.", ddlRule);
+                    return;
+                }
 
                 var cols = new List<string> { "Discount_Name", "Discount_Type", "Discount_Value", "Discount_Status", "Discount_StartDate", "Discount_EndDate" };
                 var pars = new List<string> { "@Name", "@Type", "@Value", "@Status", "@Start", "@End" };
                 if (DescCol != null) { cols.Add(DescCol.Name); pars.Add("@Desc"); }
+                if (HasPromoCols)
+                {
+                    cols.Add(CodeCol.Name); pars.Add("@Code");
+                    cols.Add(MinSpendCol.Name); pars.Add("@MinSpend");
+                    cols.Add(RuleCol.Name); pars.Add("@Rule");
+                }
 
                 TableSchema.Column idCol = Schema.Find("Discount_ID");
                 bool manualId = !idCol.IsIdentity;
@@ -795,6 +911,14 @@ namespace SamsLiquorShop.Manager
                         cmd.Parameters.AddWithValue("@End", EndValueFor(end));
                         if (DescCol != null)
                             cmd.Parameters.AddWithValue("@Desc", desc.Length == 0 && DescCol.Nullable ? (object)DBNull.Value : desc);
+                        if (HasPromoCols)
+                        {
+                            cmd.Parameters.AddWithValue("@Code", code.Length == 0 ? (object)DBNull.Value : code);
+                            cmd.Parameters.Add("@MinSpend", SqlDbType.Decimal).Value = minSpend.HasValue ? (object)minSpend.Value : DBNull.Value;
+                            cmd.Parameters["@MinSpend"].Precision = 18;
+                            cmd.Parameters["@MinSpend"].Scale = 2;
+                            cmd.Parameters.AddWithValue("@Rule", rule.Length == 0 ? (object)DBNull.Value : rule);
+                        }
 
                         cmd.ExecuteNonQuery();
                         tx.Commit();
@@ -809,7 +933,9 @@ namespace SamsLiquorShop.Manager
 
             pnlForm.Visible = false;
             RefreshAll();
-            ShowMessage(name + " was added. Link products to it in Manage Products using the Discount drop-down.", true);
+            ShowMessage(code.Length > 0
+                ? name + " was added. Customers can use the code " + code + " in their cart from " + start.ToString("d MMM yyyy") + "."
+                : name + " was added. Link products to it in Manage Products using the Discount drop-down.", true);
         }
 
         private bool NameTaken(string name)
@@ -822,6 +948,41 @@ namespace SamsLiquorShop.Manager
                 conn.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
             }
+        }
+
+        private bool CodeTaken(string code)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(
+                "SELECT COUNT(*) FROM Discount WHERE UPPER(LTRIM(RTRIM(" + TableSchema.Q(CodeCol.Name) + "))) = @Code", conn))
+            {
+                cmd.Parameters.AddWithValue("@Code", code);
+                conn.Open();
+                return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
+        }
+
+        /// <summary>True when another active discount with the same rule overlaps these dates.</summary>
+        private bool RuleTaken(string rule, DateTime start, DateTime end)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(
+                "SELECT Discount_Status, Discount_StartDate, Discount_EndDate FROM Discount WHERE LTRIM(RTRIM(" + TableSchema.Q(RuleCol.Name) + ")) = @Rule", conn))
+            {
+                cmd.Parameters.AddWithValue("@Rule", rule);
+                conn.Open();
+                using (SqlDataReader r = cmd.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        if (!IsActiveValueOn(r["Discount_Status"])) continue;
+                        DateTime s = r["Discount_StartDate"] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(r["Discount_StartDate"]).Date;
+                        DateTime e = r["Discount_EndDate"] == DBNull.Value ? DateTime.MaxValue : Convert.ToDateTime(r["Discount_EndDate"]).Date;
+                        if (s <= end.Date && e >= start.Date) return true;
+                    }
+                }
+            }
+            return false;
         }
 
         // ---------- DEACTIVATE / REACTIVATE ----------
@@ -878,6 +1039,48 @@ namespace SamsLiquorShop.Manager
             if (Convert.ToString(type).Trim() == "Percentage")
                 return v.ToString("0.##", CultureInfo.InvariantCulture) + "% off";
             return v.ToString("C") + " off";
+        }
+
+        protected string CodeText(object code)
+        {
+            string c = code == null || code == DBNull.Value ? "" : code.ToString().Trim();
+            if (c.Length == 0) return "<span class=\"emp-sub\">No code</span>";
+            return "<strong class=\"disc-code\">" + HttpUtility.HtmlEncode(c) + "</strong>";
+        }
+
+        protected string PromoSub(object minSpend, object rule)
+        {
+            string text = PromoConditions(minSpend, rule, "", "");
+            return text.Length == 0 ? "" : "<span class=\"emp-sub\">" + HttpUtility.HtmlEncode(text) + "</span>";
+        }
+
+        /// <summary>"Min spend R500.00 · Students only", wrapped in prefix/suffix when there's anything to say.</summary>
+        private static string PromoConditions(object minSpend, object rule, string prefix, string suffix)
+        {
+            var parts = new List<string>();
+            if (minSpend != null && minSpend != DBNull.Value) parts.Add("Min spend " + Convert.ToDecimal(minSpend).ToString("C"));
+            string r = rule == null || rule == DBNull.Value ? "" : rule.ToString().Trim();
+            if (r.Length > 0) parts.Add(RuleText(r));
+            return parts.Count == 0 ? "" : prefix + string.Join(" · ", parts) + suffix;
+        }
+
+        protected static string RuleText(object rule)
+        {
+            string r = rule == null || rule == DBNull.Value ? "" : rule.ToString().Trim();
+            if (r.Length == 0) return "Anyone";
+            if (r.Equals("Student", StringComparison.OrdinalIgnoreCase)) return "Students only";
+            if (r.Equals("FirstOrder", StringComparison.OrdinalIgnoreCase)) return "First order only";
+            return r + " (unknown rule: code won't work)";
+        }
+
+        protected string AppliesText(object code, object productCount, object categoryCount)
+        {
+            int n = Convert.ToInt32(productCount);
+            bool hasCode = code != null && code != DBNull.Value && code.ToString().Trim().Length > 0;
+            if (hasCode && n == 0) return "Whole order<span class=\"emp-sub\">via promo code</span>";
+            string text = n + " product" + (n == 1 ? "" : "s") + CategorySub(categoryCount);
+            if (hasCode) text += "<span class=\"emp-sub\">+ whole order via code</span>";
+            return text;
         }
 
         protected string DateText(object value)
