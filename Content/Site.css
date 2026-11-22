@@ -939,6 +939,7 @@ body {
     font-weight: 700;
     color: var(--accent);
     margin: 0 0 6px;
+    font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
