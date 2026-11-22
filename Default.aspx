@@ -55,208 +55,85 @@
     </div>
     </section>
 
-    <section class="shell home-section">
+        <section class="shell home-section" id="secFeatured" runat="server">
       <div class="section-header">
         <h2>Featured at Sam's</h2>
         <a href="Shop.aspx" class="view-all-link">View all &rarr;</a>
       </div>
-      <div class="ribbon">
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/product1.jpg" alt="Johnnie Walker Black Label 12yo Whisky 750ml" />
-          <p class="product-name">Johnnie Walker Black Label 12yo Whisky 750ml</p>
-          <p class="product-price">R419.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/product2.jpg" alt="Ciroc Vodka 750ml" />
-          <p class="product-name">Ciroc Vodka 750m</p>
-          <p class="product-price">R399.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/product3.jpg" alt="Grey Goose Vodka 750ml" />
-          <p class="product-name">Grey Goose Vodka 750ml</p>
-          <p class="product-price">R699.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/product4.jpg" alt="Moet & Chandon Brut Imperial Champagne 750ml" />
-          <p class="product-name">Moet & Chandon Brut Imperial Champagne 750ml</p>
-          <p class="product-price">R749.95</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/product6.jpg" alt="Amarula Cream Liqueur 750ml" />
-          <p class="product-name">Amarula Cream Liqueur 750ml</p>
-          <p class="product-price">R184.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/product5.jpg" alt="Hendricks Gin 750ml" />
-          <p class="product-name">Hendricks Gin 750ml</p>
-          <p class="product-price">R499.99</p>
-        </a>
-      </div>
+      <asp:Literal ID="litFeatured" runat="server" EnableViewState="false" />
     </section>
 
-    <section class="shell home-section">
+    <section class="shell home-section" id="secPromos" runat="server">
       <div class="section-header">
         <h2>Shop Promotions</h2>
-        <a href="Specials.aspx" class="view-all-link">View all &rarr;</a>
+        <a href="Shop.aspx?sale=1" class="view-all-link">View all &rarr;</a>
       </div>
       <p class="section-subtext">Priced to leave our stores. Here while stocks last.</p>
-      <div class="ribbon">
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo1.jpg" alt="Jack Daniel's Whiskey 750ml" />
-          <p class="product-name">Jack Daniel's Whiskey 750ml</p>
-          <p class="product-price">R329.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo2.jpg" alt="Amarula Cream Liqueur 750ml" />
-          <p class="product-name">Amarula Cream Liqueur 750ml</p>
-          <p class="product-price">R184.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo3.jpg" alt="Savanna Dry NRB 6 x 330ml" />
-          <p class="product-name">Savanna Dry NRB 6 x 330ml</p>
-          <p class="product-price">R89.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo4.jpg" alt="Four Cousins Natural Sweet Rose 750ml" />
-          <p class="product-name">Four Cousins Natural Sweet Rose 750ml</p>
-          <p class="product-price">R69.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo5.jpg" alt="Nederburg Baronne 750ml" />
-          <p class="product-name">Nederburg Baronne 750ml</p>
-          <p class="product-price">R79.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/promo6.jpg" alt="Carling Black Label Local Beer 6 x 500ml" />
-          <p class="product-name">Carling Black Label Local Beer 6 x 500ml</p>
-          <p class="product-price">R84.99</p>
-        </a>
-      </div>
+      <asp:Literal ID="litPromos" runat="server" EnableViewState="false" />
     </section>
 
-    <section class="shell home-section">
+    <section class="shell home-section" id="secNonAlc" runat="server">
       <div class="section-header">
         <h2>Non-Alcoholic Favourites</h2>
         <a href="Shop.aspx?cat=non-alcoholic" class="view-all-link">View all &rarr;</a>
       </div>
-      <div class="ribbon">
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na1.jpg" alt="Heineken Lager 0.0% Non-Alcoholic 6 x 330ml" />
-          <p class="product-name">Heineken Lager 0.0% Non-Alcoholic 6 x 330ml</p>
-          <p class="product-price">R109.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na2.jpg" alt="Brutal Fruit Ruby Apple 0% Can 6 x 300ml" />
-          <p class="product-name">Brutal Fruit Ruby Apple 0% Can 6 x 300ml</p>
-          <p class="product-price">R94.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na3.jpg" alt="Fruit Lagoon Pina Colada Cocktail Base 750ml" />
-          <p class="product-name">Fruit Lagoon Pina Colada Cocktail Base 750ml</p>
-          <p class="product-price">R109.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na4.jpg" alt="JC Le Roux Le Domaine Non-Alcoholic 750ml" />
-          <p class="product-name">JC Le Roux Le Domaine Non-Alcoholic 750ml</p>
-          <p class="product-price">R109.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na5.jpg" alt="Ice Tropez 0% Grape Cooler Nrb 275ml" />
-          <p class="product-name">Ice Tropez 0% Grape Cooler Nrb 275ml</p>
-          <p class="product-price">R84.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/na6.jpg" alt="Savanna Alcoholic Free Lemon NRB 330ml" />
-          <p class="product-name">Savanna Alcoholic Free Lemon NRB 330ml</p>
-          <p class="product-price">R24.99</p>
-        </a>
-      </div>
+      <asp:Literal ID="litNonAlc" runat="server" EnableViewState="false" />
     </section>
 
-    <section class="shell home-section">
+    <section class="shell home-section" id="secGifts" runat="server">
       <div class="section-header">
         <h2>Gift Ideas & Accessories</h2>
         <a href="Shop.aspx?cat=gifts" class="view-all-link">View all &rarr;</a>
       </div>
-      <div class="ribbon">
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift1.jpg" alt="DAY Champagne Glass 250ml 4 Piece" />
-          <p class="product-name">DAY Champagne Glass 250ml 4 Piece</p>
-          <p class="product-price">R149.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift2.jpg" alt="Prestige Wing Type Corkscrew" />
-          <p class="product-name">Prestige Wing Type Corkscrew</p>
-          <p class="product-price">R89.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift4.jpg" alt="Kitchen Inspire Stainless Steel Ice Tong" />
-          <p class="product-name">Kitchen Inspire Stainless Steel Ice Tong</p>
-          <p class="product-price">R149.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift5.jpg" alt="Ethnix Ice Cube Trays 3 Pack" />
-          <p class="product-name">Ethnix Ice Cube Trays 3 Pack</p>
-          <p class="product-price">R69.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift3.jpg" alt="Outfit Freezer Pack 1kg" />
-          <p class="product-name">Outfit Freezer Pack 1kg</p>
-          <p class="product-price">R39.99</p>
-        </a>
-        <a href="#" class="card-surface product-card">
-          <img src="Images/products/gift6.jpg" alt="Kitchen Inspire Stainless Steel Ice Tong" />
-          <p class="product-name">Kitchen Inspire Stainless Steel Ice Tong</p>
-          <p class="product-price">R149.99</p>
-        </a>
-      </div>
+      <asp:Literal ID="litGifts" runat="server" EnableViewState="false" />
     </section>
 
-    <section class="shell home-section">
+    <section class="shell home-section" id="secCategories" runat="server">
       <div class="section-header">
         <h2>Shop by Category</h2>
         <a href="Shop.aspx" class="view-all-link">View all &rarr;</a>
       </div>
-      <div class="category-grid">
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/beer.jpg" alt="Beer & Ciders" />
-          <p>Beer & Ciders</p>
-        </a>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/wine.jpg" alt="Wine" />
-          <p>Wine</p>
-        </a>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/whiskey.jpg" alt="Whiskey" />
-          <p>Whiskey</p>
-        </a>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/spirits.jpg" alt="Spirits" />
-          <p>Spirits</p>
-        </a>
-        <%--<a href="#" class="card-surface category-card">
-          <img src="Images/categories/rtdandpremix.jpg" alt="Ready-to-Drink (RTD) & Premix" />
-          <p>Ready-to-Drink (RTD) & Premix</p>
-        </a>--%>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/nonalcoholic.png" alt="Non-Alcoholic Beverages" />
-          <p>Non-Alcoholic Beverages</p>
-        </a>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/accessories.jpg" alt="'Accessories & Barware'" />
-          <p>Accessories & Barware</p>
-        </a>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/snacks.jpg" alt="Snacks & Food" />
-          <p>Snacks & Food</p>
-        </a>
-        <a href="#" class="card-surface category-card">
-          <img src="Images/categories/tobaccoandvape.jpg" alt="Tobacco & Vaping" />
-          <p>Tobacco & Vaping</p>
-        </a>
-        
-      </div>
+      <asp:Literal ID="litCategories" runat="server" EnableViewState="false" />
     </section>
+
+    <%-- ============ PRODUCT POP-UP (same markup as the Shop page) ============ --%>
+    <asp:HiddenField ID="hfOpenProduct" runat="server" />
+    <asp:Button ID="btnOpenProduct" runat="server" Text="Open" OnClick="btnOpenProduct_Click" UseSubmitBehavior="false" CausesValidation="false" style="display:none" />
+
+    <asp:UpdatePanel ID="upnlHomePopup" runat="server" UpdateMode="Conditional">
+        <Triggers>
+            <asp:AsyncPostBackTrigger ControlID="btnOpenProduct" EventName="Click" />
+        </Triggers>
+        <ContentTemplate>
+            <asp:Panel ID="pnlDetail" runat="server" Visible="false" CssClass="pd-overlay">
+                <div class="pd-card" role="dialog" aria-modal="true">
+                    <asp:LinkButton ID="btnCloseDetail" runat="server" CssClass="pd-close" OnClick="btnCloseDetail_Click" aria-label="Close" Text="&times;" />
+                    <div class="pd-image-wrap">
+                        <img id="imgDetail" runat="server" class="pd-image" alt="" />
+                        <span id="spnDetailBadge" runat="server" class="shop-sale-badge" visible="false"></span>
+                    </div>
+                    <div class="pd-body">
+                        <p class="pd-brand"><asp:Literal ID="litDetailBrand" runat="server" Mode="Encode" /></p>
+                        <h2 class="pd-name"><asp:Literal ID="litDetailName" runat="server" Mode="Encode" /></h2>
+                        <asp:Literal ID="litDetailRating" runat="server" />
+                        <div><asp:LinkButton ID="lnkDetailCategory" runat="server" CssClass="pd-category" OnClick="lnkDetailCategory_Click" /></div>
+                        <div class="shop-card-price-row pd-price-row">
+                            <span id="spnDetailOld" runat="server" class="shop-card-strike" visible="false"></span>
+                            <span id="spnDetailPrice" runat="server" class="shop-card-price"></span>
+                        </div>
+                        <p class="pd-desc"><asp:Literal ID="litDetailDesc" runat="server" Mode="Encode" /></p>
+                        <asp:Literal ID="litDetailFacts" runat="server" />
+                        <asp:Literal ID="litDetailIngredients" runat="server" />
+                        <asp:Literal ID="litDetailMsg" runat="server" />
+                        <div class="pd-actions">
+                            <asp:LinkButton ID="btnDetailAdd" runat="server" CssClass="btn-primary shop-add-cart-btn pd-add" OnClick="btnDetailAdd_Click" />
+                            <asp:LinkButton ID="btnDetailWish" runat="server" CssClass="btn-ghost pd-wish" OnClick="btnDetailWish_Click" />
+                        </div>
+                    </div>
+                </div>
+            </asp:Panel>
+        </ContentTemplate>
+    </asp:UpdatePanel>
 
     <section class="shell home-section">
       <div class="section-header">
@@ -752,6 +629,70 @@
 
                 var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 if (!reduce) start();
+            })();
+        </script>
+
+        <script>
+            // Moving product rows + product pop-up
+            (function () {
+                var HF = '<%= hfOpenProduct.ClientID %>';
+                var BTN = '<%= btnOpenProduct.ClientID %>';
+                var SPEED = 45;   // pixels per second: lower is slower
+                var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                // Clicking a product opens the pop-up in place (the link still works as a fallback)
+                document.addEventListener('click', function (e) {
+                    var a = e.target && e.target.closest ? e.target.closest('a[data-pid]') : null;
+                    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                    var hf = document.getElementById(HF), btn = document.getElementById(BTN);
+                    if (!hf || !btn) return;
+                    e.preventDefault();
+                    hf.value = a.getAttribute('data-pid');
+                    btn.click();
+                });
+
+                // Repeat the cards so the row loops without a gap, then let CSS slide it right to left
+                function setup(m) {
+                    var track = m.querySelector('.marquee-track');
+                    if (!track || !track.children.length || reduce) return;
+
+                    var originals = Array.prototype.slice.call(track.children);
+                    var setWidth = track.getBoundingClientRect().width;
+                    if (!setWidth) return;
+
+                    var reps = Math.max(1, Math.ceil(m.clientWidth / setWidth));
+                    for (var r = 1; r < reps * 2; r++) {
+                        originals.forEach(function (n) {
+                            var c = n.cloneNode(true);
+                            c.setAttribute('aria-hidden', 'true');
+                            c.tabIndex = -1;
+                            track.appendChild(c);
+                        });
+                    }
+                    track.style.setProperty('--marquee-duration', Math.max(20, setWidth * reps / SPEED) + 's');
+                    m.classList.add('is-ready');
+                }
+
+                function lockScroll() {
+                    document.body.style.overflow = document.querySelector('.pd-overlay') ? 'hidden' : '';
+                }
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.querySelectorAll('.marquee').forEach(setup);
+
+                    if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                        Sys.WebForms.PageRequestManager.getInstance().add_endRequest(lockScroll);
+                    }
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key !== 'Escape') return;
+                        var c = document.querySelector('.pd-close'); if (c) c.click();
+                    });
+                    document.addEventListener('click', function (e) {
+                        if (e.target.classList && e.target.classList.contains('pd-overlay')) {
+                            var c = document.querySelector('.pd-close'); if (c) c.click();
+                        }
+                    });
+                });
             })();
         </script>
 
