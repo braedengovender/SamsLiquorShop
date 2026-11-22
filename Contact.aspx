@@ -10,45 +10,9 @@
       <p class="section-subtext">Questions, feedback, or enquiries of any kind &mdash; we would be glad to hear from you.</p>
     </section>
 
-    <%-- ============ FORM + INFO ============ --%>
+       <%-- ============ INFO + FORM ============ --%>
     <section class="shell home-section">
       <div class="contact-grid">
-
-        <%-- ---- Contact form ---- --%>
-        <div class="card-surface contact-form-card">
-          <h3>Send us a message</h3>
-          <p class="contact-lead">We typically respond within one business day.</p>
-
-          <div class="form-group">
-            <input type="text" id="contactName" placeholder="Your name" autocomplete="name" />
-            <span class="field-error" id="contactNameError"></span>
-          </div>
-
-          <div class="form-group">
-            <input type="email" id="contactEmail" placeholder="Email address" autocomplete="email" />
-            <span class="field-error" id="contactEmailError"></span>
-          </div>
-
-          <div class="form-group">
-            <select id="contactSubject">
-              <option value="">Please select a subject</option>
-              <option value="general">General enquiry</option>
-              <option value="order">Order support</option>
-              <option value="delivery">Delivery question</option>
-              <option value="returns">Returns &amp; refunds</option>
-              <option value="feedback">Feedback</option>
-            </select>
-            <span class="field-error" id="contactSubjectError"></span>
-          </div>
-
-          <div class="form-group">
-            <textarea id="contactMessage" rows="5" placeholder="Your message"></textarea>
-            <span class="field-error" id="contactMessageError"></span>
-          </div>
-
-          <button type="button" class="btn-primary" onclick="submitContactForm(event)">Send Message</button>
-          <div class="form-success" id="contactFormSuccess">Thank you &mdash; your message has been sent. We will be in touch shortly.</div>
-        </div>
 
         <%-- ---- Store info ---- --%>
         <div class="card-surface contact-info-card">
@@ -101,6 +65,42 @@
             <a href="#" aria-label="YouTube"><img src="Images/social/youtube.png" alt="YouTube" /></a>
             <a href="#" aria-label="TikTok"><img src="Images/social/tiktok.png" alt="TikTok" /></a>
           </div>
+        </div>
+
+        <%-- ---- Contact form ---- --%>
+        <div class="card-surface contact-form-card">
+          <h3>Send us a message</h3>
+          <p class="contact-lead">We typically respond within one business day.</p>
+
+          <div class="form-group">
+            <input type="text" id="contactName" placeholder="Your name" autocomplete="name" />
+            <span class="field-error" id="contactNameError"></span>
+          </div>
+
+          <div class="form-group">
+            <input type="email" id="contactEmail" placeholder="Email address" autocomplete="email" />
+            <span class="field-error" id="contactEmailError"></span>
+          </div>
+
+          <div class="form-group">
+            <select id="contactSubject">
+              <option value="">Please select a subject</option>
+              <option value="general">General enquiry</option>
+              <option value="order">Order support</option>
+              <option value="delivery">Delivery question</option>
+              <option value="returns">Returns &amp; refunds</option>
+              <option value="feedback">Feedback</option>
+            </select>
+            <span class="field-error" id="contactSubjectError"></span>
+          </div>
+
+          <div class="form-group">
+            <textarea id="contactMessage" rows="5" placeholder="Your message"></textarea>
+            <span class="field-error" id="contactMessageError"></span>
+          </div>
+
+          <button type="button" class="btn-primary" onclick="submitContactForm(event)">Send Message</button>
+          <div class="form-success" id="contactFormSuccess">Thank you &mdash; your message has been sent. We will be in touch shortly.</div>
         </div>
 
       </div>

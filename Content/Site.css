@@ -2669,7 +2669,7 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
 /* --- Contact page --- */
 .contact-grid {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: 1fr 1.3fr;
     gap: 24px;
     align-items: start;
 }
