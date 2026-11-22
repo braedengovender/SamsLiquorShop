@@ -275,32 +275,15 @@
     </div>
 
     <div id="pageLoader" class="loading-overlay" style="display: none;">
-        <div class="bubbles" aria-hidden="true">
-            <span style="--x:8%;--s:10px;--d:0s;--t:1.8s"></span>
-            <span style="--x:22%;--s:6px;--d:0.4s;--t:1.5s"></span>
-            <span style="--x:34%;--s:14px;--d:0.9s;--t:2.1s"></span>
-            <span style="--x:46%;--s:8px;--d:0.2s;--t:1.6s"></span>
-            <span style="--x:58%;--s:12px;--d:1.1s;--t:2s"></span>
-            <span style="--x:70%;--s:6px;--d:0.6s;--t:1.4s"></span>
-            <span style="--x:80%;--s:10px;--d:1.4s;--t:1.9s"></span>
-            <span style="--x:90%;--s:7px;--d:0.8s;--t:1.7s"></span>
+        <div class="loader-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="loader-stage">
+            <div class="loader-logo-wrap">
+                <img src="/Images/logo-cropped.png" alt="" class="loader-logo" aria-hidden="true" />
+            </div>
+            <div class="loader-tagline" id="loaderTagline" aria-hidden="true"><span class="is-on">Spirits</span></div>
+            <div class="loader-bar" aria-hidden="true"><span></span></div>
         </div>
-        <p>Uncorking&hellip;</p>
     </div>
-    <script>
-        // Carried over from the previous page: keep the loading screen up until the minimum time is reached
-        (function () {
-            try {
-                var left = parseInt(sessionStorage.getItem('loaderUntil') || '0', 10) - Date.now();
-                sessionStorage.removeItem('loaderUntil');
-                var el = document.getElementById('pageLoader');
-                if (el && left > 0 && left < 10000) {
-                    el.style.display = 'flex';
-                    setTimeout(function () { el.style.display = 'none'; }, left);
-                }
-            } catch (ex) { }
-        })();
-    </script>
 
     <form runat="server">
         <asp:ScriptManager runat="server">
@@ -728,8 +711,25 @@
                 return;
             }
 
-            var dob = new Date(year, month - 1, day);
+            var dob = new Date(Number(year), Number(month) - 1, Number(day));
+
+            // Reject impossible dates such as 31 February (JavaScript would roll them into March)
+            if (isNaN(dob.getTime()) ||
+                dob.getFullYear() !== Number(year) ||
+                dob.getMonth() !== Number(month) - 1 ||
+                dob.getDate() !== Number(day)) {
+                errorEl.textContent = "That date doesn't exist. Please check your date of birth.";
+                errorEl.style.display = "block";
+                return;
+            }
+
             var today = new Date();
+
+            if (dob > today) {
+                errorEl.textContent = "Your date of birth can't be in the future.";
+                errorEl.style.display = "block";
+                return;
+            }
             var age = today.getFullYear() - dob.getFullYear();
             var m = today.getMonth() - dob.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
@@ -743,9 +743,47 @@
             }
 
             errorEl.style.display = "none";
-            document.getElementById('ageGate').style.display = "none";
-            sessionStorage.setItem('ageVerified', 'true');
-            showNewsletter();
+
+            // Private browsing can make sessionStorage throw; the visitor should still get in
+            try { sessionStorage.setItem('ageVerified', 'true'); } catch (ex) { }
+
+            var gate = document.getElementById('ageGate');
+            if (gate) gate.style.display = "none";
+
+            // Loading animation first, then the newsletter pop-up
+            showAgeLoader(showNewsletter);
+        }
+
+        // ===== Loading screen shown right after the age check =====
+        var AGE_LOADER_MS = 2000;   // how long it stays up, in milliseconds
+        var ageLoaderRunning = false;
+
+        function showAgeLoader(done) {
+            if (ageLoaderRunning) return;   // ignore double clicks on "Enter Site"
+            ageLoaderRunning = true;
+
+            var finished = false;
+            function finish() {
+                if (finished) return;       // make sure this only ever runs once
+                finished = true;
+                ageLoaderRunning = false;
+                try { hidePageLoader(); } catch (ex) { }
+                try {
+                    if (typeof done === 'function') done();
+                } catch (ex) {
+                    console.error('Could not continue after the loading screen:', ex);
+                }
+            }
+
+            try {
+                var el = document.getElementById('pageLoader');
+                if (!el) { finish(); return; }   // no loader on the page: skip straight to the next step
+                el.style.display = 'flex';
+                setTimeout(finish, AGE_LOADER_MS);
+            } catch (ex) {
+                console.error('Loading screen failed:', ex);
+                finish();                        // never leave the visitor stuck on a blank page
+            }
         }
 
         function showNewsletter() {
@@ -1017,6 +1055,49 @@
 
         var pageLoaderTimer = null;
 
+        // Loading screen: cycle through the shop's category names (read from the Shop menu in the header)
+        (function () {
+            var STEP_MS = 450; // time each name stays up: lower = faster
+
+            function init() {
+                try {
+                    var box = document.getElementById('loaderTagline');
+                    if (!box) return;
+
+                    var names = [];
+                    document.querySelectorAll('.nav-links .has-dropdown:first-child .dropdown-menu a:not(.dropdown-view-all)').forEach(function (a) {
+                        var n = (a.textContent || '').replace(/\s+/g, ' ').trim();
+                        if (n && n.length <= 28 && names.indexOf(n) === -1) names.push(n);
+                    });
+                    if (names.length < 2) names = ['Spirits', 'Wine', 'Beer', 'Whisky'];
+                    names = names.slice(0, 12);
+
+                    box.innerHTML = '';
+                    names.forEach(function (n) {
+                        var s = document.createElement('span');
+                        s.textContent = n; // set as text, never as HTML
+                        box.appendChild(s);
+                    });
+
+                    var spans = box.querySelectorAll('span');
+                    var i = 0;
+                    spans[0].classList.add('is-on');
+
+                    // Only moves on while the loading screen is actually showing
+                    setInterval(function () {
+                        var overlay = document.getElementById('pageLoader');
+                        if (!overlay || overlay.style.display === 'none') return;
+                        spans[i].classList.remove('is-on');
+                        i = (i + 1) % spans.length;
+                        spans[i].classList.add('is-on');
+                    }, STEP_MS);
+                } catch (ex) { /* the tagline is cosmetic: leave the default word */ }
+            }
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+        })();
+
         // How long the loading screen stays up at minimum, in milliseconds (2000 = 2 seconds)
         var PAGE_LOADER_MIN_MS = 2000;
 
@@ -1063,6 +1144,39 @@
         window.addEventListener('pageshow', function (e) {
             if (e.persisted) hidePageLoader();
         });
+
+        // ===== Loading screen: only for slow pages, and never before the age check =====
+        var PAGE_LOADER_DELAY_MS = 700; // how long a page must take before the loading screen appears
+        var pageLoaderShowTimer = null;
+        var pageLoaderHideTimer = null;
+
+        function showPageLoader() {
+            try {
+                // Not while the age gate is showing, or before age has been confirmed
+                if (sessionStorage.getItem('ageVerified') !== 'true') return;
+                var gate = document.getElementById('ageGate');
+                if (gate && gate.style.display !== 'none') return;
+            } catch (ex) { }
+
+            var el = document.getElementById('pageLoader');
+            if (!el) return;
+
+            clearTimeout(pageLoaderShowTimer);
+            clearTimeout(pageLoaderHideTimer);
+            // Fast pages arrive before this fires, so they never show the loading screen
+            pageLoaderShowTimer = setTimeout(function () {
+                el.style.display = 'flex';
+                // If the page never changes (a download, a blocked navigation), don't leave it stuck
+                pageLoaderHideTimer = setTimeout(hidePageLoader, 15000);
+            }, PAGE_LOADER_DELAY_MS);
+        }
+
+        function hidePageLoader() {
+            clearTimeout(pageLoaderShowTimer);
+            clearTimeout(pageLoaderHideTimer);
+            var el = document.getElementById('pageLoader');
+            if (el) el.style.display = 'none';
+        }
 
         // ===== Dashboard charts =====
         // A page declares a chart as <canvas data-chart="{type, labels, values, money}">.

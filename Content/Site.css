@@ -3969,27 +3969,50 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 16px;
-    background: rgba(255, 255, 255, 0.7);
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
 }
 
+.loader-logo {
+    height: 96px;
+    width: auto;
+    max-width: 80vw;
+    animation: loader-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes loader-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: scale(1.06);
+        opacity: 1;
+    }
+}
+
 .bubbles {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: min(440px, 90vw);
+    height: 300px;
     overflow: hidden;
+    /* bubbles fade out at the top instead of being cut off */
+    -webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to top, #000 55%, transparent 100%);
 }
 
     .bubbles span {
         position: absolute;
-        bottom: -12px;
+        bottom: -30px;
         left: var(--x);
-        width: var(--s);
-        height: var(--s);
+        width: calc(var(--s) * 2.6);
+        height: calc(var(--s) * 2.6);
         border-radius: 50%;
-        border: 2px solid var(--accent-amber);
+        border: 3px solid var(--accent-amber);
+        background: radial-gradient(circle at 30% 30%, rgba(201, 162, 75, 0.35), rgba(201, 162, 75, 0.05) 70%);
         opacity: 0;
         animation: bubble-rise var(--t, 1.8s) ease-in infinite;
         animation-delay: var(--d);
@@ -4006,8 +4029,18 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     }
 
     100% {
-        transform: translateY(-130px) scale(1);
+        transform: translateY(-320px) scale(1.15);
         opacity: 0;
+    }
+}
+
+[data-theme="dark"] .loader-logo {
+    filter: invert(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loader-logo {
+        animation: none;
     }
 }
 
@@ -7081,5 +7114,296 @@ textarea.login-input {
 
     .legal-section {
         padding: 22px 20px;
+    }
+}
+
+/* ===== Page loader: aurora glow, logo shimmer, rotating tagline, progress bar ===== */
+.loading-overlay {
+    overflow: hidden;
+}
+
+/* Soft drifting light behind everything (plain gradients, no blur filters) */
+.loader-aurora {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+    .loader-aurora span {
+        position: absolute;
+        width: 62vmax;
+        height: 62vmax;
+        border-radius: 50%;
+    }
+
+        .loader-aurora span:nth-child(1) {
+            top: -22vmax;
+            left: -18vmax;
+            background: radial-gradient(circle, rgba(201, 162, 75, 0.42), transparent 62%);
+            animation: loader-drift-a 7s ease-in-out infinite alternate;
+        }
+
+        .loader-aurora span:nth-child(2) {
+            bottom: -26vmax;
+            right: -20vmax;
+            background: radial-gradient(circle, rgba(10, 132, 255, 0.32), transparent 62%);
+            animation: loader-drift-b 8s ease-in-out infinite alternate;
+        }
+
+        .loader-aurora span:nth-child(3) {
+            top: 22%;
+            left: 32%;
+            width: 46vmax;
+            height: 46vmax;
+            background: radial-gradient(circle, rgba(90, 200, 250, 0.22), transparent 62%);
+            animation: loader-drift-c 9s ease-in-out infinite alternate;
+        }
+
+@keyframes loader-drift-a {
+    to {
+        transform: translate(14vmax, 10vmax) scale(1.18);
+    }
+}
+
+@keyframes loader-drift-b {
+    to {
+        transform: translate(-12vmax, -9vmax) scale(1.15);
+    }
+}
+
+@keyframes loader-drift-c {
+    to {
+        transform: translate(-8vmax, 7vmax) scale(1.25);
+    }
+}
+
+/* Everything in front of the glow */
+.loader-stage {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    padding: 0 20px;
+}
+
+/* Logo with a gold shimmer sweeping across its shape */
+.loader-logo-wrap {
+    position: relative;
+    display: inline-block;
+    animation: loader-pulse 2.2s ease-in-out infinite;
+}
+
+    .loader-logo-wrap .loader-logo {
+        height: 110px;
+        animation: none; /* the wrapper does the pulsing so the shimmer stays lined up */
+    }
+
+    .loader-logo-wrap::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(105deg, transparent 35%, rgba(255, 236, 170, 0.95) 50%, transparent 65%);
+        background-size: 250% 100%;
+        background-position: 100% 0;
+        -webkit-mask: url("/Images/logo-cropped.png") center / 100% 100% no-repeat;
+        mask: url("/Images/logo-cropped.png") center / 100% 100% no-repeat;
+        animation: loader-shimmer 2s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+@keyframes loader-shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    60%, 100% {
+        background-position: 0% 0;
+    }
+}
+
+/* Rotating words (each shows for about 0.9s) */
+.loader-tagline {
+    position: relative;
+    width: min(320px, 80vw);
+    height: 1.6em;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-amber-dark);
+}
+
+    .loader-tagline span {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        animation: loader-word 3.6s ease-in-out infinite;
+    }
+
+        .loader-tagline span:nth-child(2) {
+            animation-delay: 0.9s;
+        }
+
+        .loader-tagline span:nth-child(3) {
+            animation-delay: 1.8s;
+        }
+
+        .loader-tagline span:nth-child(4) {
+            animation-delay: 2.7s;
+        }
+
+@keyframes loader-word {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    6%, 20% {
+        opacity: 1;
+        transform: none;
+    }
+
+    25%, 100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Thin gold progress bar: fills quickly, then waits near the end for slow pages */
+.loader-bar {
+    width: min(280px, 70vw);
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(201, 162, 75, 0.2);
+    overflow: hidden;
+}
+
+    .loader-bar span {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--accent-amber-dark), var(--accent-amber), #f3dc9a);
+        animation: loader-fill 2.4s cubic-bezier(0.22, 0.8, 0.3, 1) forwards;
+    }
+
+@keyframes loader-fill {
+    to {
+        width: 92%;
+    }
+}
+
+[data-theme="dark"] .loader-tagline {
+    color: var(--accent-amber);
+}
+
+@media (max-width: 480px) {
+    .loader-logo-wrap .loader-logo {
+        height: 84px;
+    }
+
+    .loader-tagline {
+        font-size: 0.9rem;
+        letter-spacing: 0.16em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loader-aurora span,
+    .loader-logo-wrap,
+    .loader-logo-wrap::after,
+    .loader-tagline span,
+    .loader-bar span {
+        animation: none;
+    }
+
+        .loader-tagline span:first-child {
+            opacity: 1;
+        }
+
+    .loader-bar span {
+        width: 60%;
+    }
+}
+
+/* ===== Page loader: solid background, blue theme, category names ===== */
+.loading-overlay {
+    background: #f3f8ff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+[data-theme="dark"] .loading-overlay {
+    background: #05070d;
+}
+
+/* Blue aurora */
+.loader-aurora span:nth-child(1) {
+    background: radial-gradient(circle, rgba(10, 132, 255, 0.40), transparent 62%);
+}
+
+.loader-aurora span:nth-child(2) {
+    background: radial-gradient(circle, rgba(90, 200, 250, 0.36), transparent 62%);
+}
+
+.loader-aurora span:nth-child(3) {
+    background: radial-gradient(circle, rgba(79, 163, 255, 0.26), transparent 62%);
+}
+
+/* Blue shimmer across the logo */
+.loader-logo-wrap::after {
+    background: linear-gradient(105deg, transparent 35%, rgba(90, 200, 250, 0.95) 50%, transparent 65%);
+    background-size: 250% 100%;
+    background-position: 100% 0;
+}
+
+/* Category names: switched by the script (the .is-on class), not by a CSS animation */
+.loader-tagline {
+    width: min(420px, 86vw);
+    color: var(--accent);
+}
+
+    .loader-tagline span {
+        animation: none;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+        .loader-tagline span.is-on {
+            opacity: 1;
+            transform: none;
+        }
+
+[data-theme="dark"] .loader-tagline {
+    color: var(--accent);
+}
+
+/* Blue progress bar */
+.loader-bar {
+    background: rgba(10, 132, 255, 0.16);
+}
+
+    .loader-bar span {
+        background: linear-gradient(90deg, #0a84ff, #5ac8fa, #9fdcff);
+    }
+
+@media (max-width: 480px) {
+    .loader-tagline {
+        font-size: 0.85rem;
+        letter-spacing: 0.12em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loader-tagline span {
+        transition: none;
     }
 }
