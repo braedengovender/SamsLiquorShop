@@ -230,7 +230,7 @@
         <p>Get in touch and we will be happy to help.</p>
         <div class="hero-buttons">
           <a href="Contact.aspx" class="btn-primary">Contact us</a>
-          <a href="mailto:info@samsliquorshop.co.za" class="btn-ghost">Email us</a>
+          <a href="Contact.aspx" class="btn-ghost">Email us</a>
         </div>
       </div>
     </section>

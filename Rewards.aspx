@@ -222,7 +222,7 @@
         <p>We're happy to check your balance in store or over the phone.</p>
         <div class="hero-buttons">
           <a href="tel:+27824055932" class="btn-primary">082 405 5932</a>
-          <a href="mailto:info@samsliquorshop.co.za" class="btn-ghost">Email us</a>
+          <a href="Contact.aspx" class="btn-ghost">Email us</a>
         </div>
       </div>
     </section>

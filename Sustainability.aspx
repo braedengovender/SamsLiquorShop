@@ -207,7 +207,7 @@
         <h3>Have an idea or a question?</h3>
         <p>We're always looking for better ways to do this &mdash; let us know if you've got a suggestion.</p>
         <div class="hero-buttons">
-          <a href="mailto:info@samsliquorshop.co.za" class="btn-primary">Email Us</a>
+          <a href="Contact.aspx" class="btn-primary">Email us</a>
           <a href="Contact.aspx" class="btn-ghost">Contact Us</a>
         </div>
       </div>

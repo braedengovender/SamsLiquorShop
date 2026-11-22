@@ -157,7 +157,7 @@
         <h3>Need to initiate a return?</h3>
         <p>Get in touch and we will guide you through the process.</p>
         <div class="hero-buttons">
-          <a href="mailto:info@samsliquorshop.co.za" class="btn-primary">Email us</a>
+          <a href="Contact.aspx" class="btn-primary">Email us</a>
           <a href="tel:+27824055932" class="btn-ghost">082 405 5932</a>
         </div>
       </div>

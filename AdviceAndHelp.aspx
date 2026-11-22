@@ -51,7 +51,7 @@
         <p>Our team is happy to help during trading hours.</p>
         <div class="hero-buttons">
           <a href="tel:+27824055932" class="btn-primary">082 405 5932</a>
-          <a href="mailto:info@samsliquorshop.co.za" class="btn-ghost">Email us</a>
+          <a href="Contact.aspx" class="btn-ghost">Email us</a>
         </div>
       </div>
     </section>

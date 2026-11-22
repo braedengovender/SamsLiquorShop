@@ -391,7 +391,7 @@ namespace SamsLiquorShop.Manager
         protected void gvProducts_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             if (e.CommandName != "EditProduct" && e.CommandName != "AdjustStock" && e.CommandName != "StockHistory"
-                && e.CommandName != "ToggleProduct" && e.CommandName != "DeleteProduct") return;
+                && e.CommandName != "ToggleProduct") return;
 
             int id = Convert.ToInt32(e.CommandArgument);
             litMessage.Text = "";
@@ -402,7 +402,6 @@ namespace SamsLiquorShop.Manager
                 case "AdjustStock": LoadStockForm(id); break;
                 case "StockHistory": ShowHistory(id); break;
                 case "ToggleProduct": ToggleStatus(id); break;
-                case "DeleteProduct": DeleteProduct(id); break;
             }
         }
 
