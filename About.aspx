@@ -12,7 +12,7 @@
 
     <%-- ============ FOUNDING STORY ============ --%>
     <section class="shell home-section">
-      <div class="glass hero-card">
+      <div class="glass hero-card about-hero">
         <div class="hero-text">
           <%-- [CONFIRM] Founding year --%>
           <p class="hero-eyebrow">Family-owned since 2005</p>

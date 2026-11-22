@@ -49,11 +49,16 @@ namespace SamsLiquorShop
 
             LoadCategories();
 
-            if (int.TryParse(Request.QueryString["cat"], out int catId))
+            // cat can be a category ID (cat=3) or a keyword (cat=gifts, cat=non-alcoholic)
+            string catParam = Request.QueryString["cat"];
+            if (!string.IsNullOrWhiteSpace(catParam))
             {
+                int catId;
+                bool isId = int.TryParse(catParam, out catId);
                 foreach (ListItem item in cblCategories.Items)
                 {
-                    if (item.Value == catId.ToString()) item.Selected = true;
+                    if (isId ? item.Value == catId.ToString() : CategoryMatchesSlug(catParam, item.Text))
+                        item.Selected = true;
                 }
             }
 
@@ -78,6 +83,32 @@ namespace SamsLiquorShop
                     System.Diagnostics.Trace.TraceError("Shop: could not open product " + openId + ": " + ex);
                     pnlDetail.Visible = false;
                 }
+            }
+        }
+
+        /// <summary>Lower-cases a name and keeps only letters and digits, so "Non-Alcoholic" becomes "nonalcoholic".</summary>
+        public static string NormalizeKey(string s)
+        {
+            return new string((s ?? "").ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
+        }
+
+        /// <summary>True if a category name belongs to a link keyword such as "gifts" or "non-alcoholic".</summary>
+        public static bool CategoryMatchesSlug(string slug, string categoryName)
+        {
+            string s = NormalizeKey(slug), n = NormalizeKey(categoryName);
+            if (s.Length == 0 || n.Length == 0) return false;
+            if (n == s) return true;
+
+            switch (s)
+            {
+                case "gift":
+                case "gifts":
+                case "giftideas":
+                    return n.Contains("gift") || n.Contains("accessor") || n.Contains("barware");
+                case "nonalcoholic":
+                    return n.Contains("nonalc") || n.Contains("alcoholfree") || n.Contains("zeroalc");
+                default:
+                    return n.Contains(s);
             }
         }
 

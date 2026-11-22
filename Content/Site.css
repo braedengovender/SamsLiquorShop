@@ -254,11 +254,12 @@ body {
 }
 
 .hero-card {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 48px;
     padding: 56px;
-    overflow: hidden;
+    overflow: visible; /* lets the glowing border spill outside the card */
 }
 
 .hero-text {
@@ -312,10 +313,199 @@ body {
 }
 
 .hero-image {
-    width: 100%;
-    height: auto;
-    object-fit: contain; /* keeps full 1920x1280 image visible, no aggressive crop */
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== Hero: glowing border that circles the card ===== */
+@property --hero-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes hero-spin {
+    to {
+        --hero-angle: 360deg;
+    }
+}
+
+/* ::before is the sharp ring, ::after is the same ring blurred to make the glow */
+.hero-card::before,
+.hero-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 2px; /* ring thickness */
+    border-radius: inherit;
+    pointer-events: none;
+    background: conic-gradient(from var(--hero-angle), transparent 0deg, transparent 200deg, var(--accent-light) 270deg, var(--accent) 320deg, var(--accent-amber) 350deg, transparent 360deg);
+    /* cut out the middle so only the edge ring shows */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: hero-spin 10s linear infinite;
+}
+
+.hero-card::after {
+    padding: 4px;
+    filter: blur(12px);
+    opacity: 0.85;
+}
+
+/* ===== About page: story card image stays inside the card ===== */
+.about-hero .hero-text {
+    min-width: 0;
+}
+
+.about-hero .hero-image-wrap {
+    flex: 0 1 44%;
+    min-width: 0;
+    aspect-ratio: 4 / 3;
+    max-height: 420px;
+    overflow: hidden;
     border-radius: var(--radius-md);
+}
+
+.about-hero .hero-image {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+@media (max-width: 820px) {
+    .about-hero .hero-image-wrap {
+        flex: none;
+        width: 100%;
+    }
+}
+
+/* ===== Hero: left / right arrows ===== */
+.hero-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.85);
+    color: #1d1d1f;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 0.2s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.hero-prev {
+    left: 12px;
+}
+
+.hero-next {
+    right: 12px;
+}
+
+.hero-slides:hover .hero-arrow,
+.hero-slides:focus-within .hero-arrow {
+    opacity: 1;
+}
+
+.hero-arrow:hover,
+.hero-arrow:focus-visible {
+    background: var(--accent);
+    color: #fff;
+    outline: none;
+}
+
+.hero-arrow svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Touch screens can't hover, so always show them there */
+@media (hover: none) {
+    .hero-arrow {
+        opacity: 1;
+    }
+}
+
+/* ===== Hero: rotating images ===== */
+.hero-slides {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+    .hero-slides .hero-slide {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0;
+        opacity: 0;
+        transform: scale(1);
+        transition: opacity 1.5s ease, transform 9s ease-out;
+    }
+
+        .hero-slides .hero-slide.is-active {
+            opacity: 1;
+            transform: scale(1.06); /* slow zoom while it's showing */
+        }
+
+.hero-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+    .hero-dots button {
+        width: 9px;
+        height: 9px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.55);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+        .hero-dots button.is-active {
+            background: #fff;
+            transform: scale(1.3);
+        }
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-card::before,
+    .hero-card::after {
+        animation: none;
+    }
+
+    .hero-slides .hero-slide,
+    .hero-slides .hero-slide.is-active {
+        transition: none;
+        transform: none;
+    }
 }
 
 @media (max-width: 820px) {
@@ -3047,6 +3237,73 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
 #passwordStrengthText.strength-strong {
     color: #27ae60;
 }
+/* ===== Home page: continuously moving rows (right to left) ===== */
+.marquee {
+    overflow-x: auto; /* before the script runs, or with reduced motion: a normal scrollable row */
+    padding: 8px 0 14px;
+}
+
+    .marquee.is-ready {
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+    }
+
+.marquee-track {
+    display: flex;
+    width: max-content;
+}
+
+.marquee.is-ready .marquee-track {
+    animation: marquee-scroll var(--marquee-duration, 40s) linear infinite;
+    will-change: transform;
+}
+
+/* Stops while you look at or tab to a card */
+.marquee.is-ready:hover .marquee-track,
+.marquee.is-ready:focus-within .marquee-track {
+    animation-play-state: paused;
+}
+
+.marquee-track > * {
+    flex: 0 0 auto;
+    margin-right: 18px; /* margin, not gap, so the loop point is exact */
+}
+
+@keyframes marquee-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.marquee .product-card {
+    width: 200px;
+}
+
+    .marquee .product-card img {
+        box-sizing: border-box;
+        object-fit: contain;
+        background: var(--bg);
+        padding: 12px;
+    }
+
+    .marquee .product-card .product-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 2.6em;
+        line-height: 1.3;
+    }
+
+.marquee .category-card {
+    width: 170px;
+}
+
 /* --- Specials page --- */
 .products-grid {
     display: grid;
@@ -5843,6 +6100,17 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
 .wish-icon {
     display: block;
     pointer-events: none;
+}
+
+/* Wishlist image: same colours in light and dark mode (no invert filter) */
+.wish-img {
+    width: 20px;
+    height: 20px;
+    max-width: none;
+    display: block;
+    object-fit: contain;
+    pointer-events: none;
+    filter: none;
 }
 
 .rating {
