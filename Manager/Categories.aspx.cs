@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SamsLiquorShop.Helpers;
 
 namespace SamsLiquorShop.Manager
 {
@@ -222,13 +226,14 @@ namespace SamsLiquorShop.Manager
 
         protected void gvCategories_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (e.CommandName != "EditCategory") return;
+            if (e.CommandName != "EditCategory" && e.CommandName != "ViewProducts") return;
 
             int id;
             if (!int.TryParse(Convert.ToString(e.CommandArgument), out id)) return;
 
             litMessage.Text = "";
-            LoadForEdit(id);
+            if (e.CommandName == "ViewProducts") ShowCategoryProducts(id);
+                        else LoadForEdit(id);
         }
 
         // ---------- ADD ----------
@@ -238,6 +243,7 @@ namespace SamsLiquorShop.Manager
             hfCategoryId.Value = "";
             txtName.Text = "";
             txtDescription.Text = "";
+            HideProducts();
             litFormTitle.Text = "Add category";
             litFormMeta.Text = "It will appear in the shop menu straight away.";
             btnSave.Text = "Add category";
@@ -285,6 +291,7 @@ namespace SamsLiquorShop.Manager
             }
 
             hfCategoryId.Value = id.ToString();
+            HideProducts();
             litFormTitle.Text = "Edit category";
             btnSave.Text = "Save changes";
             pnlForm.Visible = true;
@@ -412,6 +419,378 @@ namespace SamsLiquorShop.Manager
             }
         }
 
+        // ---------- CATEGORY PRODUCTS (click a category to see what's in it) ----------
+        // Optional Product columns: only selected when they really exist, so the page still works without them
+        private static readonly string[] OptionalProductColumns =
+        {
+            "Product_Description", "Product_Type", "Product_Origin",
+            "Product_Flavour", "Product_Ingredients", "Product_AlcoholPercentage"
+        };
+
+        /// <summary>Category whose products are showing (0 = none open).</summary>
+        private int ProductsCategoryId
+        {
+            get { return ViewState["ProductsCategoryId"] == null ? 0 : (int)ViewState["ProductsCategoryId"]; }
+            set { ViewState["ProductsCategoryId"] = value; }
+        }
+
+        private string ProductsCategoryName
+        {
+            get { return (string)ViewState["ProductsCategoryName"] ?? ""; }
+            set { ViewState["ProductsCategoryName"] = value; }
+        }
+
+        private static int SafeInt(object value)
+        {
+            if (value == null || value == DBNull.Value) return 0;
+            try { return Convert.ToInt32(value, CultureInfo.InvariantCulture); }
+            catch { return 0; }
+        }
+
+        private static decimal SafeDecimal(object value)
+        {
+            if (value == null || value == DBNull.Value) return 0m;
+            try { return Convert.ToDecimal(value, CultureInfo.InvariantCulture); }
+            catch { return 0m; }
+        }
+
+        private void HideProducts()
+        {
+            pnlDetail.Visible = false;
+            pnlProducts.Visible = false;
+            ProductsCategoryId = 0;
+            ProductsCategoryName = "";
+        }
+
+        private bool TryLoadCategoryHeader(int id, out string name, out string description)
+        {
+            name = "";
+            description = "";
+
+            string descExpr = Schema.DescColumn != null
+                ? "CAST([" + Schema.DescColumn + "] AS NVARCHAR(MAX))"
+                : "CAST(NULL AS NVARCHAR(MAX))";
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(
+                "SELECT Category_Name, " + descExpr + " AS Category_Description FROM Category WHERE Category_ID = @Id", conn))
+            {
+                cmd.Parameters.AddWithValue("@Id", id);
+                conn.Open();
+                using (SqlDataReader r = cmd.ExecuteReader())
+                {
+                    if (!r.Read()) return false;
+                    name = Convert.ToString(r["Category_Name"]).Trim();
+                    description = r["Category_Description"] == DBNull.Value ? "" : Convert.ToString(r["Category_Description"]).Trim();
+                    return true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// All products in a category (or just one of them), including inactive ones, with the price the
+        /// customer actually pays. Prices come from PricingHelper so they match the Shop page.
+        /// </summary>
+        private DataTable LoadCategoryProducts(int categoryId, int? onlyProductId, out bool pricingFailed)
+        {
+            pricingFailed = false;
+
+            TableSchema productSchema = TableSchema.Get(ConnStr, "Product");
+            var optional = OptionalProductColumns
+                .Where(c => productSchema.Find(c) != null)
+                .Select(c => "p." + TableSchema.Q(c))
+                .ToList();
+            string optionalSql = optional.Count > 0 ? ", " + string.Join(", ", optional) : "";
+
+            string where = "p.Category_ID = @Cat";
+            if (onlyProductId.HasValue) where += " AND p.Product_ID = @Pid";
+
+            string sql = @"
+                SELECT p.Product_ID, p.Product_Name, p.Product_Brand, p.Product_SizeML, p.Product_SellingPrice,
+                       p.Product_QuantityInStock, p.Product_ReorderQuantity, p.Product_Status" + optionalSql + @"
+                FROM Product p
+                WHERE " + where + @"
+                ORDER BY CASE WHEN p.Product_Status = 'Active' THEN 0 ELSE 1 END, p.Product_Name, p.Product_SizeML";
+
+            DataTable dt = new DataTable();
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@Cat", categoryId);
+                if (onlyProductId.HasValue) cmd.Parameters.AddWithValue("@Pid", onlyProductId.Value);
+                using (SqlDataAdapter da = new SqlDataAdapter(cmd)) da.Fill(dt);
+            }
+
+            // Every optional column exists from here on, so the rest of the code never has to check
+            foreach (string c in OptionalProductColumns)
+            {
+                if (!dt.Columns.Contains(c)) dt.Columns.Add(c, typeof(string));
+            }
+
+            dt.Columns.Add("DiscountedPrice", typeof(decimal));
+            dt.Columns.Add("IsOnSale", typeof(bool));
+            dt.Columns.Add("DiscountPercent", typeof(int));
+
+            // If discounts can't be read, show shelf prices and tell the manager instead of failing the whole view
+            var prices = new Dictionary<int, PricingHelper.PriceInfo>();
+            try
+            {
+                prices = PricingHelper.GetPrices(ConnStr, dt.Rows.Cast<DataRow>().Select(x => SafeInt(x["Product_ID"])));
+            }
+            catch
+            {
+                pricingFailed = true;
+            }
+
+            foreach (DataRow row in dt.Rows)
+            {
+                decimal shelfPrice = SafeDecimal(row["Product_SellingPrice"]);
+                decimal finalPrice = shelfPrice;
+
+                PricingHelper.PriceInfo info;
+                if (prices.TryGetValue(SafeInt(row["Product_ID"]), out info)) finalPrice = info.FinalPrice;
+
+                bool onSale = finalPrice < shelfPrice;
+                row["DiscountedPrice"] = finalPrice;
+                row["IsOnSale"] = onSale;
+                row["DiscountPercent"] = (onSale && shelfPrice > 0m)
+                    ? Math.Max(1, (int)Math.Round((shelfPrice - finalPrice) / shelfPrice * 100m, MidpointRounding.AwayFromZero))
+                    : 0;
+            }
+
+            return dt;
+        }
+
+        private void ShowCategoryProducts(int categoryId)
+        {
+            // Only one panel open at a time
+            pnlForm.Visible = false;
+            hfCategoryId.Value = "";
+            pnlDetail.Visible = false;
+
+            if (categoryId <= 0)
+            {
+                HideProducts();
+                ShowMessage("That category could not be found.", false);
+                return;
+            }
+
+            string categoryName, categoryDesc;
+            DataTable products;
+            bool pricingFailed;
+
+            try
+            {
+                if (!TryLoadCategoryHeader(categoryId, out categoryName, out categoryDesc))
+                {
+                    HideProducts();
+                    ShowMessage("That category could not be found. It may have been changed by someone else.", false);
+                    RefreshAll();
+                    return;
+                }
+
+                products = LoadCategoryProducts(categoryId, null, out pricingFailed);
+            }
+            catch (Exception ex)
+            {
+                HideProducts();
+                ShowMessage("The products for this category could not be loaded: " + ex.Message, false);
+                return;
+            }
+
+            int active = 0, inactive = 0, low = 0, outOfStock = 0;
+            foreach (DataRow r in products.Rows)
+            {
+                if (IsActiveProduct(r["Product_Status"])) active++; else inactive++;
+
+                int stock = SafeInt(r["Product_QuantityInStock"]);
+                if (stock <= 0) outOfStock++;
+                else if (stock <= SafeInt(r["Product_ReorderQuantity"])) low++;
+            }
+
+            ProductsCategoryId = categoryId;
+            ProductsCategoryName = categoryName;
+
+            litProdTitle.Text = Server.HtmlEncode(categoryName);
+            litProdDesc.Text = categoryDesc.Length > 0
+                ? "<p class=\"field-hint disc-note\">" + Server.HtmlEncode(categoryDesc) + "</p>"
+                : "";
+            litProdTotal.Text = products.Rows.Count.ToString("N0");
+            litProdActive.Text = active.ToString("N0");
+            litProdInactive.Text = inactive.ToString("N0");
+            litProdLow.Text = low.ToString("N0");
+            litProdOut.Text = outOfStock.ToString("N0");
+
+            string note = "";
+            if (inactive == 1) note = "1 product is inactive, so customers can't see it in the shop.";
+            else if (inactive > 1) note = inactive + " products are inactive, so customers can't see them in the shop.";
+            if (pricingFailed) note += (note.Length > 0 ? " " : "") + "Discounts couldn't be checked just now, so shelf prices are shown.";
+            litProdNote.Text = note.Length > 0 ? "<p class=\"field-hint disc-note\">" + Server.HtmlEncode(note) + "</p>" : "";
+
+            try
+            {
+                phProdEmpty.Visible = products.Rows.Count == 0;
+                rptCatProducts.Visible = products.Rows.Count > 0;
+                rptCatProducts.DataSource = products;
+                rptCatProducts.DataBind();
+            }
+            catch (Exception ex)
+            {
+                HideProducts();
+                ShowMessage("The products could not be displayed: " + ex.Message, false);
+                return;
+            }
+
+            pnlProducts.Visible = true;
+            ScrollToTop();
+        }
+
+        protected void rptCatProducts_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName != "ViewProduct") return;
+
+            int productId;
+            if (!int.TryParse(Convert.ToString(e.CommandArgument), out productId) || productId <= 0)
+            {
+                ShowMessage("That product could not be found.", false);
+                ScrollToTop();
+                return;
+            }
+
+            litMessage.Text = "";
+            ShowProductDetail(productId);
+        }
+
+        private void ShowProductDetail(int productId)
+        {
+            int categoryId = ProductsCategoryId;
+            if (categoryId <= 0)
+            {
+                pnlDetail.Visible = false;
+                ShowMessage("Open a category first to see its products.", false);
+                ScrollToTop();
+                return;
+            }
+
+            try
+            {
+                bool pricingFailed;
+                DataTable t = LoadCategoryProducts(categoryId, productId, out pricingFailed);
+
+                if (t.Rows.Count == 0)
+                {
+                    // Removed or moved since the list was drawn: refresh the list so it matches the database
+                    ShowCategoryProducts(categoryId);
+                    ShowMessage("That product could not be found in this category. It may have been changed by someone else.", false);
+                    return;
+                }
+
+                DataRow r = t.Rows[0];
+                string name = Convert.ToString(r["Product_Name"]).Trim();
+                bool onSale = (bool)r["IsOnSale"];
+                int stock = SafeInt(r["Product_QuantityInStock"]);
+                int reorder = SafeInt(r["Product_ReorderQuantity"]);
+
+                imgDetail.Src = "/ProductImage.ashx?id=" + productId;
+                imgDetail.Alt = name;
+
+                litDetailBrand.Text = Convert.ToString(r["Product_Brand"]).Trim();
+                litDetailName.Text = name;
+                litDetailCategory.Text = ProductsCategoryName;
+
+                spnDetailBadge.Visible = onSale;
+                spnDetailBadge.InnerText = "-" + r["DiscountPercent"] + "%";
+                spnDetailOld.Visible = onSale;
+                spnDetailOld.InnerText = Money(r["Product_SellingPrice"]);
+                spnDetailPrice.InnerText = Money(r["DiscountedPrice"]);
+                spnDetailPrice.Attributes["class"] = onSale ? "shop-card-price is-sale" : "shop-card-price";
+
+                string desc = Convert.ToString(r["Product_Description"]);
+                litDetailDesc.Text = string.IsNullOrWhiteSpace(desc) ? "No description available yet." : desc.Trim();
+
+                var facts = new StringBuilder();
+                Action<string, string> add = (label, value) =>
+                {
+                    if (!string.IsNullOrWhiteSpace(value))
+                        facts.Append("<div><dt>").Append(Server.HtmlEncode(label)).Append("</dt><dd>")
+                             .Append(Server.HtmlEncode(value.Trim())).Append("</dd></div>");
+                };
+
+                decimal abv = SafeDecimal(r["Product_AlcoholPercentage"]);
+                int sizeMl = SafeInt(r["Product_SizeML"]);
+
+                add("Type", Convert.ToString(r["Product_Type"]));
+                add("Origin", Convert.ToString(r["Product_Origin"]));
+                add("Flavour", Convert.ToString(r["Product_Flavour"]));
+                add("Alcohol", abv > 0m ? abv.ToString("0.##", CultureInfo.InvariantCulture) + "%" : null);
+                add("Size", sizeMl > 0 ? sizeMl.ToString("N0") + " ml" : null);
+                add("In stock", stock.ToString("N0"));
+                add("Reorder level", reorder.ToString("N0"));
+                add("Status", Convert.ToString(r["Product_Status"]));
+                add("Price note", pricingFailed ? "Discounts couldn't be checked, so the shelf price is shown." : null);
+                litDetailFacts.Text = facts.Length > 0 ? "<dl class=\"pd-facts\">" + facts + "</dl>" : "";
+
+                string ingredients = Convert.ToString(r["Product_Ingredients"]);
+                litDetailIngredients.Text = string.IsNullOrWhiteSpace(ingredients)
+                    ? ""
+                    : "<p class=\"pd-ingredients\"><strong>Ingredients</strong> " + Server.HtmlEncode(ingredients.Trim()) + "</p>";
+
+                pnlDetail.Visible = true;
+                KeepScrollPosition();
+            }
+            catch (Exception ex)
+            {
+                pnlDetail.Visible = false;
+                ShowMessage("The product details could not be loaded: " + ex.Message, false);
+                ScrollToTop();
+            }
+        }
+
+        protected void btnCloseProducts_Click(object sender, EventArgs e)
+        {
+            HideProducts();
+            ScrollToTop();
+        }
+
+        protected void btnCloseDetail_Click(object sender, EventArgs e)
+        {
+            pnlDetail.Visible = false;
+            KeepScrollPosition();
+        }
+
+        // Used by the product cards in the markup
+        protected string Money(object value)
+        {
+            return "R" + SafeDecimal(value).ToString("N2");
+        }
+
+        protected bool IsActiveProduct(object status)
+        {
+            return string.Equals(Convert.ToString(status).Trim(), "Active", StringComparison.OrdinalIgnoreCase);
+        }
+
+        protected string StockBadge(object stock, object reorderLevel)
+        {
+            int qty = SafeInt(stock);
+            if (qty <= 0) return "<span class=\"emp-badge emp-badge-inactive\">Out of stock</span>";
+            if (qty <= SafeInt(reorderLevel)) return "<span class=\"emp-badge emp-badge-low\">Low stock: " + qty.ToString("N0") + " left</span>";
+            return "<span class=\"emp-badge emp-badge-active\">" + qty.ToString("N0") + " in stock</span>";
+        }
+
+        protected string StatusBadge(object status)
+        {
+            string text = Convert.ToString(status).Trim();
+            if (text.Length == 0) text = "Unknown";
+            string css = IsActiveProduct(status) ? "emp-badge-active" : "emp-badge-inactive";
+            return "<span class=\"emp-badge " + css + "\">" + Server.HtmlEncode(text) + "</span>";
+        }
+
+        protected string SizeBadge(object size)
+        {
+            int ml = SafeInt(size);
+            return ml > 0 ? "<span class=\"emp-sub\">" + ml.ToString("N0") + " ml</span>" : "";
+        }
+
         // ---------- DISPLAY HELPERS ----------
         protected string DescriptionText(object value)
         {
@@ -425,6 +804,30 @@ namespace SamsLiquorShop.Manager
         {
             litMessage.Text = "<div class=\"emp-alert " + (success ? "emp-alert-success" : "emp-alert-error") + "\">"
                 + Server.HtmlEncode(text) + "</div>";
+        }
+
+        /// <summary>Goes to the top of the page (used when a different category's products open).</summary>
+        private void ScrollToTop()
+        {
+            RegisterScroll("scrollTop", "if (window.dashScroll) { dashScroll('top'); }");
+        }
+
+        /// <summary>Stays where the page is (used when the product pop-up opens or closes).</summary>
+        private void KeepScrollPosition()
+        {
+            RegisterScroll("scrollKeep", "if (window.dashScroll) { dashScroll('keep'); }");
+        }
+
+        private void RegisterScroll(string key, string js)
+        {
+            try
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), key, js, true);
+            }
+            catch
+            {
+                // Scrolling is cosmetic: never let it break the page
+            }
         }
 
         private void ScrollTo(string elementId, string focusClientId)

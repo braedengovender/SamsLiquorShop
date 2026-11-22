@@ -287,6 +287,20 @@
         </div>
         <p>Uncorking&hellip;</p>
     </div>
+    <script>
+        // Carried over from the previous page: keep the loading screen up until the minimum time is reached
+        (function () {
+            try {
+                var left = parseInt(sessionStorage.getItem('loaderUntil') || '0', 10) - Date.now();
+                sessionStorage.removeItem('loaderUntil');
+                var el = document.getElementById('pageLoader');
+                if (el && left > 0 && left < 10000) {
+                    el.style.display = 'flex';
+                    setTimeout(function () { el.style.display = 'none'; }, left);
+                }
+            } catch (ex) { }
+        })();
+    </script>
 
     <form runat="server">
         <asp:ScriptManager runat="server">
@@ -1001,30 +1015,53 @@
             return valid;
         }
 
+        var pageLoaderTimer = null;
+
+        // How long the loading screen stays up at minimum, in milliseconds (2000 = 2 seconds)
+        var PAGE_LOADER_MIN_MS = 2000;
+
         function showPageLoader() {
-            document.getElementById('pageLoader').style.display = 'flex';
+            var el = document.getElementById('pageLoader');
+            if (!el) return;
+            el.style.display = 'flex';
+            // The next page reads this and keeps the loader up until this time
+            try { sessionStorage.setItem('loaderUntil', String(Date.now() + PAGE_LOADER_MIN_MS)); } catch (ex) { }
+            clearTimeout(pageLoaderTimer);
+            // If the page never changes (a download, a blocked navigation), don't leave the overlay stuck
+            pageLoaderTimer = setTimeout(hidePageLoader, 15000);
         }
 
         function hidePageLoader() {
-            document.getElementById('pageLoader').style.display = 'none';
+            var el = document.getElementById('pageLoader');
+            if (el) el.style.display = 'none';
+            clearTimeout(pageLoaderTimer);
         }
 
-        // Show the loader the moment someone clicks a real navigation link
-        // in the main nav or its dropdowns (category links, About Us submenu, etc.)
-        document.querySelectorAll('.nav-links a, .dropdown-menu a').forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                var href = this.getAttribute('href');
-                if (href && href.indexOf('#') !== 0 && href.indexOf('javascript:') !== 0) {
-                    showPageLoader();
-                }
-            });
+        // Show the loader the moment someone clicks a link that opens another page on this site.
+        // The animation itself is the #pageLoader markup above plus .loading-overlay in Site.css,
+        // so it can be restyled later without touching this code.
+        document.addEventListener('click', function (e) {
+            try {
+                if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                var link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+                if (!link) return;
+
+                var href = link.getAttribute('href');
+                if (!href || href.charAt(0) === '#' || /^(javascript|mailto|tel|sms):/i.test(href)) return;
+                if (link.target && link.target !== '_self') return;           // opens in a new tab
+                if (link.hasAttribute('download')) return;                    // a file download
+                if (link.origin !== window.location.origin) return;           // another website
+                if (link.hash && link.pathname === window.location.pathname && link.search === window.location.search) return; // jump within this page
+
+                showPageLoader();
+            } catch (ex) { /* the loader is cosmetic: never block a link */ }
         });
 
         // Safety net: if the user navigates back via the browser's
         // back/forward cache, the old page (with loader still visible)
         // can be restored instantly — make sure it's hidden again.
-        window.addEventListener('pageshow', function () {
-            hidePageLoader();
+        window.addEventListener('pageshow', function (e) {
+            if (e.persisted) hidePageLoader();
         });
 
         // ===== Dashboard charts =====

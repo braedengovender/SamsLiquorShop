@@ -4753,8 +4753,40 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     .emp-header-flex input[type="submit"],
     .emp-form-actions input[type="submit"],
     .emp-toolbar input[type="submit"] {
+        border: none;
+        font-family: inherit;
         cursor: pointer;
     }
+
+        .emp-header-flex input[type="submit"].btn-ghost,
+        .emp-form-actions input[type="submit"].btn-ghost,
+        .emp-toolbar input[type="submit"].btn-ghost {
+            background: #f2f2f2;
+        }
+
+[data-theme="dark"] .emp-header-flex input[type="submit"].btn-ghost,
+[data-theme="dark"] .emp-form-actions input[type="submit"].btn-ghost,
+[data-theme="dark"] .emp-toolbar input[type="submit"].btn-ghost {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* --- Manage Categories: products in a category --- */
+.cat-products .shop-grid {
+    margin-top: 18px;
+}
+
+.cat-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 6px;
+}
+
+.shop-card.is-inactive .shop-card-image,
+.shop-card.is-inactive .shop-card-name-link {
+    opacity: 0.55;
+}
 
 .emp-form-card {
     margin-bottom: 24px;
@@ -6275,6 +6307,84 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     .stock-toast {
         transition: none;
     }
+}
+
+/* --- ASP.NET buttons (<input type="submit">): remove the native grey border everywhere --- */
+input[type="submit"].btn-primary,
+input[type="submit"].btn-ghost {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+input[type="submit"].btn-ghost {
+    background: #f2f2f2;
+}
+
+[data-theme="dark"] input[type="submit"].btn-ghost {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* --- Manage Suppliers: contact details --- */
+.sup-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 16px;
+}
+
+.sup-contact-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    max-width: 100%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgba(10, 132, 255, 0.06);
+    color: var(--text-primary);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+a.sup-contact-item:hover,
+a.sup-contact-item:focus-visible {
+    background: rgba(10, 132, 255, 0.13);
+    color: var(--accent);
+    outline: none;
+}
+
+.sup-contact-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.sup-contact-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.sup-link {
+    color: var(--accent);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+    .sup-link:hover {
+        text-decoration: underline;
+    }
+
+[data-theme="dark"] .sup-contact-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] a.sup-contact-item:hover,
+[data-theme="dark"] a.sup-contact-item:focus-visible {
+    background: rgba(79, 163, 255, 0.16);
 }
 
 /* --- Manage Products --- */

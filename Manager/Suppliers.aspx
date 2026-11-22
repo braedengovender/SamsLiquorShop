@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Manage Suppliers" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Suppliers.aspx.cs" Inherits="SamsLiquorShop.Manager.Suppliers" %>
+﻿<%@ Page Title="Manage Suppliers" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Suppliers.aspx.cs" Inherits="SamsLiquorShop.Manager.Suppliers" MaintainScrollPositionOnPostBack="true" %>
 <%@ Register Src="~/Manager/ManagerNav.ascx" TagPrefix="uc" TagName="ManagerNav" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
@@ -10,9 +10,9 @@
             <div class="mgr-header-row emp-header-flex">
                 <div>
                     <h1>Manage Suppliers</h1>
-                    <p class="mgr-dash-subtext">Keep supplier contact and address details up to date, add new suppliers, and switch off ones you no longer use. Click a supplier to see the products they supply.</p>
+                    <p class="mgr-dash-subtext">Manage supplier details and see the products each one supplies.</p>
                 </div>
-                <div class="emp-header-actions">
+                <div class="emp-header-actions" style="flex-shrink:0; white-space:nowrap;">
                     <asp:Button ID="btnAddNew" runat="server" Text="+ Add Supplier" CssClass="btn-primary" OnClick="btnAddNew_Click" CausesValidation="false" />
                 </div>
             </div>
@@ -174,14 +174,17 @@
 
                     <!-- PRODUCTS FROM THIS SUPPLIER -->
                     <asp:Panel ID="pnlProducts" runat="server" Visible="false">
-                        <div id="supProductsCard" class="mgr-table-card emp-form-card">
+                        <div id="supProductsCard" class="mgr-table-card emp-form-card cat-products">
                             <div class="dash-card-head">
                                 <h3>Products from <asp:Literal ID="litProdTitle" runat="server" /></h3>
                                 <asp:LinkButton ID="btnCloseProducts" runat="server" CssClass="emp-action" OnClick="btnCloseProducts_Click" CausesValidation="false">Close</asp:LinkButton>
                             </div>
 
+                            <asp:Literal ID="Literal1" runat="server" />
+
+                            <asp:Literal ID="litProdContactCards" runat="server" />
+
                             <div class="cust-history-stats">
-                                <div><span class="mgr-kpi-label">Contact</span><strong><asp:Literal ID="litProdContact" runat="server" /></strong></div>
                                 <div><span class="mgr-kpi-label">Products</span><strong><asp:Literal ID="litProdCount" runat="server" /></strong></div>
                                 <div><span class="mgr-kpi-label">Low or out of stock</span><strong><asp:Literal ID="litProdLow" runat="server" /></strong></div>
                                 <div><span class="mgr-kpi-label">Stock value (cost)</span><strong><asp:Literal ID="litProdValue" runat="server" /></strong></div>
@@ -190,34 +193,38 @@
 
                             <asp:Literal ID="litProdAddress" runat="server" />
 
-                            <asp:GridView ID="gvProducts" runat="server" AutoGenerateColumns="false" CssClass="dash-table emp-table" GridLines="None"
-                                AllowPaging="true" PageSize="10" OnPageIndexChanging="gvProducts_PageIndexChanging"
-                                EmptyDataText="No products are linked to this supplier yet. Choose this supplier on a product in Manage Products."
-                                EmptyDataRowStyle-CssClass="dash-table-empty">
-                                <PagerStyle CssClass="emp-pager" />
-                                <Columns>
-                                    <asp:TemplateField HeaderText="Product" ItemStyle-CssClass="is-wrap">
-                                        <ItemTemplate>
-                                            <strong><%#: Eval("Product_Name") %></strong>
-                                            <span class="emp-sub"><%#: ProductSub(Eval("Product_Brand"), Eval("Product_SizeML")) %></span>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                    <asp:BoundField DataField="Category_Name" HeaderText="Category" />
-                                    <asp:BoundField DataField="Product_CostPrice" HeaderText="Cost price" DataFormatString="{0:C}" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
-                                    <asp:BoundField DataField="Product_SellingPrice" HeaderText="Selling price" DataFormatString="{0:C}" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
-                                    <asp:TemplateField HeaderText="Stock" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num">
-                                        <ItemTemplate>
-                                            <%# Eval("Product_QuantityInStock") %>
-                                            <%# StockNote(Eval("Product_QuantityInStock"), Eval("Product_ReorderQuantity")) %>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                    <asp:TemplateField HeaderText="Status">
-                                        <ItemTemplate>
-                                            <span class='emp-badge emp-badge-<%# StatusClass(Eval("Product_Status")) %>'><%#: Eval("Product_Status") %></span>
-                                        </ItemTemplate>
-                                    </asp:TemplateField>
-                                </Columns>
-                            </asp:GridView>
+                            <asp:PlaceHolder ID="phProdEmpty" runat="server" Visible="false">
+                                <p class="dash-empty">No products are linked to this supplier yet. Choose this supplier on a product in Manage Products.</p>
+                            </asp:PlaceHolder>
+
+                            <asp:Repeater ID="rptSupProducts" runat="server" OnItemCommand="rptSupProducts_ItemCommand">
+                                <HeaderTemplate><div class="shop-grid"></HeaderTemplate>
+                                <ItemTemplate>
+                                    <div class='<%# IsActiveProduct(Eval("Product_Status")) ? "shop-card" : "shop-card is-inactive" %>'>
+                                        <div class="shop-card-image-wrap">
+                                            <asp:LinkButton runat="server" CommandName="ViewProduct" CommandArgument='<%# Eval("Product_ID") %>' CssClass="shop-card-image-link" ToolTip="View details" CausesValidation="false">
+                                                <img src='<%# "/ProductImage.ashx?id=" + Eval("Product_ID") %>' alt='<%#: Eval("Product_Name") %>' class="shop-card-image" loading="lazy" onerror="this.style.visibility='hidden'" />
+                                            </asp:LinkButton>
+                                            <span runat="server" class="shop-sale-badge" visible='<%# (bool)Eval("IsOnSale") %>'>-<%# Eval("DiscountPercent") %>%</span>
+                                        </div>
+                                        <div class="shop-card-body">
+                                            <p class="shop-card-brand"><%#: Eval("Product_Brand") %></p>
+                                            <asp:LinkButton runat="server" CommandName="ViewProduct" CommandArgument='<%# Eval("Product_ID") %>' CssClass="shop-card-name-link" CausesValidation="false"><%#: Eval("Product_Name") %></asp:LinkButton>
+                                            <%# CardSub(Eval("Product_SizeML"), Eval("Category_Name")) %>
+                                            <div class="shop-card-price-row">
+                                                <span runat="server" class="shop-card-strike" visible='<%# (bool)Eval("IsOnSale") %>'><%# Money(Eval("Product_SellingPrice")) %></span>
+                                                <span class='<%# (bool)Eval("IsOnSale") ? "shop-card-price is-sale" : "shop-card-price" %>'><%# Money(Eval("DiscountedPrice")) %></span>
+                                            </div>
+                                            <span class="emp-sub">Cost price <%# Money(Eval("Product_CostPrice")) %></span>
+                                            <div class="cat-card-meta">
+                                                <%# StockBadge(Eval("Product_QuantityInStock"), Eval("Product_ReorderQuantity")) %>
+                                                <%# StatusBadge(Eval("Product_Status")) %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ItemTemplate>
+                                <FooterTemplate></div></FooterTemplate>
+                            </asp:Repeater>
                         </div>
                     </asp:Panel>
 
@@ -255,8 +262,7 @@
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Contact" ItemStyle-CssClass="is-wrap">
                                     <ItemTemplate>
-                                        <%#: Eval("F_Phone") %>
-                                        <%# SubText(Eval("F_Email")) %>
+                                        <%# ContactLinks(Eval("F_Phone"), Eval("F_Email")) %>
                                     </ItemTemplate>
                                 </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Location" ItemStyle-CssClass="is-wrap">
@@ -281,6 +287,29 @@
                             </Columns>
                         </asp:GridView>
                     </div>
+
+                <!-- PRODUCT DETAIL OVERLAY -->
+                    <asp:Panel ID="pnlDetail" runat="server" Visible="false" CssClass="pd-overlay">
+                        <div class="pd-card" role="dialog" aria-modal="true" aria-label="Product details">
+                            <asp:LinkButton ID="btnCloseDetail" runat="server" CssClass="pd-close" OnClick="btnCloseDetail_Click" aria-label="Close" Text="&times;" CausesValidation="false" />
+                            <div class="pd-image-wrap">
+                                <img id="imgDetail" runat="server" class="pd-image" alt="" />
+                                <span id="spnDetailBadge" runat="server" class="shop-sale-badge" visible="false"></span>
+                            </div>
+                            <div class="pd-body">
+                                <p class="pd-brand"><asp:Literal ID="litDetailBrand" runat="server" Mode="Encode" /></p>
+                                <h2 class="pd-name"><asp:Literal ID="litDetailName" runat="server" Mode="Encode" /></h2>
+                                <div><span class="pd-category"><asp:Literal ID="litDetailCategory" runat="server" Mode="Encode" /></span></div>
+                                <div class="shop-card-price-row pd-price-row">
+                                    <span id="spnDetailOld" runat="server" class="shop-card-strike" visible="false"></span>
+                                    <span id="spnDetailPrice" runat="server" class="shop-card-price"></span>
+                                </div>
+                                <p class="pd-desc"><asp:Literal ID="litDetailDesc" runat="server" Mode="Encode" /></p>
+                                <asp:Literal ID="litDetailFacts" runat="server" />
+                                <asp:Literal ID="litDetailIngredients" runat="server" />
+                            </div>
+                        </div>
+                    </asp:Panel>
 
                 </ContentTemplate>
             </asp:UpdatePanel>
@@ -384,6 +413,62 @@
             }
             if (window.Sys && Sys.Application) hook();
             else document.addEventListener('DOMContentLoaded', hook);
+        })();
+    </script>
+    <script type="text/javascript">
+        (function () {
+            function lockScroll() {
+                document.body.style.overflow = document.querySelector('.pd-overlay') ? 'hidden' : '';
+            }
+            function closeOverlay() {
+                var c = document.querySelector('.pd-overlay .pd-close');
+                if (c) c.click();
+            }
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeOverlay(); });
+            document.addEventListener('click', function (e) {
+                if (e.target && e.target.classList && e.target.classList.contains('pd-overlay')) closeOverlay();
+            });
+            // ----- Scroll control (called from the server after a partial postback) -----
+            var saved = null;
+
+            function scrollers() {
+                var list = [document.scrollingElement || document.documentElement, document.documentElement, document.body];
+                var el = document.querySelector('.mgr-main');
+                while (el && el !== document.body && el !== document.documentElement) { list.push(el); el = el.parentElement; }
+                return list;
+            }
+            function snapshot() {
+                var s = { y: window.pageYOffset || 0, nodes: [] };
+                scrollers().forEach(function (n) { if (n) s.nodes.push({ n: n, t: n.scrollTop }); });
+                return s;
+            }
+            function moveTo(snap) {
+                try {
+                    window.scrollTo(0, snap ? snap.y : 0);
+                    (snap ? snap.nodes : scrollers().map(function (n) { return { n: n, t: 0 }; }))
+                        .forEach(function (i) { if (i.n) i.n.scrollTop = i.t; });
+                } catch (ex) { }
+            }
+            function repeat(fn) {
+                fn();
+                try { window.requestAnimationFrame(fn); } catch (ex) { }
+                setTimeout(fn, 120); // beats any scroll restore done after the partial update
+            }
+            window.dashScroll = function (mode) {
+                try {
+                    if (mode === 'top') repeat(function () { moveTo(null); });
+                    else if (mode === 'keep' && saved) { var s = saved; repeat(function () { moveTo(s); }); }
+                } catch (ex) { }
+            };
+
+            document.addEventListener('DOMContentLoaded', function () {
+                lockScroll();
+                if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                    var prm = Sys.WebForms.PageRequestManager.getInstance();
+                    prm.add_beginRequest(function () { try { saved = snapshot(); } catch (ex) { saved = null; } });
+                    prm.add_endRequest(lockScroll);
+                }
+            });
         })();
     </script>
 </asp:Content>
