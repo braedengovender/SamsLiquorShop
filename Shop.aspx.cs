@@ -425,6 +425,8 @@ namespace SamsLiquorShop
 
         // ------------------------------------------------------------------ cart / wishlist
 
+        private string _addMessage;   // why the last TryAddToCart failed
+
         private bool TryAddToCart(int productId, out string productName)
         {
             productName = null;
@@ -433,7 +435,20 @@ namespace SamsLiquorShop
             if (t.Rows.Count == 0) return false;
 
             DataRow r = t.Rows[0];
-            if (Convert.ToInt32(r["Product_QuantityInStock"]) <= 0) return false;
+            int stock = Convert.ToInt32(r["Product_QuantityInStock"]);
+            if (stock <= 0)
+            {
+                _addMessage = "Sorry, this item is out of stock.";
+                return false;
+            }
+
+            var inCart = CartHelper.GetCart(Session).FirstOrDefault(c => c.ProductId == productId);
+            int max = Math.Min(stock, CartHelper.MaxPerLine);
+            if (inCart != null && inCart.Quantity >= max)
+            {
+                _addMessage = "You already have the maximum available (" + max + ") in your cart.";
+                return false;
+            }
 
             productName = Convert.ToString(r["Product_Name"]);
 
@@ -451,6 +466,11 @@ namespace SamsLiquorShop
                 if (TryAddToCart(productId, out string productName))
                 {
                     litCartMessage.Text = "<div class='shop-cart-toast'>" + Server.HtmlEncode(productName) + " added to cart.</div>";
+                    litCartMessage.Visible = true;
+                }
+                else
+                {
+                    litCartMessage.Text = "<div class='shop-cart-toast'>" + Server.HtmlEncode(_addMessage ?? "Sorry, we couldn't add that item.") + "</div>";
                     litCartMessage.Visible = true;
                 }
             }
@@ -542,7 +562,7 @@ namespace SamsLiquorShop
             if (TryAddToCart(DetailProductId, out string productName))
                 litDetailMsg.Text = "<div class='shop-cart-toast'>Added to cart.</div>";
             else
-                litDetailMsg.Text = "<div class='shop-cart-toast'>Sorry, this item is out of stock.</div>";
+                litDetailMsg.Text = "<div class='shop-cart-toast'>" + Server.HtmlEncode(_addMessage ?? "Sorry, we couldn't add that item.") + "</div>";
         }
 
         protected void btnDetailWish_Click(object sender, EventArgs e)
