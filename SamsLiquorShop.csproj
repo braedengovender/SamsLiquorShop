@@ -262,6 +262,7 @@
     <Content Include="Images\social\x.png" />
     <Content Include="Images\social\youtube.png" />
     <Content Include="Login.aspx" />
+    <Content Include="Manager\Account.aspx" />
     <Content Include="Manager\Employees.aspx" />
     <Content Include="Manager\Customers.aspx" />
     <Content Include="Manager\Categories.aspx" />
@@ -594,6 +595,13 @@
     </Compile>
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Manager\Account.aspx.cs">
+      <DependentUpon>Account.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\Account.aspx.designer.cs">
+      <DependentUpon>Account.aspx</DependentUpon>
     </Compile>
     <Compile Include="Manager\Employees.aspx.cs">
       <DependentUpon>Employees.aspx</DependentUpon>
