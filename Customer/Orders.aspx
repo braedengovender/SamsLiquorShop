@@ -25,15 +25,16 @@
 
             <asp:Repeater ID="rptOrders" runat="server" OnItemDataBound="rptOrders_ItemDataBound" OnItemCommand="rptOrders_ItemCommand">
                 <ItemTemplate>
-                    <details class="mgr-table-card ord-card">
+                    <details class='<%# CardClass(Eval("IsLive")) %>' <%# OpenAttr(Eval("IsLive")) %>>
                         <summary class="ord-summary-row">
-                            <span class="ord-inv"><%# Eval("InvoiceNumber") %></span>
+                            <span class="ord-inv"><%# Eval("InvoiceNumber") %><%# StatusPill(Eval("OrderStatus")) %></span>
                             <span class="ord-date"><%# Eval("Sale_DateTime", "{0:d MMM yyyy, HH:mm}") %></span>
                             <span class="ord-items"><%# Eval("ItemCount") %> item(s)</span>
                             <span class="ord-total"><%# Eval("Sale_TotalAmount", "{0:C}") %></span>
                         </summary>
 
                         <div class="ord-body">
+                            <asp:Literal ID="litTimeline" runat="server" />
                             <table class="dash-table">
                                 <thead>
                                     <tr>
@@ -65,8 +66,8 @@
                             <div class="ord-actions">
                                 <span class="ord-total-line">Order total: <strong><%# Eval("Sale_TotalAmount", "{0:C}") %></strong></span>
                                 <span class="ord-receipt-actions">
-                                    <a href='<%# "Receipt.aspx?sale=" + Eval("Sale_ID") %>' class="btn-ghost ord-reorder-btn">View receipt</a>
-                                    <a href='<%# "Receipt.aspx?sale=" + Eval("Sale_ID") + "&print=1" %>' class="btn-ghost ord-reorder-btn">Print</a>
+                                    <a href='<%# ReceiptHref(Eval("Sale_ID"), Eval("OnlineOrder_ID"), false) %>' class="btn-ghost ord-reorder-btn">View receipt</a>
+                                    <a href='<%# ReceiptHref(Eval("Sale_ID"), Eval("OnlineOrder_ID"), true) %>' class="btn-ghost ord-reorder-btn">Print</a>
                                     <asp:LinkButton runat="server" CommandName="EmailReceipt" CommandArgument='<%# Eval("Sale_ID") %>' CssClass="btn-ghost ord-reorder-btn">Email receipt</asp:LinkButton>
                                 </span>
                                 <asp:LinkButton runat="server" CommandName="Reorder" CommandArgument='<%# Eval("Sale_ID") %>' CssClass="btn-primary ord-reorder-btn">Buy again</asp:LinkButton>

@@ -43,9 +43,8 @@
         <div class="glass rw-balance">
           <div class="rw-balance-main">
             <p class="rw-balance-eyebrow">Your points</p>
-            <%-- Static until this reads Customer_LoyaltyPointsBalance from the database --%>
-            <p class="rw-balance-value">0 <span>points &middot; worth R0</span></p>
-            <p>Your balance updates after your first order. Points usually appear within 24 hours.</p>
+            <p class="rw-balance-value"><asp:Literal ID="litPoints" runat="server" Text="0" /> <span><asp:Literal ID="litWorth" runat="server" Text="points &middot; worth R0" /></span></p>
+            <p><asp:Literal ID="litPointsNote" runat="server" Text="Your balance updates after your first order." /></p>
           </div>
           <div class="hero-buttons">
             <a href="Shop.aspx" class="btn-primary">Start shopping</a>

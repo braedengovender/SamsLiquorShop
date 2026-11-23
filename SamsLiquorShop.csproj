@@ -163,6 +163,7 @@
     <Content Include="Account\VerifyPhoneNumber.aspx" />
     <Content Include="Blog.aspx" />
     <Content Include="Cart.aspx" />
+    <Content Include="Checkout.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
@@ -276,6 +277,7 @@
     <Content Include="Manager\Dashboard.aspx" />
     <Content Include="Manager\ManagerNav.ascx" />
     <Content Include="NotFound.aspx" />
+    <Content Include="OrderConfirmation.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="Rewards.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
@@ -485,6 +487,13 @@
     <Compile Include="Cart.aspx.designer.cs">
       <DependentUpon>Cart.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Checkout.aspx.cs">
+      <DependentUpon>Checkout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Checkout.aspx.designer.cs">
+      <DependentUpon>Checkout.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Contact.aspx.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -568,7 +577,10 @@
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\ExportHelper.cs" />
     <Compile Include="Helpers\CartHelper.cs" />
+    <Compile Include="Helpers\OnlineReceiptHelper.cs" />
+    <Compile Include="Helpers\OrderHelper.cs" />
     <Compile Include="Helpers\OtpHelper.cs" />
+    <Compile Include="Helpers\PaymentGateway.cs" />
     <Compile Include="Helpers\PromoHelper.cs" />
     <Compile Include="Helpers\ReceiptHelper.cs" />
     <Compile Include="Helpers\RecaptchaHelper.cs" />
@@ -583,6 +595,7 @@
       <DependentUpon>Receipt.aspx</DependentUpon>
     </Compile>
     <Compile Include="Helpers\PricingHelper.cs" />
+    <Compile Include="Helpers\SlotHelper.cs" />
     <Compile Include="Helpers\TableSchema.cs" />
     <Compile Include="Helpers\ProductDetailHelper.cs" />
     <Compile Include="Helpers\SessionWatch.cs" />
@@ -686,6 +699,13 @@
     </Compile>
     <Compile Include="NotFound.aspx.designer.cs">
       <DependentUpon>NotFound.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="OrderConfirmation.aspx.cs">
+      <DependentUpon>OrderConfirmation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="OrderConfirmation.aspx.designer.cs">
+      <DependentUpon>OrderConfirmation.aspx</DependentUpon>
     </Compile>
     <Compile Include="ProductImage.ashx.cs">
       <DependentUpon>ProductImage.ashx</DependentUpon>

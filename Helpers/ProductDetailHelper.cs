@@ -36,7 +36,7 @@ namespace SamsLiquorShop.Helpers
 
         private static readonly string[] OptionalColumns =
         {
-            "Product_Description", "Product_Type", "Product_Origin",
+            "Product_Description", "Product_Type", "Product_OriginRegion",
             "Product_Flavour", "Product_Ingredients", "Product_AlcoholPercentage"
         };
         private static HashSet<string> _columns;
@@ -65,7 +65,8 @@ namespace SamsLiquorShop.Helpers
         public static ProductDetail Get(string connStr, int productId)
         {
             var existing = GetColumns(connStr);
-            string extra = string.Concat(OptionalColumns.Where(c => existing.Contains(c)).Select(c => ", p.[" + c + "]"));
+            string extra = string.Concat(OptionalColumns.Where(c => existing.Contains(c))
+                .Select(c => c == "Product_OriginRegion" ? ", p.[Product_OriginRegion] AS [Product_Origin]" : ", p.[" + c + "]"));
 
             string query = "SELECT p.Product_ID, p.Product_Name, p.Product_Brand, p.Product_SellingPrice, p.Product_QuantityInStock, p.Category_ID, cat.Category_Name"
                 + extra

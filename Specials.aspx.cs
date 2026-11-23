@@ -282,7 +282,7 @@ namespace SamsLiquorShop
 
         private static readonly string[] OptionalColumns =
         {
-            "Product_Description", "Product_Type", "Product_Origin",
+            "Product_Description", "Product_Type", "Product_OriginRegion",
             "Product_Flavour", "Product_Ingredients", "Product_AlcoholPercentage"
         };
         private static HashSet<string> _productColumns;
@@ -315,7 +315,10 @@ namespace SamsLiquorShop
         private DataRow LoadExtras(int productId)
         {
             HashSet<string> existing = GetProductColumns();
-            List<string> optional = OptionalColumns.Where(c => existing.Contains(c)).Select(c => "p.[" + c + "]").ToList();
+            // Product_OriginRegion is the real column; it is selected as Product_Origin so the pop-up code keeps working
+            List<string> optional = OptionalColumns.Where(c => existing.Contains(c))
+                .Select(c => c == "Product_OriginRegion" ? "p.[Product_OriginRegion] AS [Product_Origin]" : "p.[" + c + "]")
+                .ToList();
             string optionalSql = optional.Count > 0 ? ", " + string.Join(", ", optional) : "";
 
             DataTable dt = new DataTable();
@@ -329,8 +332,9 @@ namespace SamsLiquorShop
 
             foreach (string c in OptionalColumns)
             {
-                if (!dt.Columns.Contains(c))
-                    dt.Columns.Add(c, c == "Product_AlcoholPercentage" ? typeof(decimal) : typeof(string));
+                string colName = c == "Product_OriginRegion" ? "Product_Origin" : c;
+                if (!dt.Columns.Contains(colName))
+                    dt.Columns.Add(colName, colName == "Product_AlcoholPercentage" ? typeof(decimal) : typeof(string));
             }
 
             return dt.Rows.Count > 0 ? dt.Rows[0] : null;

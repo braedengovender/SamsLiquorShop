@@ -12,6 +12,7 @@ namespace SamsLiquorShop.Helpers
         {
             public decimal ShelfPrice;
             public decimal FinalPrice;
+            public int? DiscountId;   // the Discount row that produced FinalPrice (null when not on sale)
             public bool OnSale => FinalPrice < ShelfPrice;
         }
 
@@ -47,12 +48,20 @@ namespace SamsLiquorShop.Helpers
                 decimal basePrice = Convert.ToDecimal(row["Product_SellingPrice"]);
                 decimal finalPrice = basePrice;
 
+                int? discountId = null;
                 if (row["ProductDiscountId"] != DBNull.Value && IsActive(row, "Product"))
+                {
                     finalPrice = Apply(basePrice, row["ProductDiscountType"].ToString(), Convert.ToDecimal(row["ProductDiscountValue"]));
+                    discountId = Convert.ToInt32(row["ProductDiscountId"]);
+                }
                 else if (row["CategoryDiscountId"] != DBNull.Value && IsActive(row, "Category"))
+                {
                     finalPrice = Apply(basePrice, row["CategoryDiscountType"].ToString(), Convert.ToDecimal(row["CategoryDiscountValue"]));
+                    discountId = Convert.ToInt32(row["CategoryDiscountId"]);
+                }
+                if (finalPrice >= basePrice) discountId = null;
 
-                result[Convert.ToInt32(row["Product_ID"])] = new PriceInfo { ShelfPrice = basePrice, FinalPrice = finalPrice };
+                result[Convert.ToInt32(row["Product_ID"])] = new PriceInfo { ShelfPrice = basePrice, FinalPrice = finalPrice, DiscountId = discountId };
             }
 
             return result;
@@ -67,14 +76,15 @@ namespace SamsLiquorShop.Helpers
             bool active = s == "1" || s.Equals("true", StringComparison.OrdinalIgnoreCase) || s.Equals("Active", StringComparison.OrdinalIgnoreCase);
             if (!active) return false;
 
-            DateTime now = DateTime.Now;
+            DateTime now = SlotHelper.Now();   // South African time (the Azure server runs on UTC)
 
             // Same rule as the POS: Wednesday promos only run on Wednesdays
             string promoName = Convert.ToString(row[prefix + "DiscountName"]);
             if (promoName.IndexOf("wednesday", StringComparison.OrdinalIgnoreCase) >= 0 && now.DayOfWeek != DayOfWeek.Wednesday)
                 return false;
 
-            return now >= Convert.ToDateTime(row[prefix + "DiscountStart"]) && now <= Convert.ToDateTime(row[prefix + "DiscountEnd"]);
+            // Compare dates only, so the promo's last day is included
+            return now.Date >= Convert.ToDateTime(row[prefix + "DiscountStart"]).Date && now.Date <= Convert.ToDateTime(row[prefix + "DiscountEnd"]).Date;
         }
 
         private static decimal Apply(decimal basePrice, string type, decimal value)

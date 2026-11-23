@@ -22,7 +22,7 @@ namespace SamsLiquorShop
         // If one of these names is wrong the page still works - that feature is just empty/hidden.
         private static readonly string[] OptionalColumns =
         {
-            "Product_Description", "Product_Type", "Product_Origin",
+            "Product_Description", "Product_Type", "Product_OriginRegion",
             "Product_Flavour", "Product_Ingredients", "Product_AlcoholPercentage"
         };
         private static HashSet<string> _productColumns;
@@ -175,7 +175,10 @@ namespace SamsLiquorShop
         private DataTable LoadProductTable(int? onlyProductId = null)
         {
             var existing = GetProductColumns();
-            var optional = OptionalColumns.Where(c => existing.Contains(c)).Select(c => "p.[" + c + "]").ToList();
+            // Product_OriginRegion is the real column; it is selected as Product_Origin so the rest of this page keeps working
+            var optional = OptionalColumns.Where(c => existing.Contains(c))
+                .Select(c => c == "Product_OriginRegion" ? "p.[Product_OriginRegion] AS [Product_Origin]" : "p.[" + c + "]")
+                .ToList();
             string optionalSql = optional.Count > 0 ? ", " + string.Join(", ", optional) : "";
 
             string where = "p.Product_Status = 'Active'";
@@ -208,8 +211,9 @@ namespace SamsLiquorShop
             // Make sure every optional column exists so the rest of the code never has to check
             foreach (string c in OptionalColumns)
             {
-                if (!dt.Columns.Contains(c))
-                    dt.Columns.Add(c, c == "Product_AlcoholPercentage" ? typeof(decimal) : typeof(string));
+                string colName = c == "Product_OriginRegion" ? "Product_Origin" : c;
+                if (!dt.Columns.Contains(colName))
+                    dt.Columns.Add(colName, colName == "Product_AlcoholPercentage" ? typeof(decimal) : typeof(string));
             }
 
             dt.Columns.Add("DiscountedPrice", typeof(decimal));
@@ -279,7 +283,7 @@ namespace SamsLiquorShop
 
             if (!isActive) return false;
 
-            DateTime now = DateTime.Now;
+            DateTime now = SlotHelper.Now();
 
             // Same rule as the POS: "Wine Wednesday" style promos only run on Wednesdays
             string promoName = Convert.ToString(row[prefix + "DiscountName"]);
@@ -289,7 +293,7 @@ namespace SamsLiquorShop
             DateTime start = Convert.ToDateTime(row[prefix + "DiscountStart"]);
             DateTime end = Convert.ToDateTime(row[prefix + "DiscountEnd"]);
 
-            return now >= start && now <= end;
+            return now.Date >= start.Date && now.Date <= end.Date;
         }
 
         private decimal ApplyDiscount(decimal basePrice, string discountType, decimal discountValue)

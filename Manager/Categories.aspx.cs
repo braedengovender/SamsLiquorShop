@@ -423,7 +423,7 @@ namespace SamsLiquorShop.Manager
         // Optional Product columns: only selected when they really exist, so the page still works without them
         private static readonly string[] OptionalProductColumns =
         {
-            "Product_Description", "Product_Type", "Product_Origin",
+            "Product_Description", "Product_Type", "Product_OriginRegion",
             "Product_Flavour", "Product_Ingredients", "Product_AlcoholPercentage"
         };
 
@@ -498,7 +498,9 @@ namespace SamsLiquorShop.Manager
             TableSchema productSchema = TableSchema.Get(ConnStr, "Product");
             var optional = OptionalProductColumns
                 .Where(c => productSchema.Find(c) != null)
-                .Select(c => "p." + TableSchema.Q(c))
+                .Select(c => c == "Product_OriginRegion"
+                    ? "p." + TableSchema.Q(c) + " AS " + TableSchema.Q("Product_Origin")
+                    : "p." + TableSchema.Q(c))
                 .ToList();
             string optionalSql = optional.Count > 0 ? ", " + string.Join(", ", optional) : "";
 
@@ -524,7 +526,8 @@ namespace SamsLiquorShop.Manager
             // Every optional column exists from here on, so the rest of the code never has to check
             foreach (string c in OptionalProductColumns)
             {
-                if (!dt.Columns.Contains(c)) dt.Columns.Add(c, typeof(string));
+                string colName = c == "Product_OriginRegion" ? "Product_Origin" : c;
+                if (!dt.Columns.Contains(colName)) dt.Columns.Add(colName, typeof(string));
             }
 
             dt.Columns.Add("DiscountedPrice", typeof(decimal));

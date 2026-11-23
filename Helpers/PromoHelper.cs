@@ -112,7 +112,8 @@ namespace SamsLiquorShop.Helpers
             }
 
             bool active = string.Equals(status.Trim(), "Active", StringComparison.OrdinalIgnoreCase);
-            if (!active || DateTime.Today < start.Date || DateTime.Today > end.Date)
+            DateTime today = SlotHelper.Now().Date;
+            if (!active || today < start.Date || today > end.Date)
                 return Fail(code, "That promo code isn't available right now.");
 
             if (minSpend.HasValue && goodsTotal < minSpend.Value)
