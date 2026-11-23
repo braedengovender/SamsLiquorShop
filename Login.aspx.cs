@@ -20,6 +20,18 @@ namespace SamsLiquorShop
             {
                 Session["SessionInit"] = true;
 
+                // Already logged in (for example after a double-click on Verify): go to the right dashboard
+                string signedIn = Session["UserRole"] as string;
+                if (!string.IsNullOrEmpty(signedIn) && string.IsNullOrEmpty(Request.QueryString["otp"]) && string.IsNullOrEmpty(Request.QueryString["account"]))
+                {
+                    switch (signedIn.Trim().ToLowerInvariant())
+                    {
+                        case "customer": Response.Redirect("~/Customer/Dashboard.aspx"); return;
+                        case "cashier": Response.Redirect("~/Employee/Dashboard.aspx"); return;
+                        case "manager": Response.Redirect("~/Manager/Dashboard.aspx"); return;
+                    }
+                }
+
                 string otp = Request.QueryString["otp"];
                 if (otp == "locked")
                 {

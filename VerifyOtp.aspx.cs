@@ -9,6 +9,17 @@ namespace SamsLiquorShop
         {
             if (Session["PendingRole"] == null || Session["OtpAttempts"] == null || Session["OtpExpiry"] == null)
             {
+                // Already logged in (a repeat click on Verify finished first): go to the dashboard, not back to Login
+                string signedIn = Session["UserRole"] as string;
+                if (!string.IsNullOrEmpty(signedIn))
+                {
+                    switch (signedIn.Trim().ToLowerInvariant())
+                    {
+                        case "customer": Response.Redirect("~/Customer/Dashboard.aspx"); return;
+                        case "cashier": Response.Redirect("~/Employee/Dashboard.aspx"); return;
+                        case "manager": Response.Redirect("~/Manager/Dashboard.aspx"); return;
+                    }
+                }
                 Response.Redirect("~/Login.aspx");
                 return;
             }

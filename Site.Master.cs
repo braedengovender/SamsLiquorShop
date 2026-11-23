@@ -96,7 +96,7 @@ namespace SamsLiquorShop
             {
                 case "customer": return "~/Customer/Dashboard.aspx";
                 case "manager": return "~/Manager/Dashboard.aspx";   // adjust to your manager folder
-                case "cashier": return "~/Cashier/Dashboard.aspx";   // adjust to your cashier folder
+                case "cashier": return "~/Employee/Dashboard.aspx";
                 default: return "~/Account/Profile.aspx";
             }
         }

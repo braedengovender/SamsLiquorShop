@@ -29,7 +29,7 @@
             <asp:Label ID="lblInfo" runat="server" CssClass="login-subtext" Visible="false"></asp:Label>
             <asp:Label ID="lblError" runat="server" CssClass="field-error login-server-error" Visible="false"></asp:Label>
 
-            <asp:Button ID="btnVerify" runat="server" Text="Verify" CssClass="btn-primary login-submit" OnClick="btnVerify_Click" OnClientClick="return otpReady();" />
+            <asp:Button ID="btnVerify" runat="server" Text="Verify" CssClass="btn-primary login-submit" OnClick="btnVerify_Click" OnClientClick="if (window.__otpBusy) { return false; } if (!otpReady()) { return false; } window.__otpBusy = true; return true;" />
             <asp:Button ID="btnResend" runat="server" Text="Resend code" CssClass="btn-ghost login-submit otp-resend" OnClick="btnResend_Click" CausesValidation="false" />
 
             <p class="login-register-text"><a href="Login.aspx">Back to login</a></p>

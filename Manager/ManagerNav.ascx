@@ -6,6 +6,7 @@
     <ul class="mgr-sidebar-links">
         <li><a href="~/Manager/Dashboard.aspx" runat="server" id="navOverview">Overview</a></li>
         <li><a href="~/Manager/Sales.aspx" runat="server" id="navOrders">Manage Sales</a></li>
+        <li><a href="~/Manager/OnlineOrders.aspx" runat="server" id="navOnline">Manage Online Orders</a></li>
         <li><a href="~/Manager/Products.aspx" runat="server" id="navProducts">Manage Products</a></li>
         <li><a href="~/Manager/Categories.aspx" runat="server" id="navCategories">Manage Categories</a></li>
         <li><a href="~/Manager/Suppliers.aspx" runat="server" id="navSuppliers">Manage Suppliers</a></li>

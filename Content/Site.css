@@ -8950,3 +8950,187 @@ textarea.login-input {
         margin-left: 0;
     }
 }
+
+/* ===== Manage Online Orders ===== */
+.ob-head {
+    align-items: center;
+}
+
+.ob-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+    .ob-title h3 {
+        font-size: 1.25rem;
+    }
+
+.ob-box {
+    padding: 18px 20px;
+    margin-top: 16px;
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.45);
+    min-width: 0;
+}
+
+    .ob-box h4 {
+        margin: 0 0 12px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-secondary);
+    }
+
+.ob-box-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+    .ob-box-head h4 {
+        margin-bottom: 4px;
+    }
+
+.ob-meta {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.ob-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: 0 18px;
+    align-items: start;
+}
+
+.ob-stack {
+    min-width: 0;
+}
+
+.ob-gap {
+    margin-top: 16px;
+}
+
+.ob-table {
+    overflow-x: auto;
+}
+
+.ob-list {
+    margin: 0;
+    display: grid;
+    gap: 10px;
+}
+
+    .ob-list > div {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 18px;
+        font-size: 0.9rem;
+    }
+
+    .ob-list dt {
+        flex: 0 0 auto;
+        color: var(--text-secondary);
+    }
+
+    .ob-list dd {
+        margin: 0;
+        text-align: right;
+        overflow-wrap: anywhere;
+        min-width: 0;
+    }
+
+.ob-actions {
+    background: var(--bg-tint-blue);
+    border-color: rgba(10, 132, 255, 0.25);
+}
+
+.ob-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0 18px;
+}
+
+.ob-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+    .ob-buttons input[type="submit"] {
+        border: none;
+        font-family: inherit;
+        cursor: pointer;
+        padding: 11px 24px;
+    }
+
+.ob-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 4px 0 14px;
+}
+
+    .ob-check input[type="checkbox"] {
+        -webkit-appearance: none;
+        appearance: none;
+        flex: 0 0 22px;
+        width: 22px;
+        height: 22px;
+        margin: 1px 0 0;
+        border: 1.5px solid rgba(128, 128, 128, 0.6);
+        border-radius: 7px;
+        background: #fff;
+        cursor: pointer;
+        position: relative;
+    }
+
+        .ob-check input[type="checkbox"]:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+            .ob-check input[type="checkbox"]:checked::after {
+                content: "";
+                position: absolute;
+                left: 6px;
+                top: 2px;
+                width: 6px;
+                height: 11px;
+                border: solid #fff;
+                border-width: 0 2.5px 2.5px 0;
+                transform: rotate(45deg);
+            }
+
+    .ob-check label {
+        cursor: pointer;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+[data-theme="dark"] .ob-box {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .ob-actions {
+    background: rgba(79, 163, 255, 0.10);
+}
+
+[data-theme="dark"] .ob-check input[type="checkbox"] {
+    background: transparent;
+}
+
+@media (max-width: 1000px) {
+    .ob-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -976,6 +976,88 @@ namespace SamsLiquorShop.Helpers
             return new StatusResult { Success = true, NewStatus = newStatus, Message = "Order marked as " + newStatus + "." };
         }
 
+        /// <summary>The next step on the order's path (null when it is finished).</summary>
+        public static string GetNextStatus(string method, string current)
+        {
+            if (string.IsNullOrWhiteSpace(current)) return StPlaced;
+            string[] path = string.Equals((method ?? "").Trim(), MethodDelivery, StringComparison.OrdinalIgnoreCase) ? DeliveryPath : CollectionPath;
+            int i = Array.IndexOf(path, current.Trim());
+            return (i >= 0 && i < path.Length - 1) ? path[i + 1] : null;
+        }
+
+        public static bool IsLive(string status)
+        {
+            string s = (status ?? "").Trim();
+            return s.Length > 0 && s != StDelivered && s != StCollected && s != StCancelled && s != StExpired;
+        }
+
+        public static bool CanCancel(string status)
+        {
+            string s = (status ?? "").Trim();
+            return s == StPlaced || s == StPacking || s == StReady;
+        }
+
+        /// <summary>Current status of an order (own connection). Null if the order has no history or can't be read.</summary>
+        public static string GetCurrentStatus(int onlineOrderId)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                {
+                    conn.Open();
+                    return GetCurrentStatus(onlineOrderId, conn, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("OrderHelper.GetCurrentStatus: " + ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Expires every collection order that has been "Ready for collection" for longer than the given hours
+        /// (restocks it, returns points, emails the customer). Returns how many were expired.
+        /// </summary>
+        public static int ExpireUncollected(int? employeeId, int hours, out int failed)
+        {
+            failed = 0;
+            int done = 0;
+            var ids = new List<int>();
+
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                using (var cmd = new SqlCommand(@"
+                    SELECT h.OnlineOrder_ID FROM OnlineOrderStatusHistory h
+                    WHERE h.OnlineOrderStatusHistory_Status = 'Ready for collection'
+                      AND h.OnlineOrderStatusHistory_DateTime <= @Cutoff
+                      AND h.OnlineOrderStatusHistory_ID = (SELECT MAX(h2.OnlineOrderStatusHistory_ID)
+                                                           FROM OnlineOrderStatusHistory h2 WHERE h2.OnlineOrder_ID = h.OnlineOrder_ID)", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Cutoff", SlotHelper.Now().AddHours(-Math.Max(1, hours)));
+                    conn.Open();
+                    using (var r = cmd.ExecuteReader())
+                        while (r.Read()) ids.Add(Convert.ToInt32(r[0]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("OrderHelper.ExpireUncollected (find): " + ex);
+                failed = 1;
+                return 0;
+            }
+
+            foreach (int id in ids)
+            {
+                string note = "Not collected within " + hours + " hours";
+                StatusResult r = ChangeStatus(id, StExpired, employeeId, note);   // each order has its own transaction
+                if (r.Success) { done++; OrderEmailHelper.Notify(id, StExpired, note); }
+                else { failed++; Trace.TraceWarning("Could not expire order " + id + ": " + r.Message); }
+            }
+            return done;
+        }
+
         // Returns null when the move is allowed, otherwise a message for the user
         private static string CheckTransition(string method, string current, string next)
         {
