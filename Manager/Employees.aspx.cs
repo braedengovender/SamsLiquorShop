@@ -53,11 +53,14 @@ namespace SamsLiquorShop.Manager
             LoadKpis();
             BindEmployees();
         }
-
+        // The "Online Store" account belongs to the website itself, so it is never shown on this page
+        private const string HiddenEmployeeSql =
+            "NOT (LTRIM(RTRIM(Employee_FirstName + ' ' + ISNULL(Employee_LastName, ''))) = 'Online Store' " +
+            "OR REPLACE(REPLACE(Employee_Username, '_', ''), ' ', '') = 'onlinestore')";
         // ---------- READ ----------
         private DataTable LoadEmployeeTable()
         {
-            var where = new List<string>();
+            var where = new List<string> { HiddenEmployeeSql };
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             using (SqlCommand cmd = new SqlCommand())
@@ -135,7 +138,7 @@ namespace SamsLiquorShop.Manager
                        ISNULL(SUM(CASE WHEN Employee_Status = 'Active' THEN 1 ELSE 0 END), 0),
                        ISNULL(SUM(CASE WHEN Employee_Status <> 'Active' THEN 1 ELSE 0 END), 0),
                        ISNULL(SUM(CASE WHEN Employee_Role = 'Manager' THEN 1 ELSE 0 END), 0)
-                FROM Employee", conn))
+                FROM Employee WHERE " + HiddenEmployeeSql, conn))
             {
                 conn.Open();
                 using (SqlDataReader r = cmd.ExecuteReader())
@@ -695,9 +698,9 @@ namespace SamsLiquorShop.Manager
         // One row per employee with their totals, averages and rank, best first
         private DataView LoadPerfView(DateTime from, DateTime to)
         {
-            string staffFilter = ddlPrStaff.SelectedValue == "sales"
+            string staffFilter = (ddlPrStaff.SelectedValue == "sales"
                 ? "WHERE x.Sales > 0"
-                : "WHERE e.Employee_Status = 'Active' OR x.Sales > 0";
+                : "WHERE (e.Employee_Status = 'Active' OR x.Sales > 0)") + " AND " + HiddenEmployeeSql;
 
             DataTable dt = new DataTable();
 
