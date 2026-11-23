@@ -274,8 +274,7 @@
                                         <asp:LinkButton runat="server" CommandName="ToggleEmp" CommandArgument='<%# Eval("Employee_ID") %>' CssClass="emp-action"
                                             Text='<%# Eval("Employee_Status").ToString().Trim() == "Active" ? "Deactivate" : "Reactivate" %>'
                                             OnClientClick='<%# DeactivateJs(Eval("Employee_Status"), Eval("Employee_FirstName"), Eval("Employee_LastName")) %>' />
-                                        <asp:LinkButton runat="server" CommandName="DeleteEmp" CommandArgument='<%# Eval("Employee_ID") %>' CssClass="emp-action emp-action-danger"
-                                            OnClientClick='<%# DeleteJs(Eval("Employee_FirstName"), Eval("Employee_LastName")) %>'>Delete</asp:LinkButton>
+                                       
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>

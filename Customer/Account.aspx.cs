@@ -104,7 +104,7 @@ namespace SamsLiquorShop.Customer
 
             string first = txtFirstName.Text.Trim();
             string last = txtLastName.Text.Trim();
-            string idNumber = txtIdNumber.Text.Trim();
+            //string idNumber = txtIdNumber.Text.Trim();
             string phone = txtPhone.Text.Trim();
             string username = txtUsername.Text.Trim();
             string email = txtEmail.Text.Trim();
@@ -122,7 +122,7 @@ namespace SamsLiquorShop.Customer
 
             if (first.Length == 0) { bad = txtFirstName; error = "First name is required."; }
             else if (last.Length == 0) { bad = txtLastName; error = "Last name is required."; }
-            else if ((error = ValidateSaId(idNumber)) != null) { bad = txtIdNumber; }
+            //else if ((error = ValidateSaId(idNumber)) != null) { bad = txtIdNumber; }
             else if (!Regex.IsMatch(phone, @"^(\+27|0)[1-9][0-9]{8}$")) { bad = txtPhone; error = "Phone number must look like 0821234567 or +27821234567."; }
             else if (!Regex.IsMatch(username, @"^[A-Za-z0-9_]{4,30}$")) { bad = txtUsername; error = "Username must be 4 to 30 characters: letters, numbers or underscores only."; }
             else if (!Regex.IsMatch(email, @"^[^\s@]+@[^\s@]+\.[^\s@]+$")) { bad = txtEmail; error = "Please enter a valid email address."; }
@@ -136,7 +136,7 @@ namespace SamsLiquorShop.Customer
                   || IsTaken("SELECT COUNT(*) FROM Employee WHERE Employee_Username = @V", username)) { bad = txtUsername; error = "That username is already taken."; }
             else if (IsTaken("SELECT COUNT(*) FROM Customer WHERE Customer_EmailAddress = @V AND Customer_ID <> @Id", email)
                   || IsTaken("SELECT COUNT(*) FROM Employee WHERE Employee_EmailAddress = @V", email)) { bad = txtEmail; error = "That email address is already registered."; }
-            else if (IsTaken("SELECT COUNT(*) FROM Customer WHERE Customer_IDNumber = @V AND Customer_ID <> @Id", idNumber)) { bad = txtIdNumber; error = "That ID number is already registered to another account."; }
+           // else if (IsTaken("SELECT COUNT(*) FROM Customer WHERE Customer_IDNumber = @V AND Customer_ID <> @Id", idNumber)) { bad = txtIdNumber; error = "That ID number is already registered to another account."; }
 
             if (error != null)
             {
@@ -153,7 +153,7 @@ namespace SamsLiquorShop.Customer
                 using (SqlCommand cmd = new SqlCommand(@"
                     UPDATE Customer
                     SET Customer_FirstName = @First, Customer_LastName = @Last,
-                        Customer_IDNumber = @IdNumber, Customer_PhoneNumber = @Phone,
+                        Customer_PhoneNumber = @Phone,
                         Customer_Username = @Username, Customer_EmailAddress = @Email,
                         Customer_UnitNumber = @UnitNumber, Customer_UnitName = @UnitName,
                         Customer_StreetNumber = @StreetNumber, Customer_StreetName = @StreetName,
@@ -163,7 +163,7 @@ namespace SamsLiquorShop.Customer
                 {
                     cmd.Parameters.AddWithValue("@First", first);
                     cmd.Parameters.AddWithValue("@Last", last);
-                    cmd.Parameters.AddWithValue("@IdNumber", idNumber);
+                    //cmd.Parameters.AddWithValue("@IdNumber", idNumber);
                     cmd.Parameters.AddWithValue("@Phone", phone);
                     cmd.Parameters.AddWithValue("@Username", username);
                     cmd.Parameters.AddWithValue("@Email", email);

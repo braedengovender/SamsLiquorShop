@@ -238,9 +238,9 @@ namespace SamsLiquorShop.Manager
         }
 
         // ---------- ROW BUTTONS ----------
-        protected void gvEmployees_RowCommand(object sender, GridViewCommandEventArgs e)
+              protected void gvEmployees_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (e.CommandName != "EditEmp" && e.CommandName != "ToggleEmp" && e.CommandName != "DeleteEmp") return;
+            if (e.CommandName != "EditEmp" && e.CommandName != "ToggleEmp") return;
 
             int id = Convert.ToInt32(e.CommandArgument);
             litMessage.Text = "";
@@ -249,9 +249,9 @@ namespace SamsLiquorShop.Manager
             {
                 case "EditEmp": LoadForEdit(id); break;
                 case "ToggleEmp": ToggleStatus(id); break;
-                case "DeleteEmp": DeleteEmployee(id); break;
             }
         }
+
 
         // ---------- CREATE (open blank form) ----------
         protected void btnAddNew_Click(object sender, EventArgs e)

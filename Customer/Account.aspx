@@ -30,8 +30,8 @@
                         </div>
                         <div class="login-field">
                             <label for="<%= txtIdNumber.ClientID %>">SA ID number</label>
-                            <asp:TextBox ID="txtIdNumber" runat="server" CssClass="login-input" MaxLength="13" autocomplete="off" placeholder="13 digits" data-digits="1" />
-                            <span class="field-hint">You must be 18 or older.</span>
+                            <asp:TextBox ID="txtIdNumber" runat="server" CssClass="login-input" MaxLength="13" ReadOnly="true" />
+                            <span class="field-hint">Your ID number can't be changed. Contact the store if it is wrong.</span>
                         </div>
                         <div class="login-field">
                             <label for="<%= txtPhone.ClientID %>">Phone number</label>
