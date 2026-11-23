@@ -239,9 +239,7 @@
                                         <asp:LinkButton runat="server" CommandName="ToggleCust" CommandArgument='<%# Eval("Customer_ID") %>' CssClass="emp-action"
                                             Text='<%# StatusClass(Eval("Customer_Status")) == "active" ? "Deactivate" : "Reactivate" %>'
                                             OnClientClick='<%# DeactivateJs(Eval("Customer_Status"), Eval("Customer_FirstName"), Eval("Customer_LastName")) %>' />
-                                        <asp:LinkButton runat="server" CommandName="DeleteCust" CommandArgument='<%# Eval("Customer_ID") %>' CssClass="emp-action emp-action-danger"
-                                            Visible='<%# Convert.ToInt32(Eval("OrderCount")) == 0 %>'
-                                            OnClientClick='<%# DeleteJs(Eval("Customer_FirstName"), Eval("Customer_LastName")) %>'>Delete</asp:LinkButton>
+                                      
                                     </ItemTemplate>
                                 </asp:TemplateField>
                             </Columns>

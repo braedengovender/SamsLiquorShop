@@ -283,7 +283,7 @@ namespace SamsLiquorShop.Manager
         protected void gvCustomers_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             if (e.CommandName != "ViewCust" && e.CommandName != "EditCust"
-                && e.CommandName != "ToggleCust" && e.CommandName != "DeleteCust") return;
+                && e.CommandName != "ToggleCust") return;
 
             int id = Convert.ToInt32(e.CommandArgument);
             litMessage.Text = "";
@@ -293,7 +293,6 @@ namespace SamsLiquorShop.Manager
                 case "ViewCust": ShowHistory(id); break;
                 case "EditCust": LoadForEdit(id); break;
                 case "ToggleCust": ToggleStatus(id); break;
-                case "DeleteCust": DeleteCustomer(id); break;
             }
         }
 
