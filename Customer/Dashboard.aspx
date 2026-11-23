@@ -17,13 +17,38 @@
             </div>
 
             <!-- 1. LOYALTY (1 point = R1 to redeem, 1 point earned per R10 — same rules as the POS) -->
-            <div class="mgr-spotlight-card dash-loyalty-card">
-                <div>
-                    <p class="mgr-kpi-label">Your Loyalty Points</p>
-                    <p class="dash-loyalty-points"><asp:Literal runat="server" ID="litLoyaltyPoints" /></p>
-                    <p class="dash-loyalty-meta">Worth <asp:Literal runat="server" ID="litPointsValue" /> off your next order &middot; you earn 1 point for every R10 you spend</p>
+            <div class="loyalty-wrap">
+                <div class="loyalty-card" aria-label="Your loyalty card">
+                    <div class="loyalty-card-top">
+                        <span class="loyalty-card-brand">Sam's Liquor Shop</span>
+                        <span class="loyalty-card-type">Loyalty Card</span>
+                    </div>
+
+                    <span class="loyalty-chip" aria-hidden="true"></span>
+
+                    <div class="loyalty-card-points">
+                        <strong><asp:Literal runat="server" ID="litLoyaltyPoints" /></strong>
+                        <span>points</span>
+                    </div>
+
+                    <div class="loyalty-card-bottom">
+                        <div class="loyalty-card-field">
+                            <span class="loyalty-card-label">Card holder</span>
+                            <span class="loyalty-card-name"><asp:Literal runat="server" ID="litCardName" /></span>
+                        </div>
+                        <div class="loyalty-card-field is-right">
+                            <span class="loyalty-card-label">Cellphone</span>
+                            <span class="loyalty-card-phone"><asp:Literal runat="server" ID="litCardPhone" /></span>
+                        </div>
+                    </div>
                 </div>
-                <a href="~/Rewards.aspx" runat="server" class="dash-loyalty-link">How rewards work &rarr;</a>
+
+                <div class="loyalty-info">
+                    <p class="mgr-kpi-label">Your Loyalty Points</p>
+                    <p class="loyalty-info-value">Worth <asp:Literal runat="server" ID="litPointsValue" /> off your next order</p>
+                    <p class="loyalty-info-meta">You earn 1 point for every R10 you spend.</p>
+                    <a href="~/Rewards.aspx" runat="server" class="btn-primary">How rewards work &rarr;</a>
+                </div>
             </div>
 
             <!-- 2. HEADLINE NUMBERS -->
