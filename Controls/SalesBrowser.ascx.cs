@@ -89,7 +89,7 @@ namespace SamsLiquorShop.Controls
                 ddlPayment.Items.Clear();
                 ddlPayment.Items.Add(new ListItem("All payment methods", ""));
                 using (SqlCommand cmd = new SqlCommand(
-                    "SELECT PaymentMethod_ID, PaymentMethod_Name FROM PaymentMethod ORDER BY PaymentMethod_Name", conn))
+                    "SELECT PaymentMethod_ID, PaymentMethod_Name FROM PaymentMethod WHERE PaymentMethod_Name NOT LIKE '%Voucher%' ORDER BY PaymentMethod_Name", conn))
                 using (SqlDataReader r = cmd.ExecuteReader())
                 {
                     while (r.Read()) ddlPayment.Items.Add(new ListItem(r["PaymentMethod_Name"].ToString(), r["PaymentMethod_ID"].ToString()));
@@ -462,7 +462,7 @@ namespace SamsLiquorShop.Controls
 
             pnlDetail.Visible = true;
             ScriptManager.RegisterStartupScript(this, GetType(), "scrollDetail",
-                "var f=document.getElementById('saleDetailCard'); if(f){f.scrollIntoView({behavior:'smooth',block:'start'});}", true);
+            "window.scrollTo({top:0,behavior:'smooth'});", true);
         }
 
         protected void btnCloseDetail_Click(object sender, EventArgs e)
