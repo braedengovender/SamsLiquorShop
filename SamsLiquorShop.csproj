@@ -306,7 +306,6 @@
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
     <Content Include="Account\Web.config" />
-    <Content Include="EmailSecrets.config" />
     <Content Include="ProductImage.ashx" />
     <Content Include="ChatbotReply.ashx" />
     <Content Include="OtpSecrets.config" />
