@@ -225,7 +225,29 @@
       </div>
     </div>
     <script>
-        if (sessionStorage.getItem('ageVerified') !== 'true') {
+        var AGE_KEY = 'ageVerified';
+
+        // Age verification is stored in a session cookie so it is shared by every tab.
+        // sessionStorage is kept as a fallback in case cookies are blocked.
+        function isAgeVerified() {
+            try {
+                if (document.cookie.split('; ').indexOf(AGE_KEY + '=true') !== -1) return true;
+            } catch (ex) { }
+            try {
+                if (sessionStorage.getItem(AGE_KEY) === 'true') return true;
+            } catch (ex) { }
+            return false;
+        }
+
+        function setAgeVerified() {
+            try {
+                document.cookie = AGE_KEY + '=true; path=/; SameSite=Lax' +
+                    (window.location.protocol === 'https:' ? '; Secure' : '');
+            } catch (ex) { console.error('Could not save age verification cookie:', ex); }
+            try { sessionStorage.setItem(AGE_KEY, 'true'); } catch (ex) { }
+        }
+
+        if (!isAgeVerified()) {
             document.getElementById('ageGate').style.display = 'flex';
         }
     </script>
@@ -838,7 +860,7 @@
             errorEl.style.display = "none";
 
             // Private browsing can make sessionStorage throw; the visitor should still get in
-            try { sessionStorage.setItem('ageVerified', 'true'); } catch (ex) { }
+            setAgeVerified();
 
             var gate = document.getElementById('ageGate');
             if (gate) gate.style.display = "none";
@@ -1127,7 +1149,7 @@
 
         // Skip the gate if already verified this session
         window.addEventListener('DOMContentLoaded', function () {
-            if (sessionStorage.getItem('ageVerified') === 'true') {
+            if (isAgeVerified()) {
                 document.getElementById('ageGate').style.display = "none";
             }
         });
@@ -1486,7 +1508,7 @@
         function showPageLoader() {
             try {
                 // Not while the age gate is showing, or before age has been confirmed
-                if (sessionStorage.getItem('ageVerified') !== 'true') return;
+                if (!isAgeVerified()) return;
                 var gate = document.getElementById('ageGate');
                 if (gate && gate.style.display !== 'none') return;
             } catch (ex) { }
