@@ -1040,9 +1040,15 @@ body {
     overflow: hidden;
 }
 
+    .blog-card,
+    .blog-card:hover,
+    .blog-card:focus-visible,
+    .blog-card * {
+        text-decoration: none;
+    }
+
 .blog-card,
 .blog-card-body p {
-    text-decoration: none;
     color: var(--text-primary);
 }
 
@@ -2441,7 +2447,15 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     gap: 0;
     overflow: hidden;
     padding: 0;
+    text-decoration: none;
+    color: var(--text-primary);
 }
+
+    .blog-feature:hover,
+    .blog-feature:focus-visible,
+    .blog-feature * {
+        text-decoration: none;
+    }
 
     .blog-feature img {
         flex: 1 1 45%;
@@ -2470,6 +2484,11 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
 .blog-feature-body h3 {
     font-size: 1.5rem;
     margin: 0 0 12px;
+    color: var(--text-primary);
+}
+
+.blog-feature-body .btn-primary {
+    color: #fff;
 }
 
 .blog-feature-body p {
@@ -6104,6 +6123,17 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
 
 /* Wishlist image: same colours in light and dark mode (no invert filter) */
 .wish-img {
+    width: 20px;
+    height: 20px;
+    max-width: none;
+    display: block;
+    object-fit: contain;
+    pointer-events: none;
+    filter: none;
+}
+
+/* Theme toggle: coloured icons8 images, same colours in light and dark mode */
+.theme-icon-img {
     width: 20px;
     height: 20px;
     max-width: none;

@@ -219,6 +219,8 @@
     <Content Include="Images\hero-drink4.jpg" />
     <Content Include="Images\icons\emptycart.png" />
     <Content Include="Images\icons\excel.svg" />
+    <Content Include="Images\icons\icons8-moon-and-stars-30.png" />
+    <Content Include="Images\icons\icons8-sun-30.png" />
     <Content Include="Images\icons\pdf.svg" />
     <Content Include="Images\icons\fullcart.png" />
     <Content Include="Images\icons\moon.png" />

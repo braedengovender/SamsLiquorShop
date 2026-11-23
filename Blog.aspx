@@ -75,7 +75,7 @@
         </div>
         <p class="hours-note" style="margin-top:16px;">
           By subscribing you agree to receive marketing emails. Read our
-          <a href="PrivacyPolicy.aspx">privacy policy</a>.
+          <a href="/Legal.aspx#privacy">privacy policy</a>.
         </p>
       </div>
     </section>
@@ -91,9 +91,6 @@
         </a>
         <a href="Sustainability.aspx" class="card-surface guide-card">
           <p>Sustainability</p><span class="arrow">&rarr;</span>
-        </a>
-        <a href="Gallery.aspx" class="card-surface guide-card">
-          <p>Gallery</p><span class="arrow">&rarr;</span>
         </a>
         <a href="Contact.aspx" class="card-surface guide-card">
           <p>Contact Us</p><span class="arrow">&rarr;</span>

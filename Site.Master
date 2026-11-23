@@ -469,7 +469,7 @@
                   </asp:PlaceHolder>
 
                   <button type="button" id="themeToggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
-                      <img id="themeIcon" src="/Images/icons/moon.png" alt="" class="nav-icon" width="20" height="20" />
+                      <img id="themeIcon" src="/Images/icons/icons8-moon-and-stars-30.png" alt="" class="theme-icon-img" width="20" height="20" />
                   </button>
               </div>
           </nav>
@@ -685,7 +685,7 @@
 
         function setThemeIcon(theme) {
             document.getElementById('themeIcon').src =
-                theme === 'dark' ? '/Images/icons/sun.png' : '/Images/icons/moon.png';
+                theme === 'dark' ? '/Images/icons/icons8-sun-30.png' : '/Images/icons/icons8-moon-and-stars-30.png';
         }
 
         function clearHeaderSearch() {
