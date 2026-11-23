@@ -193,35 +193,35 @@
         <a href="Blog.aspx" class="view-all-link">View all &rarr;</a>
       </div>
       <div class="ribbon">
-        <a href="#" class="card-surface blog-card">
+        <a href="Blog.aspx?post=1" class="card-surface blog-card">
           <img src="Images/blog/post1.jpg" alt="Blog post" />
           <div class="blog-card-body">
             <p class="blog-title">5 Wines to Try This Summer</p>
             <p class="blog-excerpt">Our top picks for warm Durban evenings, from crisp whites to light rosés.</p>
           </div>
         </a>
-        <a href="#" class="card-surface blog-card">
+        <a href="Blog.aspx?post=2" class="card-surface blog-card">
           <img src="Images/blog/post2.jpg" alt="Blog post" />
           <div class="blog-card-body">
             <p class="blog-title">How to Host the Perfect Braai</p>
             <p class="blog-excerpt">Drinks pairings, timing tips, and a playlist to keep the evening going.</p>
           </div>
         </a>
-        <a href="#" class="card-surface blog-card">
+        <a href="Blog.aspx?post=3" class="card-surface blog-card">
           <img src="Images/blog/post3.jpg" alt="Blog post" />
           <div class="blog-card-body">
             <p class="blog-title">Behind the Bar: Meet Our Spirits Buyer</p>
             <p class="blog-excerpt">We sat down with our head buyer to talk rare finds and what's coming next.</p>
           </div>
         </a>
-        <a href="#" class="card-surface blog-card">
+        <a href="Blog.aspx?post=4" class="card-surface blog-card">
           <img src="Images/blog/post4.jpg" alt="Blog post" />
           <div class="blog-card-body">
             <p class="blog-title">Gin 101: A Beginner's Guide</p>
             <p class="blog-excerpt">Botanicals, styles, and how to build your first proper gin and tonic.</p>
           </div>
         </a>
-        <a href="#" class="card-surface blog-card">
+        <a href="Blog.aspx?post=5" class="card-surface blog-card">
           <img src="Images/blog/post5.jpg" alt="Blog post" />
           <div class="blog-card-body">
             <p class="blog-title">Low & No: Our Favourite Alcohol-Free Picks</p>
@@ -272,25 +272,34 @@
       </div>
     </section>
 
-    <section class="shell home-section">
+      <section class="shell home-section">
       <div class="section-header">
-        <h2>Featured Reviews</h2>
+        <h2>What Our Customers Say</h2>
       </div>
       <div class="reviews-grid">
-        <div class="card-surface review-card">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p class="review-quote">Best selection in Durban, hands down. Fast delivery too.</p>
-          <p class="review-name">— Thando M.</p>
+        <div class="card-surface review-card-g">
+          <div class="rg-head">
+            <span class="rg-avatar" style="background:#1a73e8;">T</span>
+            <p class="rg-name">Thando M.</p>
+          </div>
+          <div class="rg-rating"><span class="rg-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="rg-date">2 weeks ago</span></div>
+          <p class="rg-text">Best selection in Durban, hands down. Fast delivery too.</p>
         </div>
-        <div class="card-surface review-card">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p class="review-quote">Love the rewards program, and the staff always know their stuff.</p>
-          <p class="review-name">— Priya N.</p>
+        <div class="card-surface review-card-g">
+          <div class="rg-head">
+            <span class="rg-avatar" style="background:#e8710a;">P</span>
+            <p class="rg-name">Priya N.</p>
+          </div>
+          <div class="rg-rating"><span class="rg-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="rg-date">a month ago</span></div>
+          <p class="rg-text">Love the rewards program, and the staff always know their stuff.</p>
         </div>
-        <div class="card-surface review-card">
-          <div class="review-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p class="review-quote">My go-to for gifts. The gift sets are always a hit.</p>
-          <p class="review-name">— James K.</p>
+        <div class="card-surface review-card-g">
+          <div class="rg-head">
+            <span class="rg-avatar" style="background:#188038;">J</span>
+            <p class="rg-name">James K.</p>
+          </div>
+          <div class="rg-rating"><span class="rg-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span><span class="rg-date">2 months ago</span></div>
+          <p class="rg-text">My go-to for gifts. The gift sets are always a hit.</p>
         </div>
       </div>
     </section>

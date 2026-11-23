@@ -8370,3 +8370,115 @@ textarea.login-input {
     [data-theme="dark"] .chatbot-product-stock.is-out {
         color: #ff453a;
     }
+
+/* ---------- Blog article page ---------- */
+.blog-back-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+}
+
+    .blog-back-link:hover {
+        text-decoration: underline;
+    }
+
+.blog-article {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    align-items: start;
+    padding: 40px;
+}
+
+.blog-article-text h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin: 0 0 20px;
+}
+
+.blog-article-text p {
+    line-height: 1.75;
+    margin: 0 0 16px;
+}
+
+    .blog-article-text p.blog-feature-eyebrow {
+        margin: 0 0 10px;
+    }
+
+.blog-article-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 18px;
+    object-fit: cover;
+}
+
+@media screen and (max-width: 900px) {
+    .blog-article {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 24px;
+    }
+
+    .blog-article-image {
+        order: -1;
+    }
+}
+
+/* ---------- Review cards (Google-style layout) ---------- */
+.review-card-g {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 22px;
+}
+
+.rg-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.rg-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.rg-name {
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.rg-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rg-stars {
+    color: #fbbc04;
+    letter-spacing: 2px;
+    font-size: 1.05rem;
+}
+
+.rg-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.rg-text {
+    margin: 0;
+    line-height: 1.55;
+    font-size: 0.95rem;
+}

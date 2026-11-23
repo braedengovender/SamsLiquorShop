@@ -2,6 +2,28 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
+<% if (Current != null) { %>
+
+    <%-- ============ ARTICLE ============ --%>
+    <section class="shell home-section">
+      <a href="Blog.aspx" class="blog-back-link">&larr; Back to all posts</a>
+      <article class="glass blog-article">
+        <div class="blog-article-text">
+          <p class="blog-feature-eyebrow"><%: Current.Category %> &middot; 2 min read</p>
+          <h1><%: Current.Title %></h1>
+          <% foreach (string para in Current.Paragraphs) { %>
+          <p><%: para %></p>
+          <% } %>
+          <p class="hours-note">Please enjoy responsibly. You must be 18 or older to buy alcohol.</p>
+        </div>
+        <div class="blog-article-image">
+          <img src="<%: Current.Image %>" alt="<%: Current.Title %>" />
+        </div>
+      </article>
+    </section>
+
+<% } else { %>
+
     <%-- ============ PAGE HEADER ============ --%>
     <section class="shell home-section">
       <div class="section-header">
@@ -12,31 +34,15 @@
 
     <%-- ============ FEATURED POST ============ --%>
     <section class="shell home-section">
-      <a href="#" class="glass blog-feature">
-        <img src="Images/blog/post1.jpg" alt="5 Wines to Try This Summer" />
+      <a href="Blog.aspx?post=<%: Posts[0].Id %>" class="glass blog-feature">
+        <img src="<%: Posts[0].Image %>" alt="<%: Posts[0].Title %>" />
         <div class="blog-feature-body">
           <p class="blog-feature-eyebrow">Latest Post</p>
-          <h3>5 Wines to Try This Summer</h3>
-          <p>Our top picks for warm Durban evenings, from crisp whites to light rosés &mdash; and what to pair them with.</p>
+          <h3><%: Posts[0].Title %></h3>
+          <p><%: Posts[0].Excerpt %></p>
           <span class="btn-primary" style="width:fit-content;">Read More &rarr;</span>
         </div>
       </a>
-    </section>
-
-    <%-- ============ TOPICS ============ --%>
-    <section class="shell home-section">
-      <div class="section-header">
-        <h2>Browse by Topic</h2>
-      </div>
-      <div class="topic-tags">
-        <span class="topic-tag">Cocktails</span>
-        <span class="topic-tag">Wine</span>
-        <span class="topic-tag">Whiskey & Spirits</span>
-        <span class="topic-tag">Behind the Bar</span>
-        <span class="topic-tag">Entertaining</span>
-        <span class="topic-tag">Low & No Alcohol</span>
-        <span class="topic-tag">Community</span>
-      </div>
     </section>
 
     <%-- ============ ALL POSTS ============ --%>
@@ -45,43 +51,19 @@
         <h2>All Posts</h2>
       </div>
       <div class="blog-grid">
-        <a href="#" class="card-surface blog-card">
-          <img src="Images/blog/post1.jpg" alt="Blog post" />
+        <% foreach (SamsLiquorShop.BlogPost p in Posts) { %>
+        <a href="Blog.aspx?post=<%: p.Id %>" class="card-surface blog-card">
+          <img src="<%: p.Image %>" alt="<%: p.Title %>" />
           <div class="blog-card-body">
-            <p class="blog-title">5 Wines to Try This Summer</p>
-            <p class="blog-excerpt">Our top picks for warm Durban evenings, from crisp whites to light rosés.</p>
+            <p class="blog-title"><%: p.Title %></p>
+            <p class="blog-excerpt"><%: p.Excerpt %></p>
           </div>
         </a>
-        <a href="#" class="card-surface blog-card">
-          <img src="Images/blog/post2.jpg" alt="Blog post" />
-          <div class="blog-card-body">
-            <p class="blog-title">How to Host the Perfect Braai</p>
-            <p class="blog-excerpt">Drinks pairings, timing tips, and a playlist to keep the evening going.</p>
-          </div>
-        </a>
-        <a href="#" class="card-surface blog-card">
-          <img src="Images/blog/post3.jpg" alt="Blog post" />
-          <div class="blog-card-body">
-            <p class="blog-title">Behind the Bar: Meet Our Spirits Buyer</p>
-            <p class="blog-excerpt">We sat down with our head buyer to talk rare finds and what's coming next.</p>
-          </div>
-        </a>
-        <a href="#" class="card-surface blog-card">
-          <img src="Images/blog/post4.jpg" alt="Blog post" />
-          <div class="blog-card-body">
-            <p class="blog-title">Gin 101: A Beginner's Guide</p>
-            <p class="blog-excerpt">Botanicals, styles, and how to build your first proper gin and tonic.</p>
-          </div>
-        </a>
-        <a href="#" class="card-surface blog-card">
-          <img src="Images/blog/post5.jpg" alt="Blog post" />
-          <div class="blog-card-body">
-            <p class="blog-title">Low &amp; No: Our Favourite Alcohol-Free Picks</p>
-            <p class="blog-excerpt">Great taste doesn't need proof &mdash; our top zero-proof serves for any occasion.</p>
-          </div>
-        </a>
+        <% } %>
       </div>
     </section>
+
+<% } %>
 
     <%-- ============ NEWSLETTER CTA ============ --%>
     <section class="shell home-section">
@@ -93,7 +75,7 @@
         </div>
         <p class="hours-note" style="margin-top:16px;">
           By subscribing you agree to receive marketing emails. Read our
-          <a href="Legal.aspx#privacy">privacy policy</a>.
+          <a href="PrivacyPolicy.aspx">privacy policy</a>.
         </p>
       </div>
     </section>
@@ -109,6 +91,9 @@
         </a>
         <a href="Sustainability.aspx" class="card-surface guide-card">
           <p>Sustainability</p><span class="arrow">&rarr;</span>
+        </a>
+        <a href="Gallery.aspx" class="card-surface guide-card">
+          <p>Gallery</p><span class="arrow">&rarr;</span>
         </a>
         <a href="Contact.aspx" class="card-surface guide-card">
           <p>Contact Us</p><span class="arrow">&rarr;</span>

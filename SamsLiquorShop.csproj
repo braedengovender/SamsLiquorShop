@@ -472,7 +472,6 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Blog.aspx.cs">
       <DependentUpon>Blog.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Blog.aspx.designer.cs">
       <DependentUpon>Blog.aspx</DependentUpon>
