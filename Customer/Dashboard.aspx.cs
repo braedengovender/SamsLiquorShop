@@ -62,19 +62,43 @@ namespace SamsLiquorShop.Customer
         // Points redeem at 1 point = R1 (mirrors the POS loyalty rules)
         private void LoadLoyaltyPoints(int customerId)
         {
-            string query = "SELECT Customer_LoyaltyPointsBalance FROM Customer WHERE Customer_ID = @CustomerId";
+            string query = @"SELECT Customer_LoyaltyPointsBalance, Customer_FirstName, Customer_LastName, Customer_PhoneNumber
+                             FROM Customer WHERE Customer_ID = @CustomerId";
+
+            int points = 0;
+            string name = "";
+            string phone = "";
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
                 cmd.Parameters.AddWithValue("@CustomerId", customerId);
                 conn.Open();
-                object result = cmd.ExecuteScalar();
-                int points = result == null || result == DBNull.Value ? 0 : Convert.ToInt32(result);
-
-                litLoyaltyPoints.Text = points.ToString("N0");
-                litPointsValue.Text = ((decimal)points).ToString("C");
+                using (SqlDataReader r = cmd.ExecuteReader())
+                {
+                    if (r.Read())
+                    {
+                        points = r.IsDBNull(0) ? 0 : Convert.ToInt32(r[0]);
+                        name = (Convert.ToString(r[1]) + " " + Convert.ToString(r[2])).Trim();
+                        phone = Convert.ToString(r[3]);
+                    }
+                }
             }
+
+            litLoyaltyPoints.Text = points.ToString("N0");
+            litPointsValue.Text = ((decimal)points).ToString("C");
+            litCardName.Text = Server.HtmlEncode(name);
+            litCardPhone.Text = Server.HtmlEncode(FormatPhone(phone));
+        }
+
+        // 0824055932 becomes 082 405 5932; anything else is shown as stored
+        private static string FormatPhone(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return "";
+            string digits = new string(raw.Where(char.IsDigit).ToArray());
+            if (digits.Length == 10 && digits[0] == '0')
+                return digits.Substring(0, 3) + " " + digits.Substring(3, 3) + " " + digits.Substring(6);
+            return raw.Trim();
         }
 
         private void LoadRecentOrders(int customerId)

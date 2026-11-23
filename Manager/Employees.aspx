@@ -2,7 +2,7 @@
 <%@ Register Src="~/Manager/ManagerNav.ascx" TagPrefix="uc" TagName="ManagerNav" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <section class="shell mgr-layout">
+    <section class="shell mgr-layout dash-glass">
         <uc:ManagerNav runat="server" />
 
         <div class="mgr-main">
@@ -29,18 +29,22 @@
                     <!-- SUMMARY CARDS -->
                     <div class="mgr-kpi-grid">
                         <div class="mgr-kpi-card">
+                            <span class="dash-kpi-icon is-blue dash-icon-receipt" aria-hidden="true"></span>
                             <p class="mgr-kpi-label">Total employees</p>
                             <p class="mgr-kpi-value"><asp:Literal ID="litKpiTotal" runat="server" /></p>
                         </div>
                         <div class="mgr-kpi-card">
+                            <span class="dash-kpi-icon is-blue dash-icon-bag" aria-hidden="true"></span>
                             <p class="mgr-kpi-label">Active</p>
                             <p class="mgr-kpi-value"><asp:Literal ID="litKpiActive" runat="server" /></p>
                         </div>
                         <div class="mgr-kpi-card">
+                            <span class="dash-kpi-icon is-red dash-icon-alert" aria-hidden="true"></span>
                             <p class="mgr-kpi-label">Inactive</p>
                             <p class="mgr-kpi-value"><asp:Literal ID="litKpiInactive" runat="server" /></p>
                         </div>
                         <div class="mgr-kpi-card">
+                            <span class="dash-kpi-icon is-amber dash-icon-cash" aria-hidden="true"></span>
                             <p class="mgr-kpi-label">Managers</p>
                             <p class="mgr-kpi-value"><asp:Literal ID="litKpiManagers" runat="server" /></p>
                         </div>
