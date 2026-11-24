@@ -9137,3 +9137,50 @@ textarea.login-input {
 .ord-card {
     scroll-margin-top: 110px;
 }
+/* ===================== MANAGE DISCOUNTS TABLE: fit without sideways scrolling ===================== */
+.dash-table.disc-table {
+    table-layout: auto;
+    width: 100%;
+}
+
+    .dash-table.disc-table th,
+    .dash-table.disc-table td {
+        padding: 10px 8px;
+        font-size: 0.82rem;
+        vertical-align: top;
+    }
+
+    /* Let the long text columns wrap instead of forcing the table wider */
+    .dash-table.disc-table td {
+        white-space: normal;
+    }
+
+        /* Discount name column gets the most room */
+        .dash-table.disc-table th:first-child,
+        .dash-table.disc-table td:first-child {
+            min-width: 190px;
+            width: 26%;
+        }
+
+        /* Dates and amounts stay on one line */
+        .dash-table.disc-table td:nth-child(2),
+        .dash-table.disc-table td:nth-child(4),
+        .dash-table.disc-table td:nth-child(5) {
+            white-space: nowrap;
+        }
+
+        /* Actions stack under each other so the column stays narrow */
+        .dash-table.disc-table td:last-child {
+            white-space: normal;
+            min-width: 120px;
+        }
+
+            .dash-table.disc-table td:last-child .emp-action {
+                display: block;
+                margin: 0 0 6px;
+                white-space: nowrap;
+            }
+
+                .dash-table.disc-table td:last-child .emp-action:last-child {
+                    margin-bottom: 0;
+                }

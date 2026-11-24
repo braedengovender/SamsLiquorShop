@@ -216,7 +216,7 @@
 
                         <p class="emp-count"><asp:Literal ID="litCount" runat="server" /></p>
 
-                        <asp:GridView ID="gvDiscounts" runat="server" AutoGenerateColumns="false" CssClass="dash-table emp-table"
+                        <asp:GridView ID="gvDiscounts" runat="server" AutoGenerateColumns="false" CssClass="dash-table emp-table disc-table"
                             GridLines="None" DataKeyNames="Discount_ID" AllowPaging="true" PageSize="10" AllowSorting="true"
                             EmptyDataText="No discounts match your search." EmptyDataRowStyle-CssClass="dash-table-empty"
                             OnPageIndexChanging="gvDiscounts_PageIndexChanging" OnRowCommand="gvDiscounts_RowCommand"
