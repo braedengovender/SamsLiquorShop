@@ -9,10 +9,6 @@
         (function () {
             var theme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', theme);
-            // Accessibility: page size chosen in the "Aa" menu (100 / 115 / 130 / 150 %). Set before the page draws, so no jump.
-            var size = '100';
-            try { size = localStorage.getItem('textSize') || '100'; } catch (e) { }
-            document.documentElement.setAttribute('data-text-size', size);
         })();
     </script>
     <meta charset="utf-8" />
@@ -480,20 +476,6 @@
                       <a runat="server" id="lnkProfile" href="~/Customer/Dashboard.aspx" class="icon-btn nav-profile" aria-label="My Dashboard"><img src="/Images/person.png" alt="" class="nav-icon" width="20" height="20" /><span class="nav-user-name"><asp:Literal ID="litNavName" runat="server" /></span></a>
                       <asp:LinkButton runat="server" ID="btnLogout" CssClass="btn-ghost" OnClick="btnLogout_Click">Log out</asp:LinkButton>
                   </asp:PlaceHolder>
-
-                  <div class="text-size-wrap">
-                      <button type="button" id="textSizeToggle" class="theme-toggle text-size-toggle" onclick="toggleTextSizeMenu(event)"
-                          aria-label="Text size" aria-haspopup="true" aria-expanded="false" aria-controls="textSizeMenu" title="Text size">
-                          <span aria-hidden="true">A<small>A</small></span>
-                      </button>
-                      <div id="textSizeMenu" class="glass text-size-menu" role="group" aria-label="Text size" hidden>
-                          <p class="text-size-title">Text size</p>
-                          <button type="button" data-size="100" onclick="setTextSize('100')">Normal</button>
-                          <button type="button" data-size="115" onclick="setTextSize('115')">Large</button>
-                          <button type="button" data-size="130" onclick="setTextSize('130')">Larger</button>
-                          <button type="button" data-size="150" onclick="setTextSize('150')">Largest</button>
-                      </div>
-                  </div>
 
                   <button type="button" id="themeToggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
                       <img id="themeIcon" src="/Images/icons/icons8-moon-and-stars-30.png" alt="" class="theme-icon-img" width="20" height="20" />
@@ -1901,34 +1883,6 @@
         // Shared name rule for client-side checks: letters, with single spaces, hyphens or apostrophes between them.
         window.isValidPersonName = function (v) { return /^[A-Za-z]+([ '-][A-Za-z]+)*$/.test((v || '').trim()); };
 
-        // ===== Text size (accessibility) =====
-        // Scales the whole page (text, buttons, images) and remembers the choice on this device.
-        function markTextSize() {
-            var current = document.documentElement.getAttribute('data-text-size') || '100';
-            document.querySelectorAll('#textSizeMenu [data-size]').forEach(function (b) {
-                b.setAttribute('aria-pressed', b.getAttribute('data-size') === current ? 'true' : 'false');
-            });
-        }
-        window.setTextSize = function (size) {
-            document.documentElement.setAttribute('data-text-size', size);
-            try { localStorage.setItem('textSize', size); } catch (e) { }
-            markTextSize();
-        };
-        window.toggleTextSizeMenu = function (e) {
-            e.stopPropagation();
-            var menu = document.getElementById('textSizeMenu');
-            var btn = document.getElementById('textSizeToggle');
-            menu.hidden = !menu.hidden;
-            btn.setAttribute('aria-expanded', menu.hidden ? 'false' : 'true');
-            if (!menu.hidden) { markTextSize(); var on = menu.querySelector('[aria-pressed="true"]'); if (on) on.focus(); }
-        };
-        function closeTextSizeMenu() {
-            var menu = document.getElementById('textSizeMenu');
-            if (menu && !menu.hidden) { menu.hidden = true; document.getElementById('textSizeToggle').setAttribute('aria-expanded', 'false'); }
-        }
-        document.addEventListener('click', function (e) { if (!e.target.closest || !e.target.closest('.text-size-wrap')) closeTextSizeMenu(); });
-        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeTextSizeMenu(); });
-
         // ===== Live username / email availability =====
         // Any input with data-avail="username" or "email" shows "✓ available / ✗ not available" in the .avail-hint
         // inside its .login-field while the user types. data-original = the value already saved on the account being
@@ -1991,7 +1945,6 @@
                 if (t && t.getAttribute && t.getAttribute('data-avail')) check(t);
             });
             window.addEventListener('load', function () {
-                markTextSize();
                 checkAll();   // e.g. after a postback that kept a typed value
                 if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager)
                     Sys.WebForms.PageRequestManager.getInstance().add_endRequest(checkAll);   // forms inside UpdatePanels
