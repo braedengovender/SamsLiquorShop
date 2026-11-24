@@ -6,6 +6,7 @@
 <head runat="server">
     <meta name="viewport" content="width=device-width" />
     <title></title>
+    <link href="~/Images/cartIcon.png" rel="icon" type="image/png" />
     <asp:ContentPlaceHolder runat="server" ID="HeadContent" />
 </head>
 <body>

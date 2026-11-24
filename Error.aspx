@@ -6,6 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Something went wrong | Sam's Liquor Shop</title>
+    <link href="/Images/cartIcon.png" rel="icon" type="image/png" />
     <script>
         (function () {
             var t = 'light';
