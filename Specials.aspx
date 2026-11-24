@@ -1,6 +1,11 @@
 ﻿<%@ Page Title="Specials" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Specials.aspx.cs" Inherits="SamsLiquorShop.Specials" MaintainScrollPositionOnPostBack="true" %>
+<%@ Register Src="~/Controls/BlackFridayBanner.ascx" TagPrefix="uc" TagName="BlackFridayBanner" %>
+<%@ Register Src="~/Controls/RecentlyViewed.ascx" TagPrefix="uc" TagName="RecentlyViewed" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+
+    <%-- Black Friday wine special (outside the UpdatePanel so it isn't redrawn on every filter change) --%>
+    <uc:BlackFridayBanner runat="server" ID="bfBanner" />
 
     <asp:UpdatePanel ID="upnlSpecials" runat="server">
     <ContentTemplate>
@@ -103,6 +108,8 @@
         </div>
       </div>
     </asp:Panel>
+
+    <uc:RecentlyViewed runat="server" ID="ucRecent" />
 
     </ContentTemplate>
     </asp:UpdatePanel>

@@ -386,6 +386,7 @@ namespace SamsLiquorShop
 
             DataRow r = hit[0];
             DetailProductId = productId;
+            Helpers.RecentlyViewedHelper.Add(Session, productId);   // feeds the "Recently viewed" strip
 
             string name = Convert.ToString(r["Product_Name"]);
             string category = Convert.ToString(r["Category_Name"]);

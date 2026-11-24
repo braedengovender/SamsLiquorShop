@@ -24,7 +24,12 @@
         <link rel="stylesheet" href="<%: ResolveUrl("~/Content/Site.css") %>?v=<%: System.IO.File.GetLastWriteTimeUtc(Server.MapPath("~/Content/Site.css")).Ticks %>" />
     </asp:PlaceHolder>
     <link href="~/Images/cartIcon.png" rel="icon" type="image/png" />
-    <link href="~/Images/cartIcon.png" rel="apple-touch-icon" />
+    <link href="~/Images/app-icon-192.png" rel="apple-touch-icon" />
+    <%-- "Install as app" (see the footer link and the script near the bottom) --%>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0a84ff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Sam's Liquor" />
 
     <style>
         .nl-continue-btn {
@@ -530,6 +535,12 @@
                   <li><a href="Shop.aspx?cat=gifts">Gift Ideas & Accessories</a></li>
                   <li><a href="About.aspx">About Us</a></li>
                   <li><a href="Contact.aspx">Contact</a></li>
+                  <li id="installAppItem">
+                    <a href="#" id="installAppLink" role="button">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:4px;"><path d="M12 3v12" /><path d="M7 10l5 5 5-5" /><path d="M5 21h14" /></svg>Install as App
+                    </a>
+                    <p id="installAppHelp" class="hours-note" role="status" hidden></p>
+                  </li>
                 </ul>
               </div>
 
@@ -1175,7 +1186,7 @@
             'All Products': 'Yonke Imikhiqizo', 'Gift Ideas & Accessories': 'Imibono Yezipho Nezisetshenziswa',
             'My Profile': 'Iphrofayili Yami', 'My Orders': 'Ama-oda Ami', 'Wish List': 'Uhlu Lwezifiso',
             'Settings': 'Izilungiselelo', 'Loyalty & Rewards': 'Ukwethembeka Nemivuzo',
-            'Get the Loyalty Card': 'Thola Ikhadi Lokwethembeka',
+            'Get the Loyalty Card': 'Thola Ikhadi Lokwethembeka', 'Install as App': 'Faka njenge-App',
             'Delivery Policy': 'Inqubomgomo Yokulethwa', 'Return Policy': 'Inqubomgomo Yokubuyisa',
             'Privacy Policy': 'Inqubomgomo Yobumfihlo', 'Cookies Policy': 'Inqubomgomo Yamakhukhi',
             'Terms & Conditions': 'Imigomo Nemibandela', 'Website Terms of Use': 'Imigomo Yokusebenzisa Iwebhusayithi',
@@ -1537,6 +1548,71 @@
             if (el) el.style.display = 'none';
         }
 
+        // ===== Install as app (footer link) =====
+        // Chrome, Edge and Android fire beforeinstallprompt, so the link opens the browser's own install dialog.
+        // Browsers without that event (Safari, Firefox) get short instructions instead.
+        (function () {
+            var deferred = null;
+
+            function isInstalled() {
+                return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+            }
+            function hideItem() {
+                var li = document.getElementById('installAppItem');
+                if (li) li.hidden = true;
+            }
+            function help(text) {
+                var el = document.getElementById('installAppHelp');
+                if (!el) return;
+                el.textContent = text;
+                el.hidden = false;
+            }
+            function instructions() {
+                var ua = navigator.userAgent;
+                var ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                if (ios) return 'Tap the Share button, then "Add to Home Screen".';
+                if (/Firefox\//.test(ua)) return /Android/.test(ua)
+                    ? 'Open the Firefox menu, then tap "Install" or "Add to Home screen".'
+                    : "Firefox on desktop can't install websites as apps. Open this site in Chrome, Edge or Safari to install it.";
+                if (/Safari\//.test(ua) && !/Chrome|Chromium|Edg\//.test(ua)) return 'In Safari, choose File > Add to Dock.';
+                if (/Edg\//.test(ua)) return 'Open the Edge menu (...), then Apps > Install this site as an app. If it is already installed, open it from your apps.';
+                return 'Use the install icon in the address bar, or open the browser menu and choose "Install Sam\'s Liquor Shop". If it is already installed, open it from your apps.';
+            }
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('/sw.js').catch(function () { /* install just won't be offered */ });
+                });
+            }
+
+            window.addEventListener('beforeinstallprompt', function (e) {
+                e.preventDefault();   // keep the prompt for when the customer clicks the footer link
+                deferred = e;
+            });
+            window.addEventListener('appinstalled', function () { deferred = null; hideItem(); });
+
+            function init() {
+                if (isInstalled()) { hideItem(); return; }
+                var link = document.getElementById('installAppLink');
+                if (!link) return;
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (deferred) {
+                        var p = deferred;
+                        deferred = null;   // a prompt can only be used once
+                        p.prompt();
+                        p.userChoice.then(function (choice) {
+                            if (choice && choice.outcome === 'accepted') hideItem();
+                        });
+                        return;
+                    }
+                    help(instructions());
+                });
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+            else init();
+        })();
+
         // ===== Dashboard charts =====
         // A page declares a chart as <canvas data-chart="{type, labels, values, money}">.
         // type is 'bar' (columns), 'hbar' (horizontal bars) or 'doughnut'.
@@ -1580,6 +1656,33 @@
             function formatAxis(v, money) {
                 if (!money) return v;
                 return Math.abs(v) >= 1000 ? 'R' + (v / 1000).toLocaleString('en-ZA', { maximumFractionDigits: 1 }) + 'k' : 'R' + v;
+            }
+
+            // Wraps a label onto at most two lines that each fit maxWidth pixels, ending with "…" if it still doesn't fit
+            var measureCtx = document.createElement('canvas').getContext('2d');
+            function fitAxisLabel(label, maxWidth) {
+                label = String(label);
+                measureCtx.font = (Chart.defaults.font.size || 12) + 'px ' + Chart.defaults.font.family;
+                function fits(s) { return measureCtx.measureText(s).width <= maxWidth; }
+                if (fits(label)) return label;
+
+                var words = label.split(/\s+/), lines = [], line = '';
+                while (words.length && lines.length < 2) {
+                    var next = line ? line + ' ' + words[0] : words[0];
+                    if (fits(next)) { line = next; words.shift(); }
+                    else if (line) { lines.push(line); line = ''; }
+                    else { lines.push(words.shift()); }   // a single word wider than the space: trimmed below
+                }
+                if (line && lines.length < 2) lines.push(line);
+
+                var last = lines.length - 1;
+                if (words.length || !fits(lines[last])) {
+                    var s = lines[last];
+                    while (s.length > 1 && !fits(s + '…')) s = s.slice(0, -1);
+                    lines[last] = s.replace(/\s+$/, '') + '…';
+                }
+                if (!fits(lines[0])) { var f = lines[0]; while (f.length > 1 && !fits(f + '…')) f = f.slice(0, -1); lines[0] = f + '…'; }
+                return lines.length === 1 ? lines[0] : lines;
             }
 
             function foldToTop3(labels, values) {
@@ -1645,11 +1748,12 @@
 
                 var horizontal = spec.type === 'hbar';
                 var valueAxis = { grid: { color: c.grid }, border: { display: false }, beginAtZero: true, ticks: { callback: function (v) { return formatAxis(v, spec.money); } } };
-                // Long product names would be clipped at the canvas edge, so shorten them (the tooltip still shows the full name)
+                // Chart.js gives the label axis at most half the canvas width and right-aligns the text, so a long
+                // product name gets cropped on the left. Fit each name to the real width instead (the tooltip still shows it in full).
                 var categoryAxis = {
                     grid: { display: false }, border: { display: false },
                     ticks: horizontal
-                        ? { callback: function (v) { var label = this.getLabelForValue(v); return label.length > 22 ? label.slice(0, 21) + '…' : label; } }
+                        ? { callback: function (v) { return fitAxisLabel(this.getLabelForValue(v), this.chart.width * 0.5 - 20); } }
                         : { autoSkip: true, maxRotation: 0 }
                 };
 
@@ -1677,6 +1781,8 @@
             script.src = '/Scripts/chart.umd.min.js';
             script.onload = function () {
                 renderAll();
+                // Labels are measured with the page font, so redraw once web fonts have finished loading
+                if (document.fonts && document.fonts.status !== 'loaded') document.fonts.ready.then(renderAll);
                 new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
             };
             document.body.appendChild(script);

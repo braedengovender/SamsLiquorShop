@@ -56,16 +56,24 @@ namespace SamsLiquorShop.Manager
                 // The previous period is the same length, immediately before the current one
                 DateTime prevCutoff = cutoff - (now - cutoff);
 
-                LoadKpis(cutoff, prevCutoff);
-                LoadRevenueChart(cutoff, now);
-                LoadTopProductsChart(cutoff);
-                LoadCategoryChart(cutoff);
-                LoadPaymentChart(cutoff);
-                LoadCashierChart(cutoff);
-                LoadHourlyChart(cutoff);
+                if (RangeKey == "12m" && UseSampleDataFor12Months)
+                {
+                    // 12 months only: presentable sample figures (see Dashboard.Sample12m.cs)
+                    LoadSample12Months(cutoff, now);
+                }
+                else
+                {
+                    LoadKpis(cutoff, prevCutoff);
+                    LoadRevenueChart(cutoff, now);
+                    LoadTopProductsChart(cutoff);
+                    LoadCategoryChart(cutoff);
+                    LoadPaymentChart(cutoff);
+                    LoadCashierChart(cutoff);
+                    LoadHourlyChart(cutoff);
+                    LoadTopCustomers(cutoff);
+                }
                 LoadLowStock();
                 LoadRecentSales();
-                LoadTopCustomers(cutoff);
                 LoadActiveDiscounts();
 
                 // Low-stock pop-up: once per login (logout clears the session, so it shows again next time)
@@ -199,16 +207,25 @@ namespace SamsLiquorShop.Manager
                 litTransactionsDelta.Text = DeltaBadge(transactions, prevTransactions);
                 litAvgBasketDelta.Text = DeltaBadge(avgBasket, prevAvgBasket);
 
-                string lowStockQuery = @"
-                    SELECT COUNT(*)
-                    FROM Product
-                    WHERE Product_QuantityInStock <= Product_ReorderQuantity
-                      AND Product_Status = 'Active'";
+            }
 
-                using (SqlCommand cmd = new SqlCommand(lowStockQuery, conn))
-                {
-                    litLowStock.Text = cmd.ExecuteScalar().ToString();
-                }
+            LoadLowStockCount();
+        }
+
+        // The "Low Stock Items" KPI is always real, whatever the range
+        private void LoadLowStockCount()
+        {
+            string lowStockQuery = @"
+                SELECT COUNT(*)
+                FROM Product
+                WHERE Product_QuantityInStock <= Product_ReorderQuantity
+                  AND Product_Status = 'Active'";
+
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand(lowStockQuery, conn))
+            {
+                conn.Open();
+                litLowStock.Text = cmd.ExecuteScalar().ToString();
             }
         }
 

@@ -245,7 +245,8 @@ namespace SamsLiquorShop
             OrderResult result = OrderHelper.PlaceOrder(req);
 
             // Card details are never kept
-            req.CardNumber = req.CardExpiry = req.CardCvv = null;
+            req.CardName = req.CardNumber = req.CardExpiry = req.CardCvv = null;
+            txtCardName.Text = "";
             txtCardNumber.Text = "";
             txtCardExpiry.Text = "";
             txtCardCvv.Text = "";
@@ -292,6 +293,7 @@ namespace SamsLiquorShop
                 Instructions = txtInstructions.Text,
                 PromoCode = Session["PromoCode"] as string,
                 UsePoints = chkUsePoints.Checked,
+                CardName = txtCardName.Text,
                 CardNumber = txtCardNumber.Text,
                 CardExpiry = txtCardExpiry.Text,
                 CardCvv = txtCardCvv.Text,

@@ -3,6 +3,7 @@
 </asp:Content>--%>
 
 <%@ Page Title="Your Cart" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Cart.aspx.cs" Inherits="SamsLiquorShop.Cart" %>
+<%@ Register Src="~/Controls/RecentlyViewed.ascx" TagPrefix="uc" TagName="RecentlyViewed" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <section class="shell">
@@ -201,6 +202,9 @@
                         </asp:Repeater>
                     </div>
                 </asp:Panel>
+
+                <%-- Products opened earlier: easy to go back and add one --%>
+                <uc:RecentlyViewed runat="server" ID="ucRecent" Title="Still thinking about these?" />
 
             </ContentTemplate>
         </asp:UpdatePanel>

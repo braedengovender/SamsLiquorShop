@@ -362,7 +362,12 @@
                         <asp:Label ID="lblVerifyError" runat="server" CssClass="field-error login-server-error" />
                         <asp:Label ID="lblVerifyInfo" runat="server" CssClass="field-hint valid login-server-error" />
 
-                        <asp:Button ID="btnVerify" runat="server" Text="Verify and create account" CssClass="btn-primary login-submit" CausesValidation="false" OnClick="btnVerify_Click" />
+                        <asp:Button ID="btnVerify" runat="server" Text="Verify and create account" CssClass="btn-primary login-submit" CausesValidation="false" OnClick="btnVerify_Click"
+                            OnClientClick="if (this.getAttribute('aria-busy')) { return false; } this.setAttribute('aria-busy', 'true'); this.value = 'Verifying...'; this.classList.add('is-busy'); document.getElementById('otpVerifying').hidden = false; return true;" />
+                        <div id="otpVerifying" class="otp-verifying" role="status" aria-live="polite" hidden>
+                            <span class="otp-spinner" aria-hidden="true"></span>
+                            <span>Verifying your code&hellip;</span>
+                        </div>
 
                         <p class="login-register-text">
                             Didn't get it? Check your spam folder or

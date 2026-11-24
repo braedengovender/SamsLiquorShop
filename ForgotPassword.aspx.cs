@@ -28,8 +28,9 @@ namespace SamsLiquorShop
 
         protected void btnSend_Click(object sender, EventArgs e)
         {
-            string email = txtEmail.Text.Trim();
-            if (email.Length == 0) return;
+            // The customer can type either their email address or their username
+            string login = txtEmail.Text.Trim();
+            if (login.Length == 0) return;
 
             // reCAPTCHA: stops bots from spamming people's inboxes with reset codes
             if (!Helpers.RecaptchaHelper.Verify(Request.Form["g-recaptcha-response"], Request.UserHostAddress))
@@ -43,34 +44,39 @@ namespace SamsLiquorShop
             string table = null;
             object id = null;
             string name = null;
+            string email = null;   // always the address on the account, never the typed text
 
             using (SqlConnection conn = new SqlConnection(ConnStr))
             {
                 conn.Open();
 
                 using (SqlCommand cmd = new SqlCommand(
-                    "SELECT Customer_ID, Customer_Username FROM Customer WHERE Customer_EmailAddress = @E AND Customer_Status = 'Active'", conn))
+                    "SELECT TOP 1 Customer_ID, Customer_Username, Customer_EmailAddress FROM Customer " +
+                    "WHERE (Customer_EmailAddress = @E OR Customer_Username = @E) AND Customer_Status = 'Active' " +
+                    "ORDER BY CASE WHEN Customer_EmailAddress = @E THEN 0 ELSE 1 END", conn))
                 {
-                    cmd.Parameters.AddWithValue("@E", email);
+                    cmd.Parameters.AddWithValue("@E", login);
                     using (SqlDataReader r = cmd.ExecuteReader())
-                        if (r.Read()) { table = "Customer"; id = r["Customer_ID"]; name = r["Customer_Username"].ToString(); }
+                        if (r.Read()) { table = "Customer"; id = r["Customer_ID"]; name = r["Customer_Username"].ToString(); email = r["Customer_EmailAddress"].ToString(); }
                 }
 
                 if (table == null)
                 {
                     using (SqlCommand cmd = new SqlCommand(
-                        "SELECT Employee_ID, Employee_Username FROM Employee WHERE Employee_EmailAddress = @E AND Employee_Status = 'Active'", conn))
+                        "SELECT TOP 1 Employee_ID, Employee_Username, Employee_EmailAddress FROM Employee " +
+                        "WHERE (Employee_EmailAddress = @E OR Employee_Username = @E) AND Employee_Status = 'Active' " +
+                        "ORDER BY CASE WHEN Employee_EmailAddress = @E THEN 0 ELSE 1 END", conn))
                     {
-                        cmd.Parameters.AddWithValue("@E", email);
+                        cmd.Parameters.AddWithValue("@E", login);
                         using (SqlDataReader r = cmd.ExecuteReader())
-                            if (r.Read()) { table = "Employee"; id = r["Employee_ID"]; name = r["Employee_Username"].ToString(); }
+                            if (r.Read()) { table = "Employee"; id = r["Employee_ID"]; name = r["Employee_Username"].ToString(); email = r["Employee_EmailAddress"].ToString(); }
                     }
                 }
             }
 
             // Only send a code if the account exists, but always move on to step 2
-            // so the page never reveals whether an email is registered.
-            if (table != null)
+            // so the page never reveals whether an email or username is registered.
+            if (table != null && !string.IsNullOrWhiteSpace(email))
             {
                 string code = Helpers.OtpHelper.GenerateCode();
                 if (!Helpers.OtpHelper.SendCode(email, name, code, "password reset"))

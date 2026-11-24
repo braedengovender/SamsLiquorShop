@@ -37,6 +37,7 @@ namespace SamsLiquorShop.Helpers
         public DateTime? SlotStart { get; set; }
         public string PromoCode { get; set; }
         public bool UsePoints { get; set; }
+        public string CardName { get; set; }               // name printed on the card - checked, never stored
         public string CardNumber { get; set; }             // checked, then thrown away - only the last four digits are stored
         public string CardExpiry { get; set; }
         public string CardCvv { get; set; }
@@ -276,6 +277,10 @@ namespace SamsLiquorShop.Helpers
         {
             errors = new List<string>();
             lastFour = null;
+
+            string cardName = Regex.Replace((r.CardName ?? "").Trim(), @"\s+", " ");
+            if (cardName.Length < 2 || cardName.Length > 50 || !NameFormat.IsMatch(cardName))
+                errors.Add("Please enter the name on the card (letters only, 2 to 50 characters).");
 
             string digits = Regex.Replace(r.CardNumber ?? "", @"[\s\-]", "");
             if (!Regex.IsMatch(digits, @"^[0-9]{13,19}$") || !PassesLuhn(digits))

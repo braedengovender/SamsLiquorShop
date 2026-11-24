@@ -60,9 +60,17 @@ namespace SamsLiquorShop.Helpers
             string greeting = first.Length > 0 ? "Hi " + WebUtility.HtmlEncode(first) + "," : "Hi,";
 
             bool isRegister = (purpose ?? "").ToLowerInvariant().Contains("registration");
+            bool isEmailChange = (purpose ?? "").ToLowerInvariant().Contains("email change");
 
             string eyebrow, heading, intro, ignore;
-            if (isRegister)
+            if (isEmailChange)
+            {
+                eyebrow = "Email verification";
+                heading = "Confirm your new email address";
+                intro = "You asked to change the email address on your Sam's Liquor Shop account to this one. Enter the code below on your Account Details page to confirm the change.";
+                ignore = "If you didn't ask for this, you can ignore this email. Your account's email address will not change without this code.";
+            }
+            else if (isRegister)
             {
                 eyebrow = "Email verification";
                 heading = "Verify your email address";

@@ -1,6 +1,11 @@
 ﻿<%@ Page Title="Shop" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Shop.aspx.cs" Inherits="SamsLiquorShop.Shop" %>
+<%@ Register Src="~/Controls/BlackFridayBanner.ascx" TagPrefix="uc" TagName="BlackFridayBanner" %>
+<%@ Register Src="~/Controls/RecentlyViewed.ascx" TagPrefix="uc" TagName="RecentlyViewed" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+
+    <%-- Black Friday wine special: clicking it reloads the shop filtered to wines on sale --%>
+    <uc:BlackFridayBanner runat="server" ID="bfBanner" />
 
     <!-- SEARCH: deliberately OUTSIDE the UpdatePanel so the box is never re-rendered (keeps focus + caret while typing) -->
     <section class="shell shop-search-wrap">
@@ -141,6 +146,9 @@
                 </div>
 
             </section>
+
+            <%-- Inside the UpdatePanel so a product opened in the pop-up appears here straight away --%>
+            <uc:RecentlyViewed runat="server" ID="ucRecent" />
 
             <!-- PRODUCT DETAIL OVERLAY -->
             <asp:Panel ID="pnlDetail" runat="server" Visible="false" CssClass="pd-overlay">

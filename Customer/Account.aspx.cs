@@ -27,6 +27,8 @@ namespace SamsLiquorShop.Customer
             if (!IsPostBack)
             {
                 LoadDetails();
+                // Came back to the page with a code still waiting: show the box again
+                if (PendingEmail != null) ShowEmailVerify();
             }
         }
 
@@ -145,6 +147,13 @@ namespace SamsLiquorShop.Customer
                 return;
             }
 
+            // A new email address is only saved after the customer enters the code we send to it.
+            // Everything else is saved now; the email stays as it is until then.
+            string currentEmail = GetCurrentEmail();
+            bool emailChanged = currentEmail != null && !string.Equals(email, currentEmail, StringComparison.OrdinalIgnoreCase);
+            string newEmail = email;
+            if (emailChanged) email = currentEmail;
+
             int rows;
             string target;
             try
@@ -198,7 +207,195 @@ namespace SamsLiquorShop.Customer
 
             // Re-read from the database so the form shows exactly what was stored
             LoadDetails();
+
+            if (emailChanged)
+            {
+                if (!StartEmailChange(newEmail, first))
+                {
+                    ShowMessage("Your other details were saved, but we couldn't send a code to " + newEmail + ". Please check the address and try again.", false);
+                    return;
+                }
+                ShowMessage("Your other details were saved. To change your email, enter the code we sent to " + newEmail + ".", true);
+                return;
+            }
+
             ShowMessage("Your details have been updated (" + rows + " row saved to " + target + ", Customer ID " + CustomerId + ").", true);
+        }
+
+        // ---------- CHANGE EMAIL (OTP) ----------
+        private const int MaxEmailCodeAttempts = 5;
+
+        // The new address waiting for its code, or null (also null if it belongs to a different login or has expired)
+        private string PendingEmail
+        {
+            get
+            {
+                if (!(Session["EmailChangeCustomer"] is int) || (int)Session["EmailChangeCustomer"] != CustomerId) return null;
+                if (!(Session["EmailChangeExpiry"] is DateTime) || DateTime.Now > (DateTime)Session["EmailChangeExpiry"]) return null;
+                return Session["EmailChangeNew"] as string;
+            }
+        }
+
+        private void ClearEmailChange()
+        {
+            foreach (string k in new[] { "EmailChangeCustomer", "EmailChangeNew", "EmailChangeCode", "EmailChangeExpiry", "EmailChangeAttempts" })
+                Session.Remove(k);
+        }
+
+        private bool StartEmailChange(string newEmail, string firstName)
+        {
+            string code = OtpHelper.GenerateCode();
+            if (!OtpHelper.SendCode(newEmail, firstName, code, "email change")) return false;
+
+            Session["EmailChangeCustomer"] = CustomerId;
+            Session["EmailChangeNew"] = newEmail;
+            Session["EmailChangeCode"] = code;
+            Session["EmailChangeExpiry"] = DateTime.Now.AddMinutes(10);
+            Session["EmailChangeAttempts"] = 0;
+
+            txtEmailCode.Text = "";
+            lblEmailCodeError.Visible = false;
+            ShowEmailVerify();
+            return true;
+        }
+
+        private void ShowEmailVerify()
+        {
+            pnlEmailVerify.Visible = true;
+            lblPendingEmail.Text = Server.HtmlEncode(PendingEmail ?? "");
+            lblEmailDemo.Visible = OtpHelper.DemoMode && Session["EmailChangeCode"] != null;
+            if (lblEmailDemo.Visible) lblEmailDemo.Text = "Demo mode: your code is " + Session["EmailChangeCode"];
+        }
+
+        private void HideEmailVerify()
+        {
+            pnlEmailVerify.Visible = false;
+            txtEmailCode.Text = "";
+            lblEmailCodeError.Visible = false;
+        }
+
+        private void EmailCodeError(string text)
+        {
+            lblEmailCodeError.Text = text;
+            lblEmailCodeError.Visible = true;
+            txtEmailCode.Text = "";
+            ShowEmailVerify();
+        }
+
+        protected void btnVerifyEmail_Click(object sender, EventArgs e)
+        {
+            litMessage.Text = "";
+            string newEmail = PendingEmail;
+            if (newEmail == null)
+            {
+                ClearEmailChange();
+                HideEmailVerify();
+                ShowMessage("That code has expired. Change your email and save again to get a new one.", false);
+                return;
+            }
+
+            int attempts = (int)Session["EmailChangeAttempts"] + 1;
+            Session["EmailChangeAttempts"] = attempts;
+            if (attempts > MaxEmailCodeAttempts)
+            {
+                ClearEmailChange();
+                HideEmailVerify();
+                ShowMessage("Too many wrong codes. Your email was not changed. Save it again to get a new code.", false);
+                return;
+            }
+
+            if (txtEmailCode.Text.Trim() != (string)Session["EmailChangeCode"])
+            {
+                EmailCodeError("That code isn't right. Please try again (" + (MaxEmailCodeAttempts - attempts) + " tries left).");
+                return;
+            }
+
+            // Someone may have registered the address in the last few minutes
+            if (IsTaken("SELECT COUNT(*) FROM Customer WHERE Customer_EmailAddress = @V AND Customer_ID <> @Id", newEmail)
+                || IsTaken("SELECT COUNT(*) FROM Employee WHERE Employee_EmailAddress = @V", newEmail))
+            {
+                ClearEmailChange();
+                HideEmailVerify();
+                ShowMessage("That email address is already registered to another account. Your email was not changed.", false);
+                return;
+            }
+
+            string oldEmail = GetCurrentEmail();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(ConnStr))
+                using (SqlCommand cmd = new SqlCommand("UPDATE Customer SET Customer_EmailAddress = @Email WHERE Customer_ID = @Id", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Email", newEmail);
+                    cmd.Parameters.AddWithValue("@Id", CustomerId);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (SqlException ex)
+            {
+                EmailCodeError("Your email could not be changed: " + ex.Message);
+                return;
+            }
+
+            ClearEmailChange();
+            HideEmailVerify();
+            SessionWatch.UpdateEmail(Session.SessionID, newEmail);   // logout / expiry notices go to the new address
+            NotifyOldEmail(oldEmail, newEmail);
+            LoadDetails();
+            ShowMessage("Your email address has been changed to " + newEmail + ".", true);
+        }
+
+        protected void btnResendEmailCode_Click(object sender, EventArgs e)
+        {
+            litMessage.Text = "";
+            string newEmail = Session["EmailChangeCustomer"] is int && (int)Session["EmailChangeCustomer"] == CustomerId
+                ? Session["EmailChangeNew"] as string : null;
+            if (newEmail == null)
+            {
+                HideEmailVerify();
+                ShowMessage("Change your email and save again to get a code.", false);
+                return;
+            }
+            if (!StartEmailChange(newEmail, txtFirstName.Text.Trim()))
+            {
+                EmailCodeError("We couldn't send a new code. Please try again.");
+                return;
+            }
+            ShowMessage("We sent a new code to " + newEmail + ".", true);
+        }
+
+        protected void btnCancelEmailChange_Click(object sender, EventArgs e)
+        {
+            ClearEmailChange();
+            HideEmailVerify();
+            LoadDetails();
+            ShowMessage("Your email address was not changed.", true);
+        }
+
+        private string GetCurrentEmail()
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand("SELECT Customer_EmailAddress FROM Customer WHERE Customer_ID = @Id", conn))
+            {
+                cmd.Parameters.AddWithValue("@Id", CustomerId);
+                conn.Open();
+                object o = cmd.ExecuteScalar();
+                return o == null || o == DBNull.Value ? null : o.ToString().Trim();
+            }
+        }
+
+        // Security notice to the old address, so the real owner hears about it if someone else made the change
+        private void NotifyOldEmail(string oldEmail, string newEmail)
+        {
+            if (string.IsNullOrWhiteSpace(oldEmail) || OtpHelper.DemoMode) return;
+            string first = Server.HtmlEncode(txtFirstName.Text.Trim());
+            string html = "<p>Hi " + (first.Length > 0 ? first : "there") + ",</p>"
+                + "<p>The email address on your Sam's Liquor Shop account was changed to <strong>" + Server.HtmlEncode(newEmail) + "</strong>.</p>"
+                + "<p>If you made this change, you don't need to do anything. If you didn't, please contact us straight away.</p>"
+                + "<p>Sam's Liquor Shop</p>";
+            try { OtpHelper.SendEmail(oldEmail, txtFirstName.Text.Trim(), "Your Sam's Liquor Shop email address was changed", html); }
+            catch { /* the change itself has already succeeded */ }
         }
 
         // ---------- CHANGE PASSWORD ----------

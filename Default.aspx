@@ -1,4 +1,6 @@
 ﻿<%@ Page Title="Home" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="SamsLiquorShop._Default" %>
+<%@ Register Src="~/Controls/BlackFridayBanner.ascx" TagPrefix="uc" TagName="BlackFridayBanner" %>
+<%@ Register Src="~/Controls/RecentlyViewed.ascx" TagPrefix="uc" TagName="RecentlyViewed" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
 
@@ -23,6 +25,12 @@
         </div>
       </div>
     </section>
+
+    <%-- Products this visitor opened earlier in their visit (renders nothing until they've viewed one) --%>
+    <uc:RecentlyViewed runat="server" ID="ucRecent" Title="Pick up where you left off" />
+
+    <%-- Black Friday wine special: thin bar stuck to the bottom of the window until closed with the x (hides itself after the end date) --%>
+    <uc:BlackFridayBanner runat="server" ID="bfBanner" Layout="Bar" />
 
     <section class="shell home-section about-section">
       <div class="section-header">

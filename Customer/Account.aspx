@@ -13,6 +13,40 @@
 
             <asp:Literal ID="litMessage" runat="server" />
 
+            <!-- CONFIRM A NEW EMAIL ADDRESS (shown after the email is changed and saved) -->
+            <asp:Panel ID="pnlEmailVerify" runat="server" Visible="false" DefaultButton="btnVerifyEmail">
+                <div class="mgr-table-card emp-form-card">
+                    <div class="dash-card-head"><h3>Confirm your new email address</h3></div>
+                    <p class="mgr-dash-subtext">
+                        We sent a 6-digit code to <strong><asp:Label ID="lblPendingEmail" runat="server" /></strong>.
+                        Enter it below to finish changing your email. The code expires in 10 minutes.
+                        Until then, your account keeps using your current email address.
+                    </p>
+
+                    <asp:Label ID="lblEmailDemo" runat="server" CssClass="field-hint invalid" Visible="false" />
+
+                    <div class="login-field" style="max-width: 320px;">
+                        <label for="<%= txtEmailCode.ClientID %>">Verification code</label>
+                        <asp:TextBox ID="txtEmailCode" runat="server" CssClass="login-input" MaxLength="6"
+                            autocomplete="one-time-code" inputmode="numeric" data-digits="1" placeholder="000000"
+                            Style="text-align:center;font-size:1.4rem;letter-spacing:8px;" />
+                    </div>
+
+                    <asp:Label ID="lblEmailCodeError" runat="server" CssClass="field-error login-server-error" Visible="false" />
+
+                    <div class="emp-form-actions">
+                        <asp:Button ID="btnVerifyEmail" runat="server" Text="Verify and change email" CssClass="btn-primary login-submit" CausesValidation="false" OnClick="btnVerifyEmail_Click"
+                            OnClientClick="var c = this.closest('.emp-form-card').querySelector('input[autocomplete=one-time-code]'); if (!/^\d{6}$/.test(c.value.trim())) { c.classList.add('invalid'); c.focus(); return false; } if (this.getAttribute('aria-busy')) { return false; } this.setAttribute('aria-busy', 'true'); this.value = 'Verifying...'; this.classList.add('is-busy'); document.getElementById('otpVerifying').hidden = false; return true;" />
+                        <asp:Button ID="btnResendEmailCode" runat="server" Text="Send a new code" CssClass="btn-ghost" CausesValidation="false" OnClick="btnResendEmailCode_Click" />
+                        <asp:Button ID="btnCancelEmailChange" runat="server" Text="Keep my current email" CssClass="btn-ghost" CausesValidation="false" OnClick="btnCancelEmailChange_Click" />
+                    </div>
+                    <div id="otpVerifying" class="otp-verifying" role="status" aria-live="polite" style="justify-content:flex-start;" hidden>
+                        <span class="otp-spinner" aria-hidden="true"></span>
+                        <span>Verifying your code&hellip;</span>
+                    </div>
+                </div>
+            </asp:Panel>
+
             <!-- PERSONAL + ADDRESS DETAILS -->
             <asp:Panel ID="pnlDetails" runat="server" DefaultButton="btnSaveDetails">
 
@@ -46,6 +80,7 @@
                         <div class="login-field">
                             <label for="<%= txtEmail.ClientID %>">Email address</label>
                             <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" autocomplete="email" />
+                            <span class="field-hint">If you change this, we'll email a code to the new address to confirm it.</span>
                         </div>
                     </div>
                 </div>

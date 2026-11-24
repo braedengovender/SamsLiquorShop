@@ -67,6 +67,10 @@
         .co-portal-amount { margin: 0; font-size: .9rem; color: var(--text-secondary); }
         .co-portal-visual { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 18px 0; padding: 16px 18px; border-radius: 14px; color: #fff; background: linear-gradient(135deg, #0a84ff, #003f87); font-variant-numeric: tabular-nums; letter-spacing: .08em; font-weight: 600; }
         .co-portal-visual small { letter-spacing: .04em; font-weight: 600; opacity: .85; }
+        .co-portal-visual-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .co-portal-name { text-transform: uppercase; font-size: .78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .co-card h3 .field-help { vertical-align: 3px; }
+        .co-check + .co-msg + .co-note, .co-check + .co-note { margin-top: 6px; }
         .co-portal-steps { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 10px; font-size: .9rem; }
         .co-portal-steps li { display: flex; align-items: center; gap: 10px; color: var(--text-secondary); }
         .co-portal-steps li::before { content: ""; flex: 0 0 18px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(128,128,128,.45); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
@@ -110,19 +114,19 @@
                                 <h3>2. Your details</h3>
                                 <div class="co-grid">
                                     <div class="co-field">
-                                        <label for="<%= txtFirstName.ClientID %>">First name</label>
+                                        <label for="<%= txtFirstName.ClientID %>">First name <button type="button" class="field-help" data-rules="Required.|Letters, spaces, hyphens and apostrophes only.|Up to 50 characters."></button></label>
                                         <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" data-rule="name" />
                                     </div>
                                     <div class="co-field">
-                                        <label for="<%= txtLastName.ClientID %>">Last name</label>
+                                        <label for="<%= txtLastName.ClientID %>">Last name <button type="button" class="field-help" data-rules="Required.|Letters, spaces, hyphens and apostrophes only.|Up to 50 characters."></button></label>
                                         <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" data-rule="name" />
                                     </div>
                                     <div class="co-field">
-                                        <label for="<%= txtEmail.ClientID %>">Email address</label>
+                                        <label for="<%= txtEmail.ClientID %>">Email address <button type="button" class="field-help" data-rules="Required.|A valid address, e.g. name@example.com. Up to 100 characters.|We send your receipt and order updates here."></button></label>
                                         <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" TextMode="Email" autocomplete="email" data-rule="email" />
                                     </div>
                                     <div class="co-field">
-                                        <label for="<%= txtPhone.ClientID %>">Phone number</label>
+                                        <label for="<%= txtPhone.ClientID %>">Phone number <button type="button" class="field-help" data-rules="Required.|9 to 15 digits, e.g. 0821234567. You can start with +27.|Spaces, dashes and brackets are ignored.|We only call if there is a problem with your order."></button></label>
                                         <asp:TextBox ID="txtPhone" runat="server" CssClass="login-input" MaxLength="20" data-phone="1" autocomplete="tel" data-rule="phone" />
                                     </div>
                                 </div>
@@ -133,45 +137,45 @@
 
                                 <asp:Panel ID="pnlAddress" runat="server">
                                     <div class="co-field" style="margin-bottom: 16px;">
-                                        <label for="txtAddressSearch">Search your address</label>
+                                        <label for="txtAddressSearch">Search your address <button type="button" class="field-help" data-rules="Optional shortcut.|Type at least 5 characters, then pick your address from the list.|Only Durban-area addresses are shown.|The fields below fill in for you. Check them and correct anything that's wrong."></button></label>
                                         <input type="text" id="txtAddressSearch" class="login-input" placeholder="Start typing your address..." autocomplete="off" />
                                         <span class="co-note" style="display:block;">We deliver in the Durban area only. Pick a result to fill in the fields below.</span>
                                     </div>
                                     <div class="co-grid">
                                         <div class="co-field">
-                                            <label for="<%= txtUnitNumber.ClientID %>">Unit number (optional)</label>
+                                            <label for="<%= txtUnitNumber.ClientID %>">Unit number (optional) <button type="button" class="field-help" data-rules="Optional. Only needed for flats, townhouses or complexes.|Up to 10 characters."></button></label>
                                             <asp:TextBox ID="txtUnitNumber" runat="server" CssClass="login-input" MaxLength="10" />
                                         </div>
                                         <div class="co-field">
-                                            <label for="<%= txtUnitName.ClientID %>">Complex / building (optional)</label>
+                                            <label for="<%= txtUnitName.ClientID %>">Complex / building (optional) <button type="button" class="field-help" data-rules="Optional. The name of your building or complex.|Up to 50 characters."></button></label>
                                             <asp:TextBox ID="txtUnitName" runat="server" CssClass="login-input" MaxLength="50" />
                                         </div>
                                         <div class="co-field">
-                                            <label for="<%= txtStreetNumber.ClientID %>">Street number</label>
+                                            <label for="<%= txtStreetNumber.ClientID %>">Street number <button type="button" class="field-help" data-rules="Required.|Your house or building number, e.g. 12 or 12A.|Up to 10 letters, numbers, / or -."></button></label>
                                             <asp:TextBox ID="txtStreetNumber" runat="server" CssClass="login-input" MaxLength="10" data-rule="streetno" />
                                         </div>
                                         <div class="co-field">
-                                            <label for="<%= txtStreetName.ClientID %>">Street name</label>
+                                            <label for="<%= txtStreetName.ClientID %>">Street name <button type="button" class="field-help" data-rules="Required.|The full street name, e.g. Florida Road.|Up to 100 characters."></button></label>
                                             <asp:TextBox ID="txtStreetName" runat="server" CssClass="login-input" MaxLength="100" data-rule="text" />
                                         </div>
                                         <div class="co-field">
-                                            <label for="<%= txtSuburb.ClientID %>">Suburb</label>
+                                            <label for="<%= txtSuburb.ClientID %>">Suburb <button type="button" class="field-help" data-rules="Required.|e.g. Morningside or Umhlanga.|Up to 50 characters."></button></label>
                                             <asp:TextBox ID="txtSuburb" runat="server" CssClass="login-input" MaxLength="50" data-rule="text" />
                                         </div>
                                         <div class="co-field">
-                                            <label for="<%= txtPostalCode.ClientID %>">Postal code</label>
+                                            <label for="<%= txtPostalCode.ClientID %>">Postal code <button type="button" class="field-help" data-rules="Required.|Exactly 4 digits, e.g. 4001."></button></label>
                                             <asp:TextBox ID="txtPostalCode" runat="server" CssClass="login-input" MaxLength="4" data-digits="1" inputmode="numeric" data-rule="postal" />
                                         </div>
                                         <div class="co-field">
-                                            <label for="<%= txtCity.ClientID %>">City</label>
+                                            <label for="<%= txtCity.ClientID %>">City <button type="button" class="field-help" data-rules="Filled in for you.|We deliver within the Durban area only."></button></label>
                                             <asp:TextBox ID="txtCity" runat="server" CssClass="login-input" ReadOnly="true" />
                                         </div>
                                         <div class="co-field">
-                                            <label for="<%= txtProvince.ClientID %>">Province</label>
+                                            <label for="<%= txtProvince.ClientID %>">Province <button type="button" class="field-help" data-rules="Filled in for you.|We deliver within the Durban area (KwaZulu-Natal) only."></button></label>
                                             <asp:TextBox ID="txtProvince" runat="server" CssClass="login-input" ReadOnly="true" />
                                         </div>
                                         <div class="co-field co-full">
-                                            <label for="<%= txtInstructions.ClientID %>">Delivery instructions (optional)</label>
+                                            <label for="<%= txtInstructions.ClientID %>">Delivery instructions (optional) <button type="button" class="field-help" data-rules="Optional.|Anything the driver should know, e.g. a gate code or where to park.|Up to 250 characters."></button></label>
                                             <asp:TextBox ID="txtInstructions" runat="server" CssClass="login-input" TextMode="MultiLine" Rows="2" MaxLength="250" />
                                         </div>
                                     </div>
@@ -182,14 +186,14 @@
                                 </asp:Panel>
 
                                 <div class="co-field" style="margin-top: 16px;">
-                                    <label for="<%= ddlSlot.ClientID %>">Time slot</label>
+                                    <label for="<%= ddlSlot.ClientID %>">Time slot <button type="button" class="field-help" data-rules="Required.|Pick a time that suits you from the list.|Slots that are full or too soon are not shown.|If your slot passes before you order, choose another one."></button></label>
                                     <asp:DropDownList ID="ddlSlot" runat="server" CssClass="co-select" data-rule="slot" />
                                     <asp:Literal ID="litSlotHint" runat="server" />
                                 </div>
                             </div>
 
                             <div class="glass co-card">
-                                <h3>4. Promo code and loyalty points</h3>
+                                <h3>4. Promo code and loyalty points <button type="button" class="field-help" data-title="Promo code and loyalty points" data-rules="Optional.|Promo codes are up to 20 letters, numbers, - or _. Press Apply to use one.|Student codes need a student email address.|Tick the loyalty box to use your points as a discount."></button></h3>
                                 <div class="co-promo-row">
                                     <asp:TextBox ID="txtPromo" runat="server" CssClass="login-input" MaxLength="20" placeholder="Promo code" />
                                     <asp:Button ID="btnApplyPromo" runat="server" Text="Apply" CssClass="btn-ghost" OnClick="btnApplyPromo_Click" CausesValidation="false" />
@@ -207,15 +211,19 @@
                                 <h3>5. Payment</h3>
                                 <div class="co-grid">
                                     <div class="co-field co-full">
-                                        <label for="<%= txtCardNumber.ClientID %>">Card number</label>
+                                        <label for="<%= txtCardName.ClientID %>">Name on card <button type="button" class="field-help" data-rules="Required.|Exactly as it is printed on the front of your card.|Letters, spaces, hyphens, apostrophes and full stops only.|2 to 50 characters."></button></label>
+                                        <asp:TextBox ID="txtCardName" runat="server" CssClass="login-input" MaxLength="50" EnableViewState="false" autocomplete="cc-name" autocapitalize="characters" spellcheck="false" data-rule="cardname" />
+                                    </div>
+                                    <div class="co-field co-full">
+                                        <label for="<%= txtCardNumber.ClientID %>">Card number <button type="button" class="field-help" data-rules="Required.|Visa, Mastercard, American Express or Diners Club.|Spaces are added for you as you type.|Only the last 4 digits are kept."></button></label>
                                         <asp:TextBox ID="txtCardNumber" runat="server" CssClass="login-input" MaxLength="23" EnableViewState="false" autocomplete="cc-number" inputmode="numeric" data-rule="card" />
                                     </div>
                                     <div class="co-field">
-                                        <label for="<%= txtCardExpiry.ClientID %>">Expiry (MM/YY)</label>
+                                        <label for="<%= txtCardExpiry.ClientID %>">Expiry (MM/YY) <button type="button" class="field-help" data-rules="Required.|The month and year printed on your card, e.g. 08/28.|The card must not have expired."></button></label>
                                         <asp:TextBox ID="txtCardExpiry" runat="server" CssClass="login-input" MaxLength="5" EnableViewState="false" autocomplete="cc-exp" placeholder="MM/YY" inputmode="numeric" data-rule="expiry" />
                                     </div>
                                     <div class="co-field">
-                                        <label for="<%= txtCardCvv.ClientID %>">Security code</label>
+                                        <label for="<%= txtCardCvv.ClientID %>">Security code <button type="button" class="field-help" data-rules="Required.|The 3 digits on the back of your card.|American Express: the 4 digits on the front.|Never stored."></button></label>
                                         <asp:TextBox ID="txtCardCvv" runat="server" CssClass="login-input" MaxLength="4" EnableViewState="false" TextMode="Password" autocomplete="cc-csc" data-digits="1" inputmode="numeric" data-rule="cvv" />
                                     </div>
                                 </div>
@@ -223,6 +231,7 @@
 
                             <div class="glass co-card">
                                 <asp:CheckBox ID="chkAge" runat="server" CssClass="co-check" Text="I confirm that I am 18 years or older and will show valid ID when my order is delivered or collected." />
+                                <p class="co-note" style="margin-left: 36px;">Age confirmation <button type="button" class="field-help" data-title="Age confirmation" data-rules="Required. Tick the box to place your order.|You must be 18 or older to buy alcohol in South Africa.|Our driver or store staff will check your ID before handing over your order."></button></p>
                             </div>
                         </div>
 
@@ -259,7 +268,10 @@
                 </div>
                 <h3 id="coPortalTitle">Processing your payment</h3>
                 <p class="co-portal-amount">Paying Sam's Liquor Shop <strong id="coPortalAmt"></strong></p>
-                <div class="co-portal-visual"><span id="coPortalCard">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; ----</span><small id="coPortalBrand"></small></div>
+                <div class="co-portal-visual">
+                    <span class="co-portal-visual-main"><span id="coPortalCard">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; ----</span><small id="coPortalName" class="co-portal-name"></small></span>
+                    <small id="coPortalBrand"></small>
+                </div>
                 <ul class="co-portal-steps">
                     <li>Connecting to the secure payment portal</li>
                     <li>Encrypting your card details</li>
@@ -350,6 +362,14 @@
                 },
                 slot: function (v, f) {
                     if (!v) return f ? BAD('Please choose a time slot.') : CLR();
+                    return OK();
+                },
+                cardname: function (v, f) {
+                    v = v.replace(/\s+/g, ' ');
+                    if (!v) return f ? BAD('Please enter the name on the card.') : CLR();
+                    if (v.length > 50) return BAD('At most 50 characters.');
+                    if (!NAME_RE.test(v)) return BAD('Letters, spaces, hyphens, apostrophes and full stops only.');
+                    if (v.length < 2) return f ? BAD('Enter the name as it appears on the card.') : PEND('');
                     return OK();
                 },
                 card: function (v, f) {
@@ -518,6 +538,8 @@
                 $('coPortalAmt').textContent = totalEl ? totalEl.textContent : '';
                 $('coPortalCard').textContent = '\u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 \u2022\u2022\u2022\u2022 ' + d.slice(-4);
                 $('coPortalBrand').textContent = brand(d);
+                var nameEl = document.querySelector('#' + PANEL + ' [data-rule="cardname"]');
+                $('coPortalName').textContent = nameEl ? nameEl.value.trim().replace(/\s+/g, ' ') : '';
                 var items = box.querySelectorAll('.co-portal-steps li');
                 var bar = $('coPortalBar');
                 box.classList.add('is-open');
@@ -632,6 +654,95 @@
                 for (var i = 0; i < lists.length; i++) lists[i].style.display = 'none';
             });
 
+            // ----- "?" field help popovers (same look as Register) -----
+            // One shared popover, driven by event delegation, so it keeps working after
+            // the UpdatePanel re-renders the form.
+            var helpTip = null, helpBtn = null, helpPinned = false;
+
+            function helpName(btn) {
+                var t = btn.getAttribute('data-title');
+                if (t) return t;
+                var holder = btn.closest('label, h3');
+                var n = holder && holder.firstChild ? holder.firstChild.textContent.trim() : '';
+                return n && n.length <= 40 ? n : 'This field';
+            }
+            function prepHelp() {
+                var btns = document.querySelectorAll('.field-help[data-rules]');
+                for (var i = 0; i < btns.length; i++) {
+                    var b = btns[i];
+                    if (b.getAttribute('data-ready')) continue;
+                    b.setAttribute('data-ready', '1');
+                    b.textContent = '?';
+                    b.setAttribute('aria-label', 'Rules for ' + helpName(b));
+                    b.setAttribute('aria-describedby', 'coHelpTip');
+                    b.setAttribute('aria-expanded', 'false');
+                }
+            }
+            function placeHelp() {
+                if (!helpTip || !helpBtn) return;
+                var r = helpBtn.getBoundingClientRect();
+                helpTip.style.left = '0px'; helpTip.style.top = '0px';
+                var w = helpTip.offsetWidth, h = helpTip.offsetHeight;
+                var left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+                var top = r.bottom + 8;
+                if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 8);
+                helpTip.style.left = left + 'px';
+                helpTip.style.top = top + 'px';
+            }
+            function openHelp(btn) {
+                if (helpBtn && helpBtn !== btn) closeHelp();
+                if (!helpTip) {
+                    helpTip = document.createElement('div');
+                    helpTip.className = 'field-help-tip';
+                    helpTip.id = 'coHelpTip';
+                    helpTip.setAttribute('role', 'tooltip');
+                    document.body.appendChild(helpTip);
+                }
+                helpTip.innerHTML = '';
+                var title = document.createElement('div');
+                title.className = 'field-help-title';
+                title.textContent = helpName(btn);
+                helpTip.appendChild(title);
+                var list = document.createElement('ul');
+                btn.getAttribute('data-rules').split('|').forEach(function (rule) {
+                    var li = document.createElement('li');
+                    li.textContent = rule;
+                    list.appendChild(li);
+                });
+                helpTip.appendChild(list);
+                helpBtn = btn;
+                helpTip.classList.add('open');
+                placeHelp();
+            }
+            function closeHelp() {
+                if (helpTip) helpTip.classList.remove('open');
+                if (helpBtn) helpBtn.setAttribute('aria-expanded', 'false');
+                helpBtn = null;
+                helpPinned = false;
+            }
+            function helpTarget(e) {
+                return e.target && e.target.closest ? e.target.closest('.field-help[data-rules]') : null;
+            }
+            document.addEventListener('mouseover', function (e) { var b = helpTarget(e); if (b && !helpPinned) openHelp(b); });
+            document.addEventListener('mouseout', function (e) {
+                var b = helpTarget(e);
+                if (b && b === helpBtn && !helpPinned && !(e.relatedTarget && b.contains(e.relatedTarget))) closeHelp();
+            });
+            document.addEventListener('focusin', function (e) { var b = helpTarget(e); if (b) openHelp(b); });
+            document.addEventListener('focusout', function (e) { if (helpTarget(e)) closeHelp(); });
+            document.addEventListener('click', function (e) {
+                var b = helpTarget(e);
+                if (!b) { if (helpBtn) closeHelp(); return; }
+                e.preventDefault();   // don't tick the checkbox / focus the field the label belongs to
+                if (helpPinned && helpBtn === b) { closeHelp(); return; }
+                openHelp(b);
+                helpPinned = true;
+                b.setAttribute('aria-expanded', 'true');
+            });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && helpBtn) closeHelp(); });
+            window.addEventListener('scroll', function () { if (helpBtn) closeHelp(); }, { passive: true });
+            window.addEventListener('resize', placeHelp);
+
             function hook() {
                 if (window.__coHooked) return;
                 if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
@@ -639,8 +750,10 @@
                     window.__coHooked = true;
                 }
             }
-            if (window.Sys && Sys.Application) Sys.Application.add_load(function () { hook(); revalidate(); });
-            else document.addEventListener('DOMContentLoaded', function () { hook(); revalidate(); });
+            // Runs on first load and after every UpdatePanel refresh (the old help buttons are replaced)
+            function onLoad() { closeHelp(); prepHelp(); hook(); revalidate(); }
+            if (window.Sys && Sys.Application) Sys.Application.add_load(onLoad);
+            else document.addEventListener('DOMContentLoaded', onLoad);
         })();
     </script>
 </asp:Content>

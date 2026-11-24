@@ -7,12 +7,12 @@
             <asp:Panel ID="pnlEmail" runat="server">
                 <p class="login-eyebrow">Sam's Liquor Shop</p>
                 <h1 class="login-heading">Reset your password</h1>
-                <p class="login-subtext">Enter your account email and we'll send you a 6-digit code.</p>
+                <p class="login-subtext">Enter your email address or username and we'll email you a 6-digit code.</p>
 
                 <div class="login-field">
-                    <label for="<%= txtEmail.ClientID %>">Email address</label>
-                    <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" TextMode="Email" MaxLength="100" autocomplete="email" />
-                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Email is required." ValidationGroup="EmailForm" />
+                    <label for="<%= txtEmail.ClientID %>">Email or username</label>
+                    <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" autocomplete="username" autocapitalize="none" spellcheck="false" />
+                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Enter your email address or username." ValidationGroup="EmailForm" />
                 </div>
                 <asp:Label ID="lblEmailError" runat="server" CssClass="field-error login-server-error" Visible="false"></asp:Label>
                 <%-- reCAPTCHA "I'm not a robot" box (drawn by the script in Site.Master; checked in Helpers/RecaptchaHelper.cs) --%>
@@ -24,7 +24,7 @@
             <asp:Panel ID="pnlCode" runat="server" Visible="false">
                 <p class="login-eyebrow">Sam's Liquor Shop</p>
                 <h1 class="login-heading">Check your email</h1>
-                <p class="login-subtext">If that email is registered, we've sent a 6-digit code. It expires in 10 minutes.</p>
+                <p class="login-subtext">If we found your account, we've sent a 6-digit code to the email address on it. It expires in 10 minutes.</p>
 
                 <span id="spanDemo" runat="server" class="field-error" visible="false"></span>
 
@@ -33,7 +33,12 @@
                     <asp:TextBox ID="txtCode" runat="server" CssClass="login-input" MaxLength="6" autocomplete="one-time-code" />
                 </div>
                 <asp:Label ID="lblCodeError" runat="server" CssClass="field-error login-server-error" Visible="false"></asp:Label>
-                <asp:Button ID="btnVerify" runat="server" Text="Verify code" CssClass="btn-primary login-submit" OnClick="btnVerify_Click" />
+                <asp:Button ID="btnVerify" runat="server" Text="Verify code" CssClass="btn-primary login-submit" OnClick="btnVerify_Click"
+                    OnClientClick="if (this.getAttribute('aria-busy')) { return false; } this.setAttribute('aria-busy', 'true'); this.value = 'Verifying...'; this.classList.add('is-busy'); document.getElementById('otpVerifying').hidden = false; return true;" />
+                <div id="otpVerifying" class="otp-verifying" role="status" aria-live="polite" hidden>
+                    <span class="otp-spinner" aria-hidden="true"></span>
+                    <span>Verifying your code&hellip;</span>
+                </div>
                 <p class="login-register-text"><a href="ForgotPassword.aspx">Start again</a></p>
             </asp:Panel>
 
@@ -43,7 +48,10 @@
                 <p class="login-subtext">Code verified. Set your new password below.</p>
 
                 <div class="login-field login-password-wrap">
-                    <label for="<%= txtNewPassword.ClientID %>">New password</label>
+                    <div class="password-label-row">
+                        <label for="<%= txtNewPassword.ClientID %>">New password</label>
+                        <button type="button" class="suggest-password-btn" onclick="suggestPassword()">Suggest password</button>
+                    </div>
                     <div class="password-input-wrap">
                         <asp:TextBox ID="txtNewPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="new-password" oninput="checkPasswordStrength(this.value)" />
                         <button type="button" class="login-eye-btn" onclick="toggleFieldVisibility('<%= txtNewPassword.ClientID %>', this)" aria-label="Show password">
@@ -52,6 +60,11 @@
                                 <circle cx="12" cy="12" r="2.5"></circle>
                             </svg>
                         </button>
+                    </div>
+
+                    <div id="suggestedPasswordNote" class="suggested-password-note" hidden>
+                        <span>Suggested password filled in both fields. Save it somewhere safe.</span>
+                        <button type="button" class="suggest-password-copy" onclick="copySuggestedPassword(this)">Copy</button>
                     </div>
 
                     <div class="password-strength">
@@ -147,5 +160,75 @@
             fill.classList.add(cls[level]);
             text.classList.add(cls[level]);
         }
+
+        // ---------- Suggest password (same generator as Register.aspx) ----------
+        // No < > & characters: ASP.NET request validation rejects some combinations of them.
+        var PW_SETS = {
+            lower: 'abcdefghijkmnopqrstuvwxyz',
+            upper: 'ABCDEFGHJKLMNPQRSTUVWXYZ',
+            digit: '23456789',
+            special: '!@#$%*?-_=+'
+        };
+
+        function randomIndex(max) {
+            var buf = new Uint32Array(1);
+            var limit = Math.floor(0x100000000 / max) * max;
+            do { window.crypto.getRandomValues(buf); } while (buf[0] >= limit);
+            return buf[0] % max;
+        }
+
+        function pick(chars) { return chars.charAt(randomIndex(chars.length)); }
+
+        function generatePassword(length) {
+            var all = PW_SETS.lower + PW_SETS.upper + PW_SETS.digit + PW_SETS.special;
+            // One of each required type, the rest from everything, then shuffled.
+            var chars = [pick(PW_SETS.lower), pick(PW_SETS.upper), pick(PW_SETS.digit), pick(PW_SETS.special)];
+            while (chars.length < length) chars.push(pick(all));
+            for (var i = chars.length - 1; i > 0; i--) {
+                var j = randomIndex(i + 1);
+                var t = chars[i]; chars[i] = chars[j]; chars[j] = t;
+            }
+            return chars.join('');
+        }
+
+        function suggestPassword() {
+            var pw = document.getElementById('<%= txtNewPassword.ClientID %>');
+            var confirm = document.getElementById('<%= txtConfirmPassword.ClientID %>');
+            var value = generatePassword(16);
+
+            [pw, confirm].forEach(function (el) {
+                el.value = value;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true })); // re-runs the ASP.NET validators
+            });
+
+            // Show the password so the customer can see (and note) what was chosen.
+            if (pw.type === 'password') {
+                toggleFieldVisibility(pw.id, pw.parentNode.querySelector('.login-eye-btn'));
+            }
+            document.getElementById('suggestedPasswordNote').hidden = false;
+        }
+
+        function copySuggestedPassword(btn) {
+            var value = document.getElementById('<%= txtNewPassword.ClientID %>').value;
+            function done(ok) {
+                btn.textContent = ok ? 'Copied' : 'Copy failed';
+                setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(value).then(function () { done(true); }, function () { done(false); });
+            } else {
+                done(false);
+            }
+        }
+
+        // Hide the "suggested" note once the customer types their own password
+        window.addEventListener('load', function () {
+            var pw = document.getElementById('<%= txtNewPassword.ClientID %>');
+            if (!pw) return;   // only on the "choose a new password" step
+            pw.addEventListener('input', function (e) {
+                if (e.isTrusted) document.getElementById('suggestedPasswordNote').hidden = true;
+            });
+        });
     </script>
 </asp:Content>

@@ -206,6 +206,8 @@
     <Content Include="Images\blog\post4.jpg" />
     <Content Include="Images\blog\post5.jpg" />
     <Content Include="Images\cartIcon.png" />
+    <Content Include="Images\app-icon-192.png" />
+    <Content Include="Images\app-icon-512.png" />
     <Content Include="Images\categories\accessories.jpg" />
     <Content Include="Images\categories\beer.jpg" />
     <Content Include="Images\categories\nonalcoholic.png" />
@@ -278,6 +280,8 @@
     <Content Include="Manager\Products.aspx" />
     <Content Include="Manager\Sales.aspx" />
     <Content Include="Employee\Orders.aspx" />
+    <Content Include="Controls\BlackFridayBanner.ascx" />
+    <Content Include="Controls\RecentlyViewed.ascx" />
     <Content Include="Controls\SalesBrowser.ascx" />
     <Content Include="Manager\Dashboard.aspx" />
     <Content Include="Manager\ManagerNav.ascx" />
@@ -355,6 +359,8 @@
     <Content Include="Specials.aspx" />
     <Content Include="Shipping.aspx" />
     <Content Include="Site.Master" />
+    <Content Include="manifest.json" />
+    <Content Include="sw.js" />
     <Content Include="Sustainability.aspx" />
     <Content Include="VerifyOtp.aspx" />
     <Content Include="ViewSwitcher.ascx" />
@@ -593,6 +599,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\RecentlyViewedHelper.cs" />
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\ExportHelper.cs" />
     <Compile Include="Helpers\CartHelper.cs" />
@@ -637,6 +644,10 @@
     </Compile>
     <Compile Include="Manager\Employees.aspx.cs">
       <DependentUpon>Employees.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Manager\Dashboard.Sample12m.cs">
+      <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Manager\Dashboard.aspx.cs">
@@ -704,6 +715,20 @@
     </Compile>
     <Compile Include="Employee\Orders.aspx.designer.cs">
       <DependentUpon>Orders.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\BlackFridayBanner.ascx.cs">
+      <DependentUpon>BlackFridayBanner.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\BlackFridayBanner.ascx.designer.cs">
+      <DependentUpon>BlackFridayBanner.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RecentlyViewed.ascx.cs">
+      <DependentUpon>RecentlyViewed.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\RecentlyViewed.ascx.designer.cs">
+      <DependentUpon>RecentlyViewed.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\SalesBrowser.ascx.cs">
       <DependentUpon>SalesBrowser.ascx</DependentUpon>

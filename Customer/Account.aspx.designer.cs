@@ -23,6 +23,30 @@ namespace SamsLiquorShop.Customer
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litMessage;
 
+        /// <summary>pnlEmailVerify control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlEmailVerify;
+
+        /// <summary>lblPendingEmail control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblPendingEmail;
+
+        /// <summary>lblEmailDemo control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblEmailDemo;
+
+        /// <summary>txtEmailCode control.</summary>
+        protected global::System.Web.UI.WebControls.TextBox txtEmailCode;
+
+        /// <summary>lblEmailCodeError control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblEmailCodeError;
+
+        /// <summary>btnVerifyEmail control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnVerifyEmail;
+
+        /// <summary>btnResendEmailCode control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnResendEmailCode;
+
+        /// <summary>btnCancelEmailChange control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnCancelEmailChange;
+
         /// <summary>
         /// pnlDetails control.
         /// </summary>

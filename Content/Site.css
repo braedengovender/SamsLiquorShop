@@ -2917,6 +2917,21 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     padding: 32px;
 }
 
+    /* "Send Message" is a real <button>: drop the browser's default grey border / focus ring */
+    .contact-form-card button.btn-primary {
+        border: none;
+        outline: none;
+        box-shadow: none;
+        cursor: pointer;
+        font-family: inherit;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+        .contact-form-card button.btn-primary:focus-visible {
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.35);
+        }
+
     .contact-form-card h3,
     .contact-info-card h3 {
         margin: 0 0 6px;
@@ -9294,3 +9309,36 @@ textarea.login-input {
                 .dash-table.disc-table td:last-child .emp-action:last-child {
                     margin-bottom: 0;
                 }
+
+/* ===== OTP "Verifying your code..." spinner (VerifyOtp, Register, ForgotPassword) ===== */
+.otp-verifying {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.otp-spinner {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 3px solid rgba(10, 132, 255, 0.2);
+    border-top-color: var(--accent);
+    animation: otp-spin 0.8s linear infinite;
+}
+
+@keyframes otp-spin { to { transform: rotate(360deg); } }
+
+.login-submit.is-busy {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .otp-spinner { animation-duration: 2s; }
+}

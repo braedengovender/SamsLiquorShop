@@ -29,7 +29,11 @@
             <asp:Label ID="lblInfo" runat="server" CssClass="login-subtext" Visible="false"></asp:Label>
             <asp:Label ID="lblError" runat="server" CssClass="field-error login-server-error" Visible="false"></asp:Label>
 
-            <asp:Button ID="btnVerify" runat="server" Text="Verify" CssClass="btn-primary login-submit" OnClick="btnVerify_Click" OnClientClick="if (window.__otpBusy) { return false; } if (!otpReady()) { return false; } window.__otpBusy = true; return true;" />
+            <asp:Button ID="btnVerify" runat="server" Text="Verify" CssClass="btn-primary login-submit" OnClick="btnVerify_Click" OnClientClick="if (window.__otpBusy) { return false; } if (!otpReady()) { return false; } window.__otpBusy = true; otpShowVerifying(this); return true;" />
+            <div id="otpVerifying" class="otp-verifying" role="status" aria-live="polite" hidden>
+                <span class="otp-spinner" aria-hidden="true"></span>
+                <span>Verifying your code&hellip;</span>
+            </div>
             <asp:Button ID="btnResend" runat="server" Text="Resend code" CssClass="btn-ghost login-submit otp-resend" OnClick="btnResend_Click" CausesValidation="false" />
 
             <p class="login-register-text"><a href="Login.aspx">Back to login</a></p>
@@ -153,6 +157,28 @@
                 if (firstEmpty) firstEmpty.focus();
                 return false;
             };
+
+            // Shown while the server checks the code. The button is not disabled, because a disabled
+            // submit button isn't posted and btnVerify_Click would never run; __otpBusy stops double clicks.
+            window.otpShowVerifying = function (btn) {
+                btn.value = 'Verifying...';
+                btn.classList.add('is-busy');
+                btn.setAttribute('aria-busy', 'true');
+                document.getElementById('otpVerifying').hidden = false;
+                boxes.forEach(function (b) { b.readOnly = true; });
+            };
+
+            // Back/forward cache can restore the page mid-"verifying": reset it
+            window.addEventListener('pageshow', function (e) {
+                if (!e.persisted) return;
+                window.__otpBusy = false;
+                var btn = document.getElementById('<%= btnVerify.ClientID %>');
+                btn.value = 'Verify';
+                btn.classList.remove('is-busy');
+                btn.removeAttribute('aria-busy');
+                document.getElementById('otpVerifying').hidden = true;
+                boxes.forEach(function (b) { b.readOnly = false; });
+            });
 
             // Fresh start on every page load (including after a wrong code or a resend)
             hidden.value = '';

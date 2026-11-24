@@ -274,5 +274,23 @@ namespace SamsLiquorShop
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton btnDetailWish;
+        /// <summary>
+        /// bfBanner control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::SamsLiquorShop.Controls.BlackFridayBanner bfBanner;
+        /// <summary>
+        /// ucRecent control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::SamsLiquorShop.Controls.RecentlyViewed ucRecent;
+
+
     }
 }

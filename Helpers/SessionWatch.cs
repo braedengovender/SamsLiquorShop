@@ -28,6 +28,13 @@ namespace SamsLiquorShop.Helpers
             notified.TryRemove(sessionId, out b);
         }
 
+        // The customer changed their email address: send later notices to the new one.
+        public static void UpdateEmail(string sessionId, string email)
+        {
+            Person p;
+            if (people.TryGetValue(sessionId, out p)) people[sessionId] = new Person { Email = email, Name = p.Name };
+        }
+
         // Called on manual logout. Returns false if this session wasn't being watched.
         public static bool Unregister(string sessionId, out string email, out string name)
         {
