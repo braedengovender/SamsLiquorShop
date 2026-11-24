@@ -100,11 +100,24 @@ namespace SamsLiquorShop.Customer
                 return digits.Substring(0, 3) + " " + digits.Substring(3, 3) + " " + digits.Substring(6);
             return raw.Trim();
         }
+        // Clicking a recent order opens it on the My Orders page
+        protected void gvRecentOrders_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType != DataControlRowType.DataRow) return;
 
+            DataRowView row = (DataRowView)e.Row.DataItem;
+            string saleId = Convert.ToString(row["Sale_ID"]);
+            string url = ResolveUrl("~/Customer/Orders.aspx") + "?order=" + saleId + "#order-" + saleId;
+
+            e.Row.Style["cursor"] = "pointer";
+            e.Row.ToolTip = "View this order";
+            e.Row.Attributes["onclick"] = "window.location.href='" + url + "';";
+        }
         private void LoadRecentOrders(int customerId)
         {
             string query = @"
                 SELECT TOP 5
+                      s.Sale_ID,
                     'INV-' + RIGHT('000000' + CAST(s.Sale_ID AS VARCHAR(6)), 6) AS InvoiceNumber,
                     s.Sale_DateTime,
                     (SELECT ISNULL(SUM(SaleLine_Quantity), 0) FROM SaleLine WHERE Sale_ID = s.Sale_ID) AS ItemCount,

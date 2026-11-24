@@ -39,7 +39,11 @@ namespace SamsLiquorShop.Customer
             litMessage.Text = "";
             LoadOrders();
         }
-
+        // The order opened from the dashboard (Orders.aspx?order=123) starts expanded
+        protected string OpenAttr(object saleId)
+        {
+            return Request.QueryString["order"] == Convert.ToString(saleId) ? "open" : "";
+        }
         // ---------- LOAD ----------
         private void LoadOrders()
         {
@@ -183,7 +187,7 @@ namespace SamsLiquorShop.Customer
             return (isLive is bool && (bool)isLive) ? "mgr-table-card ord-card is-live" : "mgr-table-card ord-card";
         }
 
-        protected string OpenAttr(object isLive)
+        protected string OpenAttribute(object isLive)
         {
             return (isLive is bool && (bool)isLive) ? "open" : "";
         }

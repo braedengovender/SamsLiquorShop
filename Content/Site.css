@@ -9134,3 +9134,6 @@ textarea.login-input {
         grid-template-columns: 1fr;
     }
 }
+.ord-card {
+    scroll-margin-top: 110px;
+}

@@ -25,7 +25,7 @@
 
             <asp:Repeater ID="rptOrders" runat="server" OnItemDataBound="rptOrders_ItemDataBound" OnItemCommand="rptOrders_ItemCommand">
                 <ItemTemplate>
-                    <details class='<%# CardClass(Eval("IsLive")) %>' <%# OpenAttr(Eval("IsLive")) %>>
+                            <details id="order-<%# Eval("Sale_ID") %>" class="mgr-table-card ord-card" <%# OpenAttribute(Eval("Sale_ID")) %>>
                         <summary class="ord-summary-row">
                             <span class="ord-inv"><%# Eval("InvoiceNumber") %><%# StatusPill(Eval("OrderStatus")) %></span>
                             <span class="ord-date"><%# Eval("Sale_DateTime", "{0:d MMM yyyy, HH:mm}") %></span>

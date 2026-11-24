@@ -12,12 +12,19 @@ namespace SamsLiquorShop
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Matches the login-state pattern used in Site.Master.cs
+            // Not logged in: leave the "Sign in to see your balance" box showing
             if (Session["UserRole"] == null) return;
+
+            // Managers and cashiers don't have points, so they see neither box
+            if (!Convert.ToString(Session["UserRole"]).Trim().Equals("Customer", StringComparison.OrdinalIgnoreCase))
+            {
+                phSignedOut.Visible = false;
+                phSignedIn.Visible = false;
+                return;
+            }
 
             phSignedOut.Visible = false;
             phSignedIn.Visible = true;
-
             try
             {
                 ShowBalance();

@@ -77,9 +77,13 @@
                     <a href="~/Customer/Orders.aspx" runat="server" class="emp-action">View all orders &rarr;</a>
                 </div>
                 <asp:GridView ID="gvRecentOrders" runat="server" AutoGenerateColumns="false" CssClass="dash-table" GridLines="None"
-                    EmptyDataText="You haven't placed any orders yet." EmptyDataRowStyle-CssClass="dash-table-empty">
+                    EmptyDataText="You haven't placed any orders yet." EmptyDataRowStyle-CssClass="dash-table-empty" OnRowDataBound="gvRecentOrders_RowDataBound">
                     <Columns>
-                        <asp:BoundField DataField="InvoiceNumber" HeaderText="Invoice #" ItemStyle-CssClass="is-muted" />
+                            <asp:TemplateField HeaderText="Invoice #">
+                            <ItemTemplate>
+                                <a class="emp-action" href='<%# ResolveUrl("~/Customer/Orders.aspx") + "?order=" + Eval("Sale_ID") + "#order-" + Eval("Sale_ID") %>'><%# Eval("InvoiceNumber") %></a>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="Sale_DateTime" HeaderText="Date" DataFormatString="{0:d MMM yyyy}" />
                         <asp:BoundField DataField="ItemCount" HeaderText="Items" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
                         <asp:BoundField DataField="Sale_TotalAmount" HeaderText="Total" DataFormatString="{0:C}" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num" />
