@@ -458,7 +458,18 @@ namespace SamsLiquorShop
         {
             pnlDetail.Visible = false;
         }
+        // Managers and cashiers can look at specials but not buy or wishlist them
+        protected bool IsStaff { get { return CartHelper.IsStaff(Session); } }
 
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+            if (IsStaff)
+            {
+                btnDetailAdd.Visible = false;
+                btnDetailWish.Visible = false;
+            }
+        }
         protected void btnDetailAdd_Click(object sender, EventArgs e)
         {
             int id = DetailProductId;

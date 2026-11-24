@@ -20,6 +20,13 @@ namespace SamsLiquorShop
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Managers and cashiers have no cart: send them back to the shop
+            if (CartHelper.IsStaff(Session))
+            {
+                Response.Redirect("~/Shop.aspx");
+                return;
+            }
+
             litCartMessage.Text = "";
 
             if (!IsPostBack)

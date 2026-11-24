@@ -476,7 +476,18 @@ namespace SamsLiquorShop
         // ------------------------------------------------------------------ cart / wishlist
 
         private string _addMessage;   // why the last TryAddToCart failed
+                                      // Managers and cashiers can look at products but not buy or wishlist them
+        protected bool IsStaff { get { return CartHelper.IsStaff(Session); } }
 
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+            if (IsStaff)
+            {
+                btnDetailAdd.Visible = false;
+                btnDetailWish.Visible = false;
+            }
+        }
         private bool TryAddToCart(int productId, out string productName)
         {
             productName = null;

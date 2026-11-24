@@ -115,7 +115,7 @@
                                         <img src='<%# "/ProductImage.ashx?id=" + Eval("Product_ID") %>' alt='<%# Eval("Product_Name") %>' class="shop-card-image" />
                                     </asp:LinkButton>
                                     <span runat="server" class="shop-sale-badge" visible='<%# (bool)Eval("IsOnSale") %>'>-<%# Eval("DiscountPercent") %>%</span>
-                                    <asp:LinkButton runat="server" CommandName="ToggleWishlist" CommandArgument='<%# Eval("Product_ID") %>' CssClass='<%# "shop-heart-btn" + (IsWishlisted((int)Eval("Product_ID")) ? " is-active" : "") %>' ToolTip="Wishlist"><%# IsWishlisted((int)Eval("Product_ID")) ? "&#9829;" : "&#9825;" %></asp:LinkButton>
+                                    <asp:LinkButton runat="server" Visible='<%# !IsStaff %>' CommandName="ToggleWishlist" CommandArgument='<%# Eval("Product_ID") %>' CssClass='<%# "shop-heart-btn" + (IsWishlisted((int)Eval("Product_ID")) ? " is-active" : "") %>' ToolTip="Wishlist"><%# IsWishlisted((int)Eval("Product_ID")) ? "&#9829;" : "&#9825;" %></asp:LinkButton>
                                 </div>
                                 <div class="shop-card-body">
                                     <p class="shop-card-brand"><%# Eval("Product_Brand") %></p>
@@ -128,7 +128,7 @@
                                         <span runat="server" class="shop-card-strike" visible='<%# (bool)Eval("IsOnSale") %>'><%# Money(Eval("Product_SellingPrice")) %></span>
                                         <span class='<%# (bool)Eval("IsOnSale") ? "shop-card-price is-sale" : "shop-card-price" %>'><%# Money(Eval("DiscountedPrice")) %></span>
                                     </div>
-                                    <asp:LinkButton runat="server" CommandName="AddToCart" CommandArgument='<%# Eval("Product_ID") %>' CssClass="btn-primary shop-add-cart-btn" Enabled='<%# Convert.ToInt32(Eval("Product_QuantityInStock")) > 0 %>'>
+                                    <asp:LinkButton runat="server" Visible='<%# !IsStaff %>' CommandName="AddToCart" CommandArgument='<%# Eval("Product_ID") %>' CssClass="btn-primary shop-add-cart-btn" Enabled='<%# Convert.ToInt32(Eval("Product_QuantityInStock")) > 0 %>'>
                                         <%# Convert.ToInt32(Eval("Product_QuantityInStock")) > 0 ? "Add to Cart" : "Out of Stock" %>
                                     </asp:LinkButton>
                                 </div>

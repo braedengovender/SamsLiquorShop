@@ -1,5 +1,6 @@
 ﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="SamsLiquorShop.SiteMaster" %>
 
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -439,6 +440,7 @@
                   <button type="button" class="icon-btn" onclick="toggleSearch()" aria-label="Search">
                       <img src="/Images/icons/search.png" alt="" class="nav-icon" width="20" height="20" />
                   </button>
+                                   <asp:PlaceHolder runat="server" ID="phShopIcons">
                   <a href="Shop.aspx?wishlist=1" class="icon-btn cart-icon-wrap" aria-label="Wishlist">
                       <asp:UpdatePanel ID="upnlWishBadge" runat="server" UpdateMode="Always" RenderMode="Inline">
                           <ContentTemplate>
@@ -456,6 +458,7 @@
                           </ContentTemplate>
                       </asp:UpdatePanel>
                   </a>
+                  </asp:PlaceHolder>
 
                   <asp:PlaceHolder runat="server" ID="phLoggedOut">
                       <a runat="server" href="~/Login.aspx" class="btn-ghost">Log in</a>

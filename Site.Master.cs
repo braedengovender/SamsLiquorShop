@@ -80,6 +80,9 @@ namespace SamsLiquorShop
                 phLoggedIn.Visible = true;
 
                 lnkProfile.HRef = GetDashboardUrl(Session["UserRole"].ToString());
+
+                // Managers and cashiers get no cart or wishlist icons
+                phShopIcons.Visible = !CartHelper.IsStaff(Session);
             }
 
             if (!IsPostBack)

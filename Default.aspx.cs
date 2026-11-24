@@ -273,7 +273,16 @@ namespace SamsLiquorShop
 
             pnlDetail.Visible = true;
         }
-
+        // Managers and cashiers can look at products but not buy or wishlist them
+        protected override void OnPreRender(EventArgs e)
+        {
+            base.OnPreRender(e);
+            if (CartHelper.IsStaff(Session))
+            {
+                btnDetailAdd.Visible = false;
+                btnDetailWish.Visible = false;
+            }
+        }
         private bool TryAddToCart(int productId)
         {
             var d = ProductDetailHelper.Get(ConnStr, productId);

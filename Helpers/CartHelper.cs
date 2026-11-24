@@ -30,8 +30,17 @@ namespace SamsLiquorShop.Helpers
             return (List<CartItem>)session[CartSessionKey];
         }
 
+        // Managers and cashiers don't shop on the website, so they never get a cart or a wishlist
+        public static bool IsStaff(System.Web.SessionState.HttpSessionState session)
+        {
+            string role = session["UserRole"] as string;
+            return role == "Manager" || role == "Cashier";
+        }
+
         public static void AddToCart(System.Web.SessionState.HttpSessionState session, int productId, string name, decimal price, int quantity = 1, int maxQuantity = MaxPerLine)
         {
+            if (IsStaff(session)) return;
+
             var cart = GetCart(session);
             var existing = cart.FirstOrDefault(c => c.ProductId == productId);
 
@@ -56,6 +65,8 @@ namespace SamsLiquorShop.Helpers
 
         public static void ToggleWishlist(System.Web.SessionState.HttpSessionState session, int productId)
         {
+            if (IsStaff(session)) return;
+
             var wishlist = GetWishlist(session);
             if (wishlist.Contains(productId))
                 wishlist.Remove(productId);

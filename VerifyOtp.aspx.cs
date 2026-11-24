@@ -135,6 +135,13 @@ namespace SamsLiquorShop
 
             if (role == "Customer") Helpers.WishlistHelper.MergeAtLogin(Session);
 
+            // A manager or cashier who browsed as a guest first must not keep that basket
+            if (role == "Manager" || role == "Cashier")
+            {
+                Helpers.CartHelper.ClearCart(Session);
+                Helpers.CartHelper.GetWishlist(Session).Clear();
+            }
+
             // Customers, cashiers and managers all get login/logout notifications
             if (!string.IsNullOrEmpty(email))
             {
