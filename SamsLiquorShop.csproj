@@ -324,6 +324,7 @@
     <None Include="Properties\PublishProfiles\IST-WST-Group-15 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\chart.umd.min.js" />
+    <Content Include="Scripts\form-tools.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -605,6 +606,7 @@
     <Compile Include="Helpers\CartHelper.cs" />
     <Compile Include="Helpers\OnlineReceiptHelper.cs" />
     <Compile Include="Helpers\OrderEmailHelper.cs" />
+    <Compile Include="Helpers\NotificationEmailHelper.cs" />
     <Compile Include="Helpers\OrderHelper.cs" />
     <Compile Include="Helpers\OtpHelper.cs" />
     <Compile Include="Helpers\PaymentGateway.cs" />

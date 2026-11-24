@@ -1461,6 +1461,12 @@ body {
     background: #fff;
 }
 
+.login-input.is-locked {
+    background: #f1f2f5;
+    color: #8a8f99;
+    cursor: not-allowed;
+}
+
 .login-input.invalid {
     border-color: #d70015;
 }
@@ -1656,6 +1662,11 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     background: #10131c;
     color: var(--text-primary);
     border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .login-input.is-locked {
+    background: #1a1e29;
+    color: rgba(255, 255, 255, 0.45);
 }
 
 [data-theme="dark"] .login-google-btn {
@@ -9341,4 +9352,135 @@ textarea.login-input {
 
 @media (prefers-reduced-motion: reduce) {
     .otp-spinner { animation-duration: 2s; }
+}
+/* ---------- Dashboard notices (new-customer welcome, new online orders for managers) ---------- */
+.dash-notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+    background: var(--bg-tint-blue);
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+    .dash-notice.is-welcome {
+        border-color: rgba(10, 132, 255, 0.35);
+    }
+
+    .dash-notice.is-orders {
+        background: var(--bg-tint-amber);
+        border-color: rgba(201, 162, 75, 0.45);
+        border-left: 4px solid var(--accent-amber);
+    }
+
+    .dash-notice a:not(.btn-primary) {
+        color: var(--accent);
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+.dash-notice-body {
+    flex: 1 1 320px;
+    min-width: 0;
+}
+
+    .dash-notice-body ul {
+        margin: 8px 0 0;
+        padding-left: 18px;
+    }
+
+    .dash-notice-body li {
+        margin: 2px 0;
+    }
+
+.dash-notice-meta {
+    color: var(--text-secondary);
+    margin-left: 6px;
+}
+
+/* ---------- Customer "Your Offers" (promo codes) ---------- */
+.offer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+}
+
+.offer-card {
+    padding: 16px;
+    border: 1px dashed var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--bg-tint-blue);
+}
+
+.offer-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.offer-value {
+    margin: 10px 0 2px;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.offer-name {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.offer-code-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.offer-code {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+    background: none;
+    padding: 0;
+}
+
+.offer-terms {
+    margin: 8px 0 0;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+/* ---------- Count badge on sidebar links (e.g. new online orders) ---------- */
+.nav-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    margin-left: 6px;
+    border-radius: 999px;
+    background: #d70015;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: middle;
 }

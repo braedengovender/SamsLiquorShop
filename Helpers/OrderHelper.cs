@@ -539,7 +539,10 @@ namespace SamsLiquorShop.Helpers
         {
             try
             {
-                return PlaceOrderCore(req);
+                OrderResult result = PlaceOrderCore(req);
+                // Only after the commit, so managers are never told about an order that was rolled back
+                if (result.Success) NotificationEmailHelper.NotifyManagersNewOrder(result.OnlineOrderId);
+                return result;
             }
             catch (SqlException ex) when (ex.Number == 1205)   // deadlock victim
             {
@@ -1000,6 +1003,68 @@ namespace SamsLiquorShop.Helpers
         {
             string s = (status ?? "").Trim();
             return s == StPlaced || s == StPacking || s == StReady;
+        }
+
+        public class NewOrderSummary
+        {
+            public int OnlineOrderId, SaleId, Items;
+            public string CustomerName, Method;
+            public decimal Total;
+            public DateTime PlacedAt;
+        }
+
+        /// <summary>
+        /// Online orders nobody has started on yet (latest status is still "Placed"), newest first.
+        /// total = how many there are in all. Returns an empty list if the database can't be read.
+        /// </summary>
+        public static List<NewOrderSummary> GetNewOrders(int top, out int total)
+        {
+            total = 0;
+            var list = new List<NewOrderSummary>();
+            try
+            {
+                using (var conn = new SqlConnection(ConnStr))
+                using (var cmd = new SqlCommand(@"
+                    SELECT o.OnlineOrder_ID, o.Sale_ID, o.OnlineOrder_FirstName, o.OnlineOrder_LastName, o.OnlineOrder_Method,
+                           s.Sale_TotalAmount, h.OnlineOrderStatusHistory_DateTime,
+                           (SELECT ISNULL(SUM(SaleLine_Quantity), 0) FROM SaleLine WHERE Sale_ID = o.Sale_ID) AS Items,
+                           COUNT(*) OVER () AS TotalNew
+                    FROM OnlineOrder o
+                    JOIN Sale s ON s.Sale_ID = o.Sale_ID
+                    JOIN OnlineOrderStatusHistory h ON h.OnlineOrder_ID = o.OnlineOrder_ID
+                    WHERE h.OnlineOrderStatusHistory_ID = (SELECT MAX(h2.OnlineOrderStatusHistory_ID)
+                                                           FROM OnlineOrderStatusHistory h2 WHERE h2.OnlineOrder_ID = o.OnlineOrder_ID)
+                      AND h.OnlineOrderStatusHistory_Status = @Placed
+                    ORDER BY h.OnlineOrderStatusHistory_DateTime DESC
+                    OFFSET 0 ROWS FETCH NEXT @Top ROWS ONLY", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Placed", StPlaced);
+                    cmd.Parameters.AddWithValue("@Top", Math.Max(1, top));
+                    conn.Open();
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            total = Convert.ToInt32(r["TotalNew"]);
+                            list.Add(new NewOrderSummary
+                            {
+                                OnlineOrderId = Convert.ToInt32(r[0]),
+                                SaleId = Convert.ToInt32(r[1]),
+                                CustomerName = (Convert.ToString(r[2]).Trim() + " " + Convert.ToString(r[3]).Trim()).Trim(),
+                                Method = Convert.ToString(r[4]).Trim(),
+                                Total = Convert.ToDecimal(r[5]),
+                                PlacedAt = Convert.ToDateTime(r[6]),
+                                Items = Convert.ToInt32(r["Items"])
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("OrderHelper.GetNewOrders: " + ex);
+            }
+            return list;
         }
 
         /// <summary>Current status of an order (own connection). Null if the order has no history or can't be read.</summary>

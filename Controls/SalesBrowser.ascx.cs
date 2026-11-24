@@ -461,8 +461,17 @@ namespace SamsLiquorShop.Controls
             }
 
             pnlDetail.Visible = true;
-            ScriptManager.RegisterStartupScript(this, GetType(), "scrollDetail",
-            "window.scrollTo({top:0,behavior:'smooth'});", true);
+            // Registered on the Page (not this control, which sits outside upSales) so it also runs
+            // after the async postback when another invoice number is clicked in the grid.
+            // Deferred to endRequest: after startup scripts run, PageRequestManager restores the
+            // pre-postback scroll position, which would cancel a smooth scroll started straight away.
+            ScriptManager.RegisterStartupScript(Page, GetType(), "scrollDetail",
+                "(function(){" +
+                "function go(){setTimeout(function(){window.scrollTo({top:0,behavior:'smooth'});},0);}" +
+                "var prm=window.Sys&&Sys.WebForms&&Sys.WebForms.PageRequestManager?Sys.WebForms.PageRequestManager.getInstance():null;" +
+                "if(prm&&prm.get_isInAsyncPostBack()){var h=function(){prm.remove_endRequest(h);go();};prm.add_endRequest(h);}" +
+                "else{go();}" +
+                "})();", true);
         }
 
         protected void btnCloseDetail_Click(object sender, EventArgs e)

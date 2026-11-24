@@ -19,6 +19,9 @@
                 </nav>
             </div>
 
+            <%-- New online orders that nobody has started packing yet --%>
+            <asp:Literal runat="server" ID="litNewOrders" />
+
             <!-- 1. HEADLINE NUMBERS -->
             <div class="mgr-kpi-grid">
                 <div class="mgr-kpi-card">

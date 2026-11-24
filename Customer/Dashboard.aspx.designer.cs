@@ -24,6 +24,24 @@ namespace SamsLiquorShop.Customer
         protected global::System.Web.UI.WebControls.Literal litGreeting;
 
         /// <summary>
+        /// litWelcome control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litWelcome;
+
+        /// <summary>
+        /// litOffers control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litOffers;
+
+        /// <summary>
         /// litLoyaltyPoints control.
         /// </summary>
         /// <remarks>

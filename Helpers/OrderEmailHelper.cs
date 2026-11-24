@@ -122,14 +122,15 @@ namespace SamsLiquorShop.Helpers
             return day + ", " + s.ToString("HH:mm", CultureInfo.InvariantCulture) + " - " + s.AddHours(1).ToString("HH:mm", CultureInfo.InvariantCulture);
         }
 
-        private static string BuildHtml(string heading, string first, string intro, string extra)
+        // intro is plain text; extra is HTML (encode anything user-supplied before passing it in)
+        internal static string BuildHtml(string heading, string first, string intro, string extra, string eyebrow = "Order update")
         {
             string hi = string.IsNullOrWhiteSpace(first) ? "Hi," : "Hi " + WebUtility.HtmlEncode(first) + ",";
             return "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><title>" + WebUtility.HtmlEncode(heading) + "</title></head>"
                 + "<body style=\"margin:0;padding:0;background:#eef3f9;font-family:Segoe UI,Helvetica,Arial,sans-serif;color:#1d1d1f;\">"
                 + "<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#eef3f9;padding:32px 12px;\"><tr><td align=\"center\">"
                 + "<table role=\"presentation\" width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;max-width:600px;background:#ffffff;border-radius:10px;overflow:hidden;\">"
-                + "<tr><td style=\"background:#0057b8;padding:28px 36px;\"><p style=\"margin:0;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:#b9d6f7;\">Order update</p>"
+                + "<tr><td style=\"background:#0057b8;padding:28px 36px;\"><p style=\"margin:0;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:#b9d6f7;\">" + WebUtility.HtmlEncode(eyebrow) + "</p>"
                 + "<p style=\"margin:6px 0 0;font-size:24px;font-weight:600;color:#ffffff;\">Sam's Liquor Shop</p></td></tr>"
                 + "<tr><td style=\"padding:32px 36px 8px;\"><p style=\"margin:0 0 14px;font-size:20px;font-weight:600;color:#0057b8;\">" + WebUtility.HtmlEncode(heading) + "</p>"
                 + "<p style=\"margin:0 0 12px;font-size:15px;line-height:1.65;color:#3a3a3c;\">" + hi + "</p>"

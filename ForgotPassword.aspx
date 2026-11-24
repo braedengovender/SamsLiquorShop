@@ -10,7 +10,7 @@
                 <p class="login-subtext">Enter your email address or username and we'll email you a 6-digit code.</p>
 
                 <div class="login-field">
-                    <label for="<%= txtEmail.ClientID %>">Email or username</label>
+                    <label for="<%= txtEmail.ClientID %>">Email or username <button type="button" class="field-help" data-rules="Required.|The email address or username you log in with.|If we find your account, we email a 6-digit code to the address on it."></button></label>
                     <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" autocomplete="username" autocapitalize="none" spellcheck="false" />
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Enter your email address or username." ValidationGroup="EmailForm" />
                 </div>
@@ -29,7 +29,7 @@
                 <span id="spanDemo" runat="server" class="field-error" visible="false"></span>
 
                 <div class="login-field">
-                    <label for="<%= txtCode.ClientID %>">Reset code</label>
+                    <label for="<%= txtCode.ClientID %>">Reset code <button type="button" class="field-help" data-rules="Required.|The 6-digit code from the email we just sent. Check your spam folder if you can't see it.|The code expires after 10 minutes. You have 5 tries."></button></label>
                     <asp:TextBox ID="txtCode" runat="server" CssClass="login-input" MaxLength="6" autocomplete="one-time-code" />
                 </div>
                 <asp:Label ID="lblCodeError" runat="server" CssClass="field-error login-server-error" Visible="false"></asp:Label>
@@ -49,8 +49,8 @@
 
                 <div class="login-field login-password-wrap">
                     <div class="password-label-row">
-                        <label for="<%= txtNewPassword.ClientID %>">New password</label>
-                        <button type="button" class="suggest-password-btn" onclick="suggestPassword()">Suggest password</button>
+                        <label for="<%= txtNewPassword.ClientID %>">New password <button type="button" class="field-help" data-rules="Required.|8 to 50 characters.|At least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special character (e.g. ! @ # ?).|Tip: press &quot;Suggest password&quot; to generate a strong one."></button></label>
+                        <button type="button" class="suggest-password-btn" onclick="suggestPassword('<%= txtNewPassword.ClientID %>', '<%= txtConfirmPassword.ClientID %>')">Suggest password</button>
                     </div>
                     <div class="password-input-wrap">
                         <asp:TextBox ID="txtNewPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="new-password" oninput="checkPasswordStrength(this.value)" />
@@ -84,7 +84,7 @@
                 </div>
 
                 <div class="login-field login-password-wrap">
-                    <label for="<%= txtConfirmPassword.ClientID %>">Confirm new password</label>
+                    <label for="<%= txtConfirmPassword.ClientID %>">Confirm new password <button type="button" class="field-help" data-rules="Required.|Type the same password again. It must match exactly (capitals count)."></button></label>
                     <div class="password-input-wrap">
                         <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="new-password" />
                         <button type="button" class="login-eye-btn" onclick="toggleFieldVisibility('<%= txtConfirmPassword.ClientID %>', this)" aria-label="Show password">
@@ -112,123 +112,5 @@
         </div>
     </section>
 
-    <script>
-        function toggleFieldVisibility(fieldId, button) {
-            var field = document.getElementById(fieldId);
-            if (!field) return;
-            var icon = button.querySelector(".eye-icon");
-            if (field.type === "password") {
-                field.type = "text";
-                button.setAttribute("aria-label", "Hide password");
-                icon.innerHTML = '<path d="M3 3l18 18"></path><path d="M2.5 12s3.5-6 9.5-6c1.2 0 2.3.2 3.3.6"></path><path d="M20.5 12s-3.5 6-9.5 6c-1.2 0-2.3-.2-3.3-.6"></path>';
-            } else {
-                field.type = "password";
-                button.setAttribute("aria-label", "Show password");
-                icon.innerHTML = '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"></path><circle cx="12" cy="12" r="2.5"></circle>';
-            }
-        }
-
-        function updatePasswordRequirement(id, valid) {
-            var el = document.getElementById(id);
-            if (!el) return;
-            if (valid) el.classList.add('valid'); else el.classList.remove('valid');
-        }
-
-        function checkPasswordStrength(password) {
-            var checks = {
-                reqLength: password.length >= 8,
-                reqLower: /[a-z]/.test(password),
-                reqUpper: /[A-Z]/.test(password),
-                reqNumber: /[0-9]/.test(password),
-                reqSpecial: /[^A-Za-z0-9]/.test(password)
-            };
-            var score = 0;
-            for (var id in checks) { updatePasswordRequirement(id, checks[id]); if (checks[id]) score++; }
-
-            var fill = document.getElementById('passwordStrengthFill');
-            var text = document.getElementById('passwordStrengthText');
-            if (!fill || !text) return;
-
-            var cls = ['strength-weak', 'strength-medium', 'strength-strong'];
-            cls.forEach(function (c) { fill.classList.remove(c); text.classList.remove(c); });
-
-            if (password.length === 0) { fill.style.width = '0%'; text.textContent = 'Password strength'; return; }
-
-            var level = score <= 2 ? 0 : (score <= 4 ? 1 : 2);
-            fill.style.width = ['25%', '60%', '100%'][level];
-            text.textContent = ['Weak password', 'Medium password', 'Strong password'][level];
-            fill.classList.add(cls[level]);
-            text.classList.add(cls[level]);
-        }
-
-        // ---------- Suggest password (same generator as Register.aspx) ----------
-        // No < > & characters: ASP.NET request validation rejects some combinations of them.
-        var PW_SETS = {
-            lower: 'abcdefghijkmnopqrstuvwxyz',
-            upper: 'ABCDEFGHJKLMNPQRSTUVWXYZ',
-            digit: '23456789',
-            special: '!@#$%*?-_=+'
-        };
-
-        function randomIndex(max) {
-            var buf = new Uint32Array(1);
-            var limit = Math.floor(0x100000000 / max) * max;
-            do { window.crypto.getRandomValues(buf); } while (buf[0] >= limit);
-            return buf[0] % max;
-        }
-
-        function pick(chars) { return chars.charAt(randomIndex(chars.length)); }
-
-        function generatePassword(length) {
-            var all = PW_SETS.lower + PW_SETS.upper + PW_SETS.digit + PW_SETS.special;
-            // One of each required type, the rest from everything, then shuffled.
-            var chars = [pick(PW_SETS.lower), pick(PW_SETS.upper), pick(PW_SETS.digit), pick(PW_SETS.special)];
-            while (chars.length < length) chars.push(pick(all));
-            for (var i = chars.length - 1; i > 0; i--) {
-                var j = randomIndex(i + 1);
-                var t = chars[i]; chars[i] = chars[j]; chars[j] = t;
-            }
-            return chars.join('');
-        }
-
-        function suggestPassword() {
-            var pw = document.getElementById('<%= txtNewPassword.ClientID %>');
-            var confirm = document.getElementById('<%= txtConfirmPassword.ClientID %>');
-            var value = generatePassword(16);
-
-            [pw, confirm].forEach(function (el) {
-                el.value = value;
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true })); // re-runs the ASP.NET validators
-            });
-
-            // Show the password so the customer can see (and note) what was chosen.
-            if (pw.type === 'password') {
-                toggleFieldVisibility(pw.id, pw.parentNode.querySelector('.login-eye-btn'));
-            }
-            document.getElementById('suggestedPasswordNote').hidden = false;
-        }
-
-        function copySuggestedPassword(btn) {
-            var value = document.getElementById('<%= txtNewPassword.ClientID %>').value;
-            function done(ok) {
-                btn.textContent = ok ? 'Copied' : 'Copy failed';
-                setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
-            }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(value).then(function () { done(true); }, function () { done(false); });
-            } else {
-                done(false);
-            }
-        }
-
-        // Hide the "suggested" note once the customer types their own password
-        window.addEventListener('load', function () {
-            var pw = document.getElementById('<%= txtNewPassword.ClientID %>');
-            if (!pw) return;   // only on the "choose a new password" step
-            pw.addEventListener('input', function (e) {
-                if (e.isTrusted) document.getElementById('suggestedPasswordNote').hidden = true;
-            });
-        });
-    </script>
+    <script src="<%= ResolveUrl("~/Scripts/form-tools.js") %>"></script>
 </asp:Content>

@@ -252,6 +252,11 @@ namespace SamsLiquorShop
             Session["UserRole"] = "Customer";
             Session["UserName"] = c.Username;
 
+            // Welcome email with the codes this customer qualifies for (WELCOME20, plus the student code for .ac.za),
+            // and a one-time welcome notice on the dashboard
+            NotificationEmailHelper.SendWelcome(c.Email, c.First, PromoHelper.GetAvailableOffers(newId));
+            Session["ShowWelcomeOffer"] = true;
+
             Response.Redirect("~/Customer/Dashboard.aspx");
         }
 

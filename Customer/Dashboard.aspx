@@ -16,6 +16,9 @@
                 <p class="mgr-dash-subtext"><asp:Literal runat="server" ID="litGreeting" /></p>
             </div>
 
+            <%-- Shown once, straight after registering --%>
+            <asp:Literal runat="server" ID="litWelcome" />
+
             <!-- 1. LOYALTY (1 point = R1 to redeem, 1 point earned per R10 — same rules as the POS) -->
             <div class="loyalty-wrap">
                 <div class="loyalty-card" aria-label="Your loyalty card">
@@ -70,7 +73,16 @@
                 </div>
             </div>
 
-            <!-- 3. RECENT ORDERS -->
+            <!-- 3. PROMO CODES THIS CUSTOMER CAN USE (same rules as checkout, see PromoHelper.GetAvailableOffers) -->
+            <div class="mgr-table-card" id="offers" style="margin-bottom: 24px;">
+                <div class="dash-card-head">
+                    <h3>Your Offers</h3>
+                    <span class="dash-card-meta">Enter a code at checkout. Each code can be used once.</span>
+                </div>
+                <asp:Literal runat="server" ID="litOffers" />
+            </div>
+
+            <!-- 4. RECENT ORDERS -->
             <div class="mgr-table-card">
                 <div class="dash-card-head">
                     <h3>Recent Orders</h3>
@@ -93,4 +105,19 @@
 
         </div>
     </section>
+
+    <script>
+        function copyOfferCode(btn) {
+            var code = btn.getAttribute('data-code');
+            function done(ok) {
+                btn.textContent = ok ? 'Copied' : 'Copy failed';
+                setTimeout(function () { btn.textContent = 'Copy code'; }, 1800);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(code).then(function () { done(true); }, function () { done(false); });
+            } else {
+                done(false);
+            }
+        }
+    </script>
 </asp:Content>

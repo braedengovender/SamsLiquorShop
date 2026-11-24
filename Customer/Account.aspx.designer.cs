@@ -246,6 +246,22 @@ namespace SamsLiquorShop.Customer
         protected global::System.Web.UI.WebControls.Button btnChangePassword;
 
         /// <summary>
+        /// Change-password code step controls.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlPasswordVerify;
+        protected global::System.Web.UI.WebControls.Label lblPasswordEmail;
+        protected global::System.Web.UI.WebControls.Label lblPasswordDemo;
+        protected global::System.Web.UI.WebControls.TextBox txtPasswordCode;
+        protected global::System.Web.UI.WebControls.Label lblPasswordCodeError;
+        protected global::System.Web.UI.WebControls.Button btnVerifyPassword;
+        protected global::System.Web.UI.WebControls.Button btnResendPasswordCode;
+        protected global::System.Web.UI.WebControls.Button btnCancelPasswordChange;
+
+        /// <summary>
         /// pnlDeactivate control.
         /// </summary>
         /// <remarks>

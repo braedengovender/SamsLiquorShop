@@ -50,6 +50,7 @@ namespace SamsLiquorShop.Manager
             if (!IsPostBack)
             {
                 litGreeting.Text = "Welcome back, " + Server.HtmlEncode(Session["UserName"].ToString());
+                LoadNewOrdersNotice();
 
                 DateTime now = DateTime.Now;
                 DateTime cutoff = ResolveRange(now);
@@ -83,6 +84,34 @@ namespace SamsLiquorShop.Manager
                     LoadStockToast();
                 }
             }
+        }
+
+        // Banner at the top of the dashboard (the manager's landing page after login) listing online orders
+        // that are still "Placed", i.e. nobody has started packing them. Hidden when there are none.
+        private void LoadNewOrdersNotice()
+        {
+            int total;
+            var orders = Helpers.OrderHelper.GetNewOrders(5, out total);
+            if (total == 0) return;
+
+            var sb = new StringBuilder();
+            sb.Append("<div class=\"dash-notice is-orders\" role=\"status\">")
+              .Append("<div class=\"dash-notice-body\"><strong>")
+              .Append(total == 1 ? "1 new online order is" : total + " new online orders are")
+              .Append(" waiting to be packed</strong><ul>");
+            foreach (var o in orders)
+            {
+                sb.Append("<li><span>INV-").Append(o.SaleId.ToString("000000")).Append(" &middot; ")
+                  .Append(Server.HtmlEncode(o.CustomerName)).Append(" &middot; ").Append(Server.HtmlEncode(o.Method))
+                  .Append(" &middot; ").Append(o.Items).Append(o.Items == 1 ? " item" : " items")
+                  .Append("</span><span class=\"dash-notice-meta\">").Append(o.Total.ToString("C"))
+                  .Append(", placed ").Append(Server.HtmlEncode(o.PlacedAt.ToString("d MMM HH:mm"))).Append("</span></li>");
+            }
+            if (total > orders.Count) sb.Append("<li class=\"dash-notice-meta\">and ").Append(total - orders.Count).Append(" more</li>");
+            sb.Append("</ul></div><a href=\"").Append(ResolveUrl("~/Manager/OnlineOrders.aspx"))
+              .Append("\" class=\"btn-primary\">View online orders</a></div>");
+
+            litNewOrders.Text = sb.ToString();
         }
 
         // Count of active products at or below their reorder level, plus the five lowest for the pop-up.

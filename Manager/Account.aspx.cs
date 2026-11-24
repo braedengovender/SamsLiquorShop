@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
+using SamsLiquorShop.Helpers;
 
 namespace SamsLiquorShop.Manager
 {
@@ -25,6 +26,8 @@ namespace SamsLiquorShop.Manager
             if (!IsPostBack)
             {
                 LoadDetails();
+                // Came back to the page with a code still waiting: show the box again
+                if (PasswordChangePending) ShowPasswordVerify();
             }
         }
 
@@ -214,6 +217,112 @@ namespace SamsLiquorShop.Manager
                 return;
             }
 
+            // Passwords are fine: confirm it's really this manager with a code sent to the account's email.
+            // The new password is only saved once the code is entered.
+            string accountEmail = GetCurrentEmail();
+            if (string.IsNullOrWhiteSpace(accountEmail))
+            {
+                ShowMessage("There's no email address on your account, so we can't send a code. Please add one above first.", false);
+                return;
+            }
+            if (!StartPasswordChange(newPw, accountEmail))
+            {
+                ShowMessage("We couldn't send a code to " + accountEmail + ". Your password has not been changed. Please try again.", false);
+                return;
+            }
+            ShowMessage("Enter the code we sent to " + accountEmail + " to finish changing your password.", true);
+        }
+
+        // ---------- CHANGE PASSWORD (OTP) ----------
+        private const int MaxPasswordCodeAttempts = 5;
+        private const int PasswordResendSeconds = 30;
+
+        // True when a new password is waiting for its code (for this employee, and not expired)
+        private bool PasswordChangePending =>
+            Session["PwChangeEmployee"] is int && (int)Session["PwChangeEmployee"] == EmployeeId
+            && Session["PwChangeExpiry"] is DateTime && DateTime.Now <= (DateTime)Session["PwChangeExpiry"]
+            && Session["PwChangeNew"] is string && Session["PwChangeCode"] is string;
+
+        private void ClearPasswordChange()
+        {
+            foreach (string k in new[] { "PwChangeEmployee", "PwChangeNew", "PwChangeCode", "PwChangeExpiry", "PwChangeAttempts", "PwChangeEmail", "PwChangeSent" })
+                Session.Remove(k);
+        }
+
+        private bool StartPasswordChange(string newPw, string email)
+        {
+            string code = OtpHelper.GenerateCode();
+            if (!OtpHelper.SendCode(email, txtFirstName.Text.Trim(), code, "password change")) return false;
+
+            Session["PwChangeEmployee"] = EmployeeId;
+            Session["PwChangeNew"] = newPw;
+            Session["PwChangeCode"] = code;
+            Session["PwChangeEmail"] = email;
+            Session["PwChangeExpiry"] = DateTime.Now.AddMinutes(10);
+            Session["PwChangeAttempts"] = 0;
+            Session["PwChangeSent"] = DateTime.Now;
+
+            ShowPasswordVerify();
+            return true;
+        }
+
+        private void ShowPasswordVerify()
+        {
+            pnlPassword.Visible = false;
+            pnlPasswordVerify.Visible = true;
+            txtPasswordCode.Text = "";
+            lblPasswordEmail.Text = Server.HtmlEncode(Session["PwChangeEmail"] as string ?? "");
+            lblPasswordDemo.Visible = OtpHelper.DemoMode && Session["PwChangeCode"] != null;
+            if (lblPasswordDemo.Visible) lblPasswordDemo.Text = "Demo mode: your code is " + Session["PwChangeCode"];
+        }
+
+        private void HidePasswordVerify()
+        {
+            pnlPasswordVerify.Visible = false;
+            pnlPassword.Visible = true;
+            txtPasswordCode.Text = "";
+            lblPasswordCodeError.Visible = false;
+        }
+
+        private void PasswordCodeError(string text)
+        {
+            ShowPasswordVerify();
+            lblPasswordCodeError.Text = Server.HtmlEncode(text);
+            lblPasswordCodeError.Visible = true;
+        }
+
+        protected void btnVerifyPassword_Click(object sender, EventArgs e)
+        {
+            litMessage.Text = "";
+            if (!PasswordChangePending)
+            {
+                ClearPasswordChange();
+                HidePasswordVerify();
+                ShowMessage("That code has expired. Your password was not changed. Please enter your new password again.", false);
+                return;
+            }
+
+            int attempts = (int)Session["PwChangeAttempts"] + 1;
+            Session["PwChangeAttempts"] = attempts;
+            if (attempts > MaxPasswordCodeAttempts)
+            {
+                ClearPasswordChange();
+                HidePasswordVerify();
+                ShowMessage("Too many wrong codes. Your password was not changed. Please start again.", false);
+                return;
+            }
+
+            if (txtPasswordCode.Text.Trim() != (string)Session["PwChangeCode"])
+            {
+                int left = MaxPasswordCodeAttempts - attempts;
+                PasswordCodeError(left > 0
+                    ? "That code isn't right. Please try again (" + left + " tries left)."
+                    : "That code isn't right. Please request a new code.");
+                return;
+            }
+
+            string newPw = (string)Session["PwChangeNew"];
+            string email = Session["PwChangeEmail"] as string;
             try
             {
                 using (SqlConnection conn = new SqlConnection(ConnStr))
@@ -228,14 +337,79 @@ namespace SamsLiquorShop.Manager
             }
             catch (SqlException ex)
             {
-                ShowMessage("Your password could not be updated: " + ex.Message, false);
+                PasswordCodeError("Your password could not be updated: " + ex.Message);
                 return;
             }
 
-            txtCurrentPassword.Text = "";
-            txtNewPassword.Text = "";
-            txtConfirmPassword.Text = "";
+            ClearPasswordChange();
+            HidePasswordVerify();
+            NotifyPasswordChanged(email);
             ShowMessage("Your password has been updated.", true);
+        }
+
+        protected void btnResendPasswordCode_Click(object sender, EventArgs e)
+        {
+            litMessage.Text = "";
+            if (!(Session["PwChangeEmployee"] is int) || (int)Session["PwChangeEmployee"] != EmployeeId || !(Session["PwChangeNew"] is string))
+            {
+                ClearPasswordChange();
+                HidePasswordVerify();
+                ShowMessage("Please enter your new password again to get a code.", false);
+                return;
+            }
+
+            if (Session["PwChangeSent"] is DateTime)
+            {
+                double elapsed = (DateTime.Now - (DateTime)Session["PwChangeSent"]).TotalSeconds;
+                if (elapsed < PasswordResendSeconds)
+                {
+                    PasswordCodeError("Please wait " + (int)Math.Ceiling(PasswordResendSeconds - elapsed) + " second(s) before asking for another code.");
+                    return;
+                }
+            }
+
+            string email = GetCurrentEmail();
+            if (string.IsNullOrWhiteSpace(email) || !StartPasswordChange((string)Session["PwChangeNew"], email))
+            {
+                PasswordCodeError("We couldn't send a new code. Please try again.");
+                return;
+            }
+            ShowMessage("We sent a new code to " + email + ".", true);
+        }
+
+        protected void btnCancelPasswordChange_Click(object sender, EventArgs e)
+        {
+            ClearPasswordChange();
+            HidePasswordVerify();
+            ShowMessage("Your password was not changed.", true);
+        }
+
+        private string GetCurrentEmail()
+        {
+            using (SqlConnection conn = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand("SELECT Employee_EmailAddress FROM Employee WHERE Employee_ID = @Id", conn))
+            {
+                cmd.Parameters.AddWithValue("@Id", EmployeeId);
+                conn.Open();
+                object o = cmd.ExecuteScalar();
+                return o == null || o == DBNull.Value ? null : o.ToString().Trim();
+            }
+        }
+
+        // Security notice, so the real owner hears about it if someone else changed the password
+        private void NotifyPasswordChanged(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email) || OtpHelper.DemoMode) return;
+            string first = txtFirstName.Text.Trim();
+            string html = "<p>Hi " + (first.Length > 0 ? Server.HtmlEncode(first) : "there") + ",</p>"
+                + "<p>The password on your Sam's Liquor Shop staff account was just changed.</p>"
+                + "<p>If you made this change, you don't need to do anything. If you didn't, please reset your password straight away and tell another manager.</p>"
+                + "<p>Sam's Liquor Shop</p>";
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                try { OtpHelper.SendEmail(email, first, "Your Sam's Liquor Shop password was changed", html); }
+                catch { /* the change itself has already succeeded */ }
+            });
         }
 
         // ---------- HELPERS ----------

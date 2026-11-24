@@ -81,33 +81,103 @@
                 </div>
             </asp:Panel>
 
-            <!-- CHANGE PASSWORD -->
+            <!-- CHANGE PASSWORD (step 1: current + new password; step 2: code emailed to the account) -->
             <asp:Panel ID="pnlPassword" runat="server" DefaultButton="btnChangePassword">
-                <div class="mgr-table-card emp-form-card">
+                <div class="mgr-table-card emp-form-card" id="change-password">
                     <div class="dash-card-head"><h3>Change Password</h3></div>
+                    <p class="mgr-dash-subtext">For your security, we'll email a 6-digit code to the address on your account before the new password is saved.</p>
 
                     <div class="emp-form-grid">
-                        <div class="login-field">
-                            <label for="<%= txtCurrentPassword.ClientID %>">Current password</label>
-                            <asp:TextBox ID="txtCurrentPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="current-password" />
+                        <div class="login-field login-password-wrap">
+                            <label for="<%= txtCurrentPassword.ClientID %>">Current password <button type="button" class="field-help" data-rules="Required.|The password you use to log in now.|Forgotten it? Log out and use &quot;Forgot password&quot; on the login page."></button></label>
+                            <div class="password-input-wrap">
+                                <asp:TextBox ID="txtCurrentPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="current-password" />
+                                <button type="button" class="login-eye-btn" onclick="toggleFieldVisibility('<%= txtCurrentPassword.ClientID %>', this)" aria-label="Show password">
+                                    <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+                                </button>
+                            </div>
                         </div>
                         <div></div>
-                        <div class="login-field">
-                            <label for="<%= txtNewPassword.ClientID %>">New password</label>
-                            <asp:TextBox ID="txtNewPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="new-password" />
-                            <span class="field-hint">8&ndash;50 characters with an upper-case letter, a lower-case letter, a number and a symbol.</span>
+                        <div class="login-field login-password-wrap">
+                            <div class="password-label-row">
+                                <label for="<%= txtNewPassword.ClientID %>">New password <button type="button" class="field-help" data-rules="Required.|8 to 50 characters.|At least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special character (e.g. ! @ # ?).|Must be different from your current password.|Tip: press &quot;Suggest password&quot; to generate a strong one."></button></label>
+                                <button type="button" class="suggest-password-btn" onclick="suggestPassword('<%= txtNewPassword.ClientID %>', '<%= txtConfirmPassword.ClientID %>')">Suggest password</button>
+                            </div>
+                            <div class="password-input-wrap">
+                                <asp:TextBox ID="txtNewPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="new-password" oninput="checkPasswordStrength(this.value)" />
+                                <button type="button" class="login-eye-btn" onclick="toggleFieldVisibility('<%= txtNewPassword.ClientID %>', this)" aria-label="Show password">
+                                    <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+                                </button>
+                            </div>
+
+                            <div id="suggestedPasswordNote" class="suggested-password-note" hidden>
+                                <span>Suggested password filled in both fields. Save it somewhere safe.</span>
+                                <button type="button" class="suggest-password-copy" onclick="copySuggestedPassword(this)">Copy</button>
+                            </div>
+
+                            <div class="password-strength">
+                                <div class="password-strength-bar"><div id="passwordStrengthFill"></div></div>
+                                <div id="passwordStrengthText" class="password-strength-text">Password strength</div>
+                                <div class="password-requirements">
+                                    <div id="reqLength" class="password-requirement"><span class="requirement-icon">○</span><span>At least 8 characters</span></div>
+                                    <div id="reqLower" class="password-requirement"><span class="requirement-icon">○</span><span>1 lowercase letter</span></div>
+                                    <div id="reqUpper" class="password-requirement"><span class="requirement-icon">○</span><span>1 uppercase letter</span></div>
+                                    <div id="reqNumber" class="password-requirement"><span class="requirement-icon">○</span><span>1 number</span></div>
+                                    <div id="reqSpecial" class="password-requirement"><span class="requirement-icon">○</span><span>1 special character</span></div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="login-field">
-                            <label for="<%= txtConfirmPassword.ClientID %>">Confirm new password</label>
-                            <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="new-password" />
+                        <div class="login-field login-password-wrap">
+                            <label for="<%= txtConfirmPassword.ClientID %>">Confirm new password <button type="button" class="field-help" data-rules="Required.|Type the same password again. It must match exactly (capitals count)."></button></label>
+                            <div class="password-input-wrap">
+                                <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="login-input" TextMode="Password" MaxLength="50" autocomplete="new-password" />
+                                <button type="button" class="login-eye-btn" onclick="toggleFieldVisibility('<%= txtConfirmPassword.ClientID %>', this)" aria-label="Show password">
+                                    <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                     <div class="emp-form-actions">
-                        <asp:Button ID="btnChangePassword" runat="server" Text="Update Password" CssClass="btn-primary" OnClick="btnChangePassword_Click" />
+                        <asp:Button ID="btnChangePassword" runat="server" Text="Email me a code" CssClass="btn-primary" OnClick="btnChangePassword_Click" />
+                    </div>
+                </div>
+            </asp:Panel>
+
+            <asp:Panel ID="pnlPasswordVerify" runat="server" Visible="false" DefaultButton="btnVerifyPassword">
+                <div class="mgr-table-card emp-form-card" id="change-password-code">
+                    <div class="dash-card-head"><h3>Confirm your password change</h3></div>
+                    <p class="mgr-dash-subtext">
+                        We sent a 6-digit code to <strong><asp:Label ID="lblPasswordEmail" runat="server" /></strong>.
+                        Enter it below to save your new password. The code expires in 10 minutes.
+                        Until then, your current password keeps working.
+                    </p>
+
+                    <asp:Label ID="lblPasswordDemo" runat="server" CssClass="field-hint invalid" Visible="false" />
+
+                    <div class="login-field" style="max-width: 320px;">
+                        <label for="<%= txtPasswordCode.ClientID %>">Verification code <button type="button" class="field-help" data-rules="Required.|The 6-digit code from the email we just sent. Check your spam folder if you can't see it.|The code expires after 10 minutes. You have 5 tries."></button></label>
+                        <asp:TextBox ID="txtPasswordCode" runat="server" CssClass="login-input" MaxLength="6"
+                            autocomplete="one-time-code" inputmode="numeric" data-digits="1" placeholder="000000"
+                            Style="text-align:center;font-size:1.4rem;letter-spacing:8px;" />
+                    </div>
+
+                    <asp:Label ID="lblPasswordCodeError" runat="server" CssClass="field-error login-server-error" Visible="false" />
+
+                    <div class="emp-form-actions">
+                        <asp:Button ID="btnVerifyPassword" runat="server" Text="Verify and change password" CssClass="btn-primary login-submit" CausesValidation="false" OnClick="btnVerifyPassword_Click"
+                            OnClientClick="var c = this.closest('.emp-form-card').querySelector('input[autocomplete=one-time-code]'); if (!/^\d{6}$/.test(c.value.trim())) { c.classList.add('invalid'); c.focus(); return false; } if (this.getAttribute('aria-busy')) { return false; } this.setAttribute('aria-busy', 'true'); this.value = 'Verifying...'; this.classList.add('is-busy'); document.getElementById('pwOtpVerifying').hidden = false; return true;" />
+                        <asp:Button ID="btnResendPasswordCode" runat="server" Text="Send a new code" CssClass="btn-ghost" CausesValidation="false" OnClick="btnResendPasswordCode_Click" />
+                        <asp:Button ID="btnCancelPasswordChange" runat="server" Text="Keep my current password" CssClass="btn-ghost" CausesValidation="false" OnClick="btnCancelPasswordChange_Click" />
+                    </div>
+                    <div id="pwOtpVerifying" class="otp-verifying" role="status" aria-live="polite" style="justify-content:flex-start;" hidden>
+                        <span class="otp-spinner" aria-hidden="true"></span>
+                        <span>Verifying your code&hellip;</span>
                     </div>
                 </div>
             </asp:Panel>
         </div>
     </section>
+
+    <script src="<%= ResolveUrl("~/Scripts/form-tools.js") %>"></script>
 </asp:Content>

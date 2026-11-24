@@ -7,6 +7,8 @@ using System.Web.UI.WebControls;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
+using SamsLiquorShop.Helpers;
 
 namespace SamsLiquorShop.Customer
 {
@@ -27,7 +29,60 @@ namespace SamsLiquorShop.Customer
                 LoadSpendingSummary(customerId);
                 LoadLoyaltyPoints(customerId);
                 LoadRecentOrders(customerId);
+                LoadOffers(customerId);
             }
+        }
+
+        // Promo codes this customer can use right now. Uses the same checks as checkout, so nothing
+        // is shown that they've already used, that is for students only, or that is first-order only.
+        private void LoadOffers(int customerId)
+        {
+            var offers = NotificationEmailHelper.OrderOffers(PromoHelper.GetAvailableOffers(customerId)).ToList();
+
+            bool justRegistered = Session["ShowWelcomeOffer"] is bool && (bool)Session["ShowWelcomeOffer"];
+            Session.Remove("ShowWelcomeOffer");   // one-time notice
+            if (justRegistered)
+            {
+                var welcome = offers.FirstOrDefault(o => string.Equals(o.Rule, "FirstOrder", StringComparison.OrdinalIgnoreCase));
+                string text = welcome != null
+                    ? "Welcome to Sam's Liquor Shop! Your new-customer discount is ready: use code <strong>" + Server.HtmlEncode(welcome.Code)
+                      + "</strong> for " + Server.HtmlEncode(welcome.Description) + " your first order. We've emailed it to you too."
+                    : "Welcome to Sam's Liquor Shop! Your account is ready.";
+                litWelcome.Text = "<div class=\"dash-notice is-welcome\" role=\"status\"><span>" + text + "</span>"
+                    + (welcome != null ? "<a href=\"#offers\">See your offers</a>" : "") + "</div>";
+            }
+
+            if (offers.Count == 0)
+            {
+                litOffers.Text = "<p class=\"dash-table-empty\">You don't have any promo codes right now. Keep an eye on our <a href=\""
+                    + ResolveUrl("~/Specials.aspx") + "\">specials</a>.</p>";
+                return;
+            }
+
+            var sb = new StringBuilder("<div class=\"offer-grid\">");
+            foreach (var o in offers)
+            {
+                string tag = string.Equals(o.Rule, "FirstOrder", StringComparison.OrdinalIgnoreCase) ? "New customer"
+                    : string.Equals(o.Rule, "Student", StringComparison.OrdinalIgnoreCase) ? "Student" : "Promo";
+
+                var conditions = new List<string>();
+                if (string.Equals(o.Rule, "FirstOrder", StringComparison.OrdinalIgnoreCase)) conditions.Add("First order only");
+                if (string.Equals(o.Rule, "Student", StringComparison.OrdinalIgnoreCase)) conditions.Add("For .ac.za email addresses");
+                if (o.MinSpend.HasValue && o.MinSpend.Value > 0) conditions.Add("Spend at least R" + o.MinSpend.Value.ToString("N2"));
+                conditions.Add("Valid until " + o.EndDate.ToString("d MMM yyyy"));
+
+                sb.Append("<div class=\"offer-card\">")
+                  .Append("<span class=\"offer-tag\">").Append(tag).Append("</span>")
+                  .Append("<p class=\"offer-value\">").Append(Server.HtmlEncode(o.Description)).Append("</p>");
+                if (o.Name.Length > 0) sb.Append("<p class=\"offer-name\">").Append(Server.HtmlEncode(o.Name)).Append("</p>");
+                sb.Append("<div class=\"offer-code-row\"><code class=\"offer-code\">").Append(Server.HtmlEncode(o.Code)).Append("</code>")
+                  .Append("<button type=\"button\" class=\"suggest-password-copy\" data-code=\"").Append(Server.HtmlEncode(o.Code))
+                  .Append("\" onclick=\"copyOfferCode(this)\">Copy code</button></div>")
+                  .Append("<p class=\"offer-terms\">").Append(Server.HtmlEncode(string.Join(" · ", conditions))).Append("</p>")
+                  .Append("</div>");
+            }
+            sb.Append("</div>");
+            litOffers.Text = sb.ToString();
         }
 
         private void LoadSpendingSummary(int customerId)
