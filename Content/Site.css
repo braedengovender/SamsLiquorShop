@@ -3019,6 +3019,42 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
         color: var(--accent);
     }
 
+/* Trading hours: same icon + label layout as the other rows, with a day/time table underneath */
+.contact-hours {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.contact-hours-list {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+}
+
+    .contact-info-list .contact-hours-list li {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+        .contact-info-list .contact-hours-list li:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .contact-hours-list span:first-child {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .contact-hours-list span:last-child {
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+    }
+
 .contact-map {
     margin: 20px 0;
     border-radius: var(--radius-sm);

@@ -41,13 +41,23 @@
                 <a href="mailto:info@samsliquorshop.co.za">info@samsliquorshop.co.za</a>
               </div>
             </li>
-          </ul>
-
-          <ul class="hours-list">
-            <li><span>Mon &ndash; Thu</span><span>09:00 &ndash; 18:00</span></li>
-            <li><span>Fri &ndash; Sat</span><span>09:00 &ndash; 20:00</span></li>
-            <li><span>Sunday</span><span>10:00 &ndash; 15:00</span></li>
-            <li><span>Public Holidays</span><span>10:00 &ndash; 15:00</span></li>
+            <li>
+              <span class="contact-info-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <polyline points="12 7 12 12 15.5 14"></polyline>
+                </svg>
+              </span>
+              <div class="contact-hours">
+                <strong>Trading Hours</strong>
+                <ul class="contact-hours-list">
+                  <li><span>Mon &ndash; Thu</span><span>09:00 &ndash; 18:00</span></li>
+                  <li><span>Fri &ndash; Sat</span><span>09:00 &ndash; 20:00</span></li>
+                  <li><span>Sunday</span><span>10:00 &ndash; 15:00</span></li>
+                  <li><span>Public Holidays</span><span>10:00 &ndash; 15:00</span></li>
+                </ul>
+              </div>
+            </li>
           </ul>
 
           <div class="contact-map">
