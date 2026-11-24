@@ -22,7 +22,8 @@
     <asp:PlaceHolder runat="server">
         <link rel="stylesheet" href="<%: ResolveUrl("~/Content/Site.css") %>?v=<%: System.IO.File.GetLastWriteTimeUtc(Server.MapPath("~/Content/Site.css")).Ticks %>" />
     </asp:PlaceHolder>
-    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="~/Images/cartIcon.png" rel="icon" type="image/png" />
+    <link href="~/Images/cartIcon.png" rel="apple-touch-icon" />
 
     <style>
         .nl-continue-btn {
