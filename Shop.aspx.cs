@@ -181,7 +181,9 @@ namespace SamsLiquorShop
                 .ToList();
             string optionalSql = optional.Count > 0 ? ", " + string.Join(", ", optional) : "";
 
-            string where = "p.Product_Status = 'Active'";
+            // Deactivated products never reach the grid, the filter counts or the sliders.
+            // Trimmed and case-insensitive so a status typed as "active " still counts, and anything else doesn't.
+            string where = "UPPER(LTRIM(RTRIM(p.Product_Status))) = 'ACTIVE'";
             if (onlyProductId.HasValue) where += " AND p.Product_ID = @Pid";
 
             string query = $@"
@@ -390,7 +392,18 @@ namespace SamsLiquorShop
             }
 
             DataTable result = all.Clone();
-            foreach (DataRow r in rows) result.ImportRow(r);
+            result.Columns.Add("MaxQty", typeof(int));      // how many more this customer can add right now
+            result.Columns.Add("BtnText", typeof(string));
+            Dictionary<int, int> cartQty = CartQuantities();
+            foreach (DataRow r in rows)
+            {
+                result.ImportRow(r);
+                DataRow added = result.Rows[result.Rows.Count - 1];
+                int stock = StockOf(r);
+                int maxQty = MaxCanAdd(Convert.ToInt32(r["Product_ID"]), stock, cartQty);
+                added["MaxQty"] = maxQty;
+                added["BtnText"] = BuyButtonText(stock, maxQty);
+            }
 
             rptProducts.DataSource = result;
             rptProducts.DataBind();
@@ -475,8 +488,7 @@ namespace SamsLiquorShop
 
         // ------------------------------------------------------------------ cart / wishlist
 
-        private string _addMessage;   // why the last TryAddToCart failed
-                                      // Managers and cashiers can look at products but not buy or wishlist them
+        // Managers and cashiers can look at products but not buy or wishlist them
         protected bool IsStaff { get { return CartHelper.IsStaff(Session); } }
 
         protected override void OnPreRender(EventArgs e)
@@ -484,56 +496,141 @@ namespace SamsLiquorShop
             base.OnPreRender(e);
             if (IsStaff)
             {
-                btnDetailAdd.Visible = false;
+                divDetailBuy.Visible = false;
                 btnDetailWish.Visible = false;
             }
         }
-        private bool TryAddToCart(int productId, out string productName)
-        {
-            productName = null;
 
-            DataTable t = LoadProductTable(productId);
-            if (t.Rows.Count == 0) return false;
+        private Dictionary<int, int> CartQuantities()
+        {
+            return CartHelper.GetCart(Session)
+                .GroupBy(c => c.ProductId)
+                .ToDictionary(g => g.Key, g => g.Sum(c => c.Quantity));
+        }
+
+        private static int StockOf(DataRow r)
+        {
+            return r["Product_QuantityInStock"] == DBNull.Value ? 0 : Math.Max(0, Convert.ToInt32(r["Product_QuantityInStock"]));
+        }
+
+        /// <summary>The per-line limit (stock, capped at MaxPerLine) minus what is already in the cart.</summary>
+        private static int MaxCanAdd(int productId, int stock, Dictionary<int, int> cartQty)
+        {
+            int inCart;
+            if (!cartQty.TryGetValue(productId, out inCart)) inCart = 0;
+            return Math.Max(0, Math.Min(stock, CartHelper.MaxPerLine) - inCart);
+        }
+
+        private static string BuyButtonText(int stock, int maxQty)
+        {
+            return stock <= 0 ? "Out of Stock" : (maxQty <= 0 ? "Max in Cart" : "Add to Cart");
+        }
+
+        /// <summary>Typed quantities are never trusted: whole number, 1 to MaxPerLine.</summary>
+        private static bool TryParseQty(string text, out int qty, out string error)
+        {
+            qty = 0;
+            error = null;
+
+            string raw = (text ?? "").Trim();
+            if (raw.Length == 0 || !int.TryParse(raw, NumberStyles.None, CultureInfo.InvariantCulture, out qty))
+            {
+                qty = 0;
+                error = "Please enter a whole number for the quantity.";
+                return false;
+            }
+            if (qty < 1)
+            {
+                error = "The quantity must be at least 1.";
+                return false;
+            }
+            if (qty > CartHelper.MaxPerLine)
+            {
+                error = "You can add at most " + CartHelper.MaxPerLine + " of one product.";
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// The one place that adds to the cart (grid cards and the pop-up both use it).
+        /// Re-reads the product and its stock from the database every time and refuses anything over the limit.
+        /// </summary>
+        private bool TryAddToCart(int productId, string qtyText, out string message)
+        {
+            int qty;
+            if (!TryParseQty(qtyText, out qty, out message)) return false;
+
+            DataTable t = LoadProductTable(productId);   // Active products only
+            if (t.Rows.Count == 0)
+            {
+                message = "Sorry, that product is no longer available.";
+                return false;
+            }
 
             DataRow r = t.Rows[0];
-            int stock = Convert.ToInt32(r["Product_QuantityInStock"]);
+            string name = Convert.ToString(r["Product_Name"]);
+            int stock = StockOf(r);
+            int cap = Math.Min(stock, CartHelper.MaxPerLine);
+            int inCart;
+            if (!CartQuantities().TryGetValue(productId, out inCart)) inCart = 0;
+            int maxQty = Math.Max(0, cap - inCart);
+
             if (stock <= 0)
             {
-                _addMessage = "Sorry, this item is out of stock.";
+                message = "Sorry, " + name + " is out of stock.";
                 return false;
             }
-
-            var inCart = CartHelper.GetCart(Session).FirstOrDefault(c => c.ProductId == productId);
-            int max = Math.Min(stock, CartHelper.MaxPerLine);
-            if (inCart != null && inCart.Quantity >= max)
+            if (maxQty <= 0)
             {
-                _addMessage = "You already have the maximum available (" + max + ") in your cart.";
+                message = "You already have the maximum available (" + cap + ") of " + name + " in your cart.";
                 return false;
             }
-
-            productName = Convert.ToString(r["Product_Name"]);
+            if (qty > maxQty)
+            {
+                message = inCart > 0
+                    ? "Only " + maxQty + " more of " + name + " can be added – you already have " + inCart + " in your cart."
+                    : "Only " + maxQty + " of " + name + " available.";
+                return false;
+            }
 
             // The customer is charged the discounted price, not the shelf price
-            CartHelper.AddToCart(Session, productId, productName, (decimal)r["DiscountedPrice"]);
+            CartHelper.AddToCart(Session, productId, name, (decimal)r["DiscountedPrice"], qty, cap);
+            message = qty + " × " + name + " added to cart.";
             return true;
+        }
+
+        private static string Toast(string message, bool isError)
+        {
+            return "<div class='shop-cart-toast" + (isError ? " is-error" : "") + "'>" + System.Web.HttpUtility.HtmlEncode(message) + "</div>";
         }
 
         protected void rptProducts_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
-            int productId = Convert.ToInt32(e.CommandArgument);
+            int productId;
+            if (!int.TryParse(Convert.ToString(e.CommandArgument), NumberStyles.None, CultureInfo.InvariantCulture, out productId) || productId <= 0)
+            {
+                LoadProducts();
+                return;
+            }
 
             if (e.CommandName == "AddToCart")
             {
-                if (TryAddToCart(productId, out string productName))
+                string message;
+                bool ok;
+                try
                 {
-                    litCartMessage.Text = "<div class='shop-cart-toast'>" + Server.HtmlEncode(productName) + " added to cart.</div>";
-                    litCartMessage.Visible = true;
+                    TextBox txtQty = e.Item.FindControl("txtQty") as TextBox;
+                    ok = TryAddToCart(productId, txtQty == null ? "" : txtQty.Text, out message);
                 }
-                else
+                catch (Exception ex)
                 {
-                    litCartMessage.Text = "<div class='shop-cart-toast'>" + Server.HtmlEncode(_addMessage ?? "Sorry, we couldn't add that item.") + "</div>";
-                    litCartMessage.Visible = true;
+                    System.Diagnostics.Trace.TraceError("Shop: add to cart failed: " + ex);
+                    ok = false;
+                    message = "Sorry, something went wrong adding that item. Please try again.";
                 }
+                litCartMessage.Text = Toast(message, !ok);
+                litCartMessage.Visible = true;
             }
             else if (e.CommandName == "ToggleWishlist")
             {
@@ -607,8 +704,15 @@ namespace SamsLiquorShop
                 : "<p class=\"pd-ingredients\"><strong>Ingredients</strong> " + Server.HtmlEncode(ingredients.Trim()) + "</p>";
 
             litDetailMsg.Text = "";
-            btnDetailAdd.Text = stock > 0 ? "Add to Cart" : "Out of Stock";
-            btnDetailAdd.Enabled = stock > 0;
+            int maxQty = MaxCanAdd(productId, stock, CartQuantities());
+            bool canBuy = maxQty > 0;
+            divDetailQty.Attributes["class"] = canBuy ? "special-qty" : "special-qty is-off";
+            divDetailQty.Attributes["data-max"] = maxQty.ToString(CultureInfo.InvariantCulture);
+            divDetailQty.Attributes["title"] = canBuy ? "Up to " + maxQty + " available" : "";
+            txtDetailQty.Text = canBuy ? "1" : "0";
+            txtDetailQty.Enabled = canBuy;
+            btnDetailAdd.Text = BuyButtonText(stock, maxQty);
+            btnDetailAdd.Enabled = canBuy;
             btnDetailWish.Text = IsWishlisted(productId) ? "Remove from wishlist" : "Add to wishlist";
 
             pnlDetail.Visible = true;
@@ -621,10 +725,24 @@ namespace SamsLiquorShop
 
         protected void btnDetailAdd_Click(object sender, EventArgs e)
         {
-            if (TryAddToCart(DetailProductId, out string productName))
-                litDetailMsg.Text = "<div class='shop-cart-toast'>Added to cart.</div>";
-            else
-                litDetailMsg.Text = "<div class='shop-cart-toast'>" + Server.HtmlEncode(_addMessage ?? "Sorry, we couldn't add that item.") + "</div>";
+            int id = DetailProductId;
+            string message;
+            bool ok;
+            try
+            {
+                ok = TryAddToCart(id, txtDetailQty.Text, out message);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Shop: add to cart from pop-up failed: " + ex);
+                ok = false;
+                message = "Sorry, something went wrong adding that item. Please try again.";
+            }
+
+            // Refresh the pop-up and the cards behind it so the quantity limits match the cart
+            ShowDetail(id);
+            LoadProducts();
+            litDetailMsg.Text = Toast(message, !ok);
         }
 
         protected void btnDetailWish_Click(object sender, EventArgs e)

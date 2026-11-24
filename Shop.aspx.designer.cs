@@ -375,6 +375,33 @@ namespace SamsLiquorShop
         protected global::System.Web.UI.WebControls.Literal litDetailMsg;
 
         /// <summary>
+        /// divDetailBuy control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divDetailBuy;
+
+        /// <summary>
+        /// divDetailQty control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divDetailQty;
+
+        /// <summary>
+        /// txtDetailQty control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtDetailQty;
+
+        /// <summary>
         /// btnDetailAdd control.
         /// </summary>
         /// <remarks>

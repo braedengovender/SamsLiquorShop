@@ -133,9 +133,17 @@
                                         <span runat="server" class="shop-card-strike" visible='<%# (bool)Eval("IsOnSale") %>'><%# Money(Eval("Product_SellingPrice")) %></span>
                                         <span class='<%# (bool)Eval("IsOnSale") ? "shop-card-price is-sale" : "shop-card-price" %>'><%# Money(Eval("DiscountedPrice")) %></span>
                                     </div>
-                                    <asp:LinkButton runat="server" Visible='<%# !IsStaff %>' CommandName="AddToCart" CommandArgument='<%# Eval("Product_ID") %>' CssClass="btn-primary shop-add-cart-btn" Enabled='<%# Convert.ToInt32(Eval("Product_QuantityInStock")) > 0 %>'>
-                                        <%# Convert.ToInt32(Eval("Product_QuantityInStock")) > 0 ? "Add to Cart" : "Out of Stock" %>
-                                    </asp:LinkButton>
+                                    <%-- Quantity + Add to Cart, same stepper and rules as the Promotions page --%>
+                                    <asp:PlaceHolder runat="server" Visible='<%# !IsStaff %>'>
+                                        <div class="special-buy-row">
+                                            <div class='special-qty<%# (int)Eval("MaxQty") > 0 ? "" : " is-off" %>' data-max='<%# Eval("MaxQty") %>' title='<%# (int)Eval("MaxQty") > 0 ? "Up to " + Eval("MaxQty") + " available" : "" %>'>
+                                                <button type="button" class="special-qty-btn" data-step="-1" aria-label="Decrease quantity">&minus;</button>
+                                                <asp:TextBox runat="server" ID="txtQty" CssClass="special-qty-input" Text='<%# (int)Eval("MaxQty") > 0 ? "1" : "0" %>' MaxLength="2" Enabled='<%# (int)Eval("MaxQty") > 0 %>' autocomplete="off" inputmode="numeric" aria-label="Quantity" />
+                                                <button type="button" class="special-qty-btn" data-step="1" aria-label="Increase quantity">+</button>
+                                            </div>
+                                            <asp:LinkButton runat="server" CommandName="AddToCart" CommandArgument='<%# Eval("Product_ID") %>' CssClass="btn-primary shop-add-cart-btn" OnClientClick="return shopCheckQty(this);" Enabled='<%# (int)Eval("MaxQty") > 0 %>'><%# Eval("BtnText") %></asp:LinkButton>
+                                        </div>
+                                    </asp:PlaceHolder>
                                 </div>
                             </div>
                         </ItemTemplate>
@@ -172,7 +180,14 @@
                         <asp:Literal ID="litDetailIngredients" runat="server" />
                         <asp:Literal ID="litDetailMsg" runat="server" />
                         <div class="pd-actions">
-                            <asp:LinkButton ID="btnDetailAdd" runat="server" CssClass="btn-primary shop-add-cart-btn pd-add" OnClick="btnDetailAdd_Click" />
+                            <div id="divDetailBuy" runat="server" class="special-buy-row pd-buy-row">
+                                <div id="divDetailQty" runat="server" class="special-qty">
+                                    <button type="button" class="special-qty-btn" data-step="-1" aria-label="Decrease quantity">&minus;</button>
+                                    <asp:TextBox ID="txtDetailQty" runat="server" CssClass="special-qty-input" MaxLength="2" autocomplete="off" inputmode="numeric" aria-label="Quantity" />
+                                    <button type="button" class="special-qty-btn" data-step="1" aria-label="Increase quantity">+</button>
+                                </div>
+                                <asp:LinkButton ID="btnDetailAdd" runat="server" CssClass="btn-primary shop-add-cart-btn pd-add" OnClick="btnDetailAdd_Click" OnClientClick="return shopCheckQty(this);" />
+                            </div>
                             <asp:LinkButton ID="btnDetailWish" runat="server" CssClass="btn-ghost pd-wish" OnClick="btnDetailWish_Click" />
                         </div>
                     </div>
@@ -296,6 +311,77 @@
                     hi.addEventListener('change', commit);
                 });
             }
+
+            /* ---------- quantity stepper (same behaviour as the Promotions page) ---------- */
+            function maxOf(wrap) {
+                var m = parseInt(wrap.getAttribute('data-max'), 10);
+                return (isNaN(m) || m < 0) ? 0 : m;
+            }
+            function isQtyInput(t) { return t && t.classList && t.classList.contains('special-qty-input'); }
+
+            document.addEventListener('click', function (e) {
+                var btn = (e.target && e.target.closest) ? e.target.closest('.special-qty-btn') : null;
+                if (!btn) return;
+                e.preventDefault();
+                var wrap = btn.parentNode;
+                var input = wrap.querySelector('.special-qty-input');
+                if (!input || input.disabled) return;
+                var max = maxOf(wrap);
+                if (max < 1) return;
+                var v = parseInt(input.value, 10);
+                if (isNaN(v) || v < 1) v = 1;
+                v += parseInt(btn.getAttribute('data-step'), 10) || 0;
+                input.value = Math.min(max, Math.max(1, v));
+            });
+
+            // typing: digits only, and never above what's available
+            document.addEventListener('input', function (e) {
+                var input = e.target;
+                if (!isQtyInput(input)) return;
+                var max = maxOf(input.parentNode);
+                var digits = input.value.replace(/[^0-9]/g, '');
+                if (digits !== '') {
+                    var n = parseInt(digits, 10);
+                    digits = String(n > max ? max : n);
+                }
+                if (input.value !== digits) input.value = digits;
+            });
+
+            // leaving the box: empty or 0 goes back to 1
+            document.addEventListener('change', function (e) {
+                var input = e.target;
+                if (!isQtyInput(input)) return;
+                var v = parseInt(input.value, 10);
+                if (isNaN(v) || v < 1) input.value = 1;
+            });
+
+            // Enter in the box must not submit the whole page
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && isQtyInput(e.target)) {
+                    e.preventDefault();
+                    e.target.blur();
+                }
+            });
+
+            // Runs before the Add to Cart postback. The server re-checks everything anyway.
+            window.shopCheckQty = function (link) {
+                try {
+                    if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+                        if (Sys.WebForms.PageRequestManager.getInstance().get_isInAsyncPostBack()) return false;   // stops double-clicks
+                    }
+                    var row = link.parentNode;
+                    var input = row.querySelector('.special-qty-input');
+                    var wrap = row.querySelector('.special-qty');
+                    if (!input || !wrap) return true;
+                    var max = maxOf(wrap);
+                    var v = parseInt(input.value, 10);
+                    if (isNaN(v) || v < 1) { input.value = 1; input.focus(); return false; }
+                    if (v > max) { input.value = max; input.focus(); return false; }
+                    return true;
+                } catch (err) {
+                    return true;
+                }
+            };
 
             /* ---------- product overlay ---------- */
             function lockScroll() {

@@ -895,6 +895,7 @@
     <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.0.min.map" />
     <Content Include="SearchSuggestions.ashx" />
+    <Content Include="NewsletterSignup.ashx" />
     <Content Include="SessionBeacon.ashx" />
     <Content Include="CheckAvailability.ashx" />
     <None Include="Web.Debug.config">
