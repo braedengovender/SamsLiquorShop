@@ -233,6 +233,8 @@
     <Content Include="Images\logo-cropped.png" />
     <Content Include="Images\logo-spaced.png" />
     <Content Include="Images\logo.png" />
+    <Content Include="Images\.png" />
+    <Content Include="Images\person.png" />
     <Content Include="Images\products\gift1.jpg" />
     <Content Include="Images\products\gift2.jpg" />
     <Content Include="Images\products\gift3.jpg" />
