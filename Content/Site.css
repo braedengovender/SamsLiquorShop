@@ -3137,6 +3137,116 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     font-size: 0.78rem;
 }
 
+/* Small "?" next to a form label; its rules popover is built by script on the page. */
+.field-help {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    padding: 0;
+    border: 1px solid var(--text-secondary);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.66rem;
+    font-weight: 700;
+    line-height: 1;
+    vertical-align: 1px;
+    cursor: help;
+    transition: color .15s, border-color .15s, background .15s;
+}
+
+    .field-help:hover,
+    .field-help:focus-visible,
+    .field-help[aria-expanded="true"] {
+        color: #fff;
+        background: var(--accent);
+        border-color: var(--accent);
+        outline: none;
+    }
+
+.field-help-tip {
+    position: fixed;
+    z-index: 2000;
+    width: max-content;
+    max-width: min(280px, calc(100vw - 16px));
+    padding: 10px 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text-primary);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+    font-size: 0.8rem;
+    font-weight: 400;
+    line-height: 1.4;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .12s;
+    pointer-events: none;
+}
+
+    .field-help-tip.open {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .field-help-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .field-help-tip ul {
+        margin: 0;
+        padding-left: 16px;
+    }
+
+    .field-help-tip li + li {
+        margin-top: 2px;
+    }
+
+.password-label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.suggest-password-btn,
+.suggest-password-copy {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+    .suggest-password-btn:hover,
+    .suggest-password-copy:hover {
+        text-decoration: underline;
+    }
+
+.suggested-password-note {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-tint-blue);
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+    .suggested-password-note[hidden] {
+        display: none;
+    }
+
 .register-static-field {
     font-size: 0.95rem;
     color: var(--text-secondary);

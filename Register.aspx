@@ -17,12 +17,12 @@
 
                         <div class="register-grid-2">
                             <div class="login-field">
-                                <label for="txtFirstName">First name</label>
+                                <label for="txtFirstName">First name <button type="button" class="field-help" data-rules="Required.|Use your first name exactly as it appears on your ID.|Up to 50 characters."></button></label>
                                 <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtFirstName" CssClass="field-error" Display="Dynamic" ErrorMessage="First name is required." ValidationGroup="RegisterForm" />
                             </div>
                             <div class="login-field">
-                                <label for="txtLastName">Last name</label>
+                                <label for="txtLastName">Last name <button type="button" class="field-help" data-rules="Required.|Use your surname exactly as it appears on your ID.|Up to 50 characters."></button></label>
                                 <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtLastName" CssClass="field-error" Display="Dynamic" ErrorMessage="Last name is required." ValidationGroup="RegisterForm" />
                             </div>
@@ -30,14 +30,14 @@
 
                         <div class="register-grid-2">
                             <div class="login-field">
-                                <label for="txtIdNumber">SA ID number</label>
+                                <label for="txtIdNumber">SA ID number <button type="button" class="field-help" data-rules="Required.|Exactly 13 digits, numbers only (no spaces).|Must be a valid South African ID number.|Your date of birth is read from the first 6 digits. You must be 18 or older.|Only one account per ID number."></button></label>
                                 <asp:TextBox ID="txtIdNumber" runat="server" ClientIDMode="Static" CssClass="login-input" MaxLength="13" autocomplete="off" placeholder="13 digits" oninput="onIdNumberInput()" />
                                 <span class="field-hint" id="idNumberHint"></span>
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtIdNumber" CssClass="field-error" Display="Dynamic" ErrorMessage="ID number is required." ValidationGroup="RegisterForm" />
                                 <asp:CustomValidator ID="cvIdNumber" runat="server" ControlToValidate="txtIdNumber" CssClass="field-error" Display="Dynamic" ErrorMessage="Enter a valid South African ID number." OnServerValidate="cvIdNumber_ServerValidate" ValidationGroup="RegisterForm" />
                             </div>
                             <div class="login-field">
-                                <label for="txtPhone">Phone number</label>
+                                <label for="txtPhone">Phone number <button type="button" class="field-help" data-rules="Required.|A South African number: 10 digits starting with 0 (e.g. 0821234567), or +27 followed by 9 digits.|No spaces or dashes."></button></label>
                                 <asp:TextBox ID="txtPhone" runat="server" CssClass="login-input" MaxLength="15" autocomplete="tel" placeholder="e.g. 0821234567" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtPhone" CssClass="field-error" Display="Dynamic" ErrorMessage="Phone number is required." ValidationGroup="RegisterForm" />
                                 <asp:RegularExpressionValidator runat="server" ControlToValidate="txtPhone" CssClass="field-error" Display="Dynamic" ErrorMessage="Enter a valid SA phone number." ValidationExpression="^(\+27|0)[1-9][0-9]{8}$" ValidationGroup="RegisterForm" />
@@ -45,7 +45,7 @@
                         </div>
 
                         <div class="login-field">
-                            <label for="fuIdPhoto">Photo of your ID <span class="register-optional">(JPG or PNG, max 5 MB)</span></label>
+                            <label for="fuIdPhoto">Photo of your ID <span class="register-optional">(JPG or PNG, max 5 MB)</span> <button type="button" class="field-help" data-rules="Required.|Fill in your first name, last name and ID number first.|JPG or PNG image, 5 MB or smaller.|At least 400 × 250 pixels. Make sure the whole ID is clear and readable.|Wait until it shows &quot;ID verified&quot; before you continue."></button></label>
                             <asp:FileUpload ID="fuIdPhoto" runat="server" ClientIDMode="Static" CssClass="login-input" accept="image/jpeg,image/png" onchange="onIdPhotoChange(this)" />
                             <asp:HiddenField ID="hdnIdPhotoOk" runat="server" ClientIDMode="Static" Value="0" />
 
@@ -81,7 +81,7 @@
                         </style>
 
                         <div class="login-field">
-                            <label for="txtEmail">Email address</label>
+                            <label for="txtEmail">Email address <button type="button" class="field-help" data-rules="Required.|A valid address, e.g. name@example.com. Up to 100 characters.|We send a 6-digit code here to verify your account, so use one you can open now.|Only one account per email address."></button></label>
                             <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" TextMode="Email" MaxLength="256" autocomplete="email" />
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Email is required." ValidationGroup="RegisterForm" />
                             <asp:RegularExpressionValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Enter a valid email address." ValidationExpression="^[^\s@]+@[^\s@]+\.[^\s@]+$" ValidationGroup="RegisterForm" />
@@ -92,29 +92,29 @@
                         <h3 class="register-section-title">Residential Address</h3>
 
                         <div class="login-field">
-                            <label for="txtAddressSearch">Search your address</label>
+                            <label for="txtAddressSearch">Search your address <button type="button" class="field-help" data-rules="Optional shortcut.|Type at least 5 characters, then pick your address from the list.|The fields below fill in for you. Check them and correct anything that's wrong."></button></label>
                             <input type="text" id="txtAddressSearch" class="login-input" placeholder="Start typing your address..." autocomplete="off" />
                         </div>
 
                         <div class="register-grid-2">
                             <div class="login-field">
-                                <label for="txtUnitNumber">Unit number <span class="register-optional">(optional)</span></label>
+                                <label for="txtUnitNumber">Unit number <span class="register-optional">(optional)</span> <button type="button" class="field-help" data-rules="Optional. Only needed for flats, townhouses or complexes.|Up to 20 characters."></button></label>
                                 <asp:TextBox ID="txtUnitNumber" runat="server" CssClass="login-input" MaxLength="20" autocomplete="off" />
                             </div>
                             <div class="login-field">
-                                <label for="txtUnitName">Unit / complex name <span class="register-optional">(optional)</span></label>
+                                <label for="txtUnitName">Unit / complex name <span class="register-optional">(optional)</span> <button type="button" class="field-help" data-rules="Optional. The name of your building or complex.|Up to 50 characters."></button></label>
                                 <asp:TextBox ID="txtUnitName" runat="server" CssClass="login-input" MaxLength="100" autocomplete="off" />
                             </div>
                         </div>
 
                         <div class="register-grid-2">
                             <div class="login-field">
-                                <label for="txtStreetNumber">Street number</label>
+                                <label for="txtStreetNumber">Street number <button type="button" class="field-help" data-rules="Required.|Your house or building number, e.g. 12 or 12A.|Up to 10 characters."></button></label>
                                 <asp:TextBox ID="txtStreetNumber" runat="server" ClientIDMode="Static" CssClass="login-input" MaxLength="20" autocomplete="off" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtStreetNumber" CssClass="field-error" Display="Dynamic" ErrorMessage="Street number is required." ValidationGroup="RegisterForm" />
                             </div>
                             <div class="login-field">
-                                <label for="txtStreetName">Street name</label>
+                                <label for="txtStreetName">Street name <button type="button" class="field-help" data-rules="Required.|The full street name, e.g. Florida Road.|Up to 100 characters."></button></label>
                                 <asp:TextBox ID="txtStreetName" runat="server" ClientIDMode="Static" CssClass="login-input" MaxLength="100" autocomplete="address-line1" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtStreetName" CssClass="field-error" Display="Dynamic" ErrorMessage="Street name is required." ValidationGroup="RegisterForm" />
                             </div>
@@ -122,12 +122,12 @@
 
                         <div class="register-grid-2">
                             <div class="login-field">
-                                <label for="txtSuburb">Suburb</label>
+                                <label for="txtSuburb">Suburb <button type="button" class="field-help" data-rules="Required.|e.g. Morningside or Umhlanga.|Up to 50 characters."></button></label>
                                 <asp:TextBox ID="txtSuburb" runat="server" ClientIDMode="Static" CssClass="login-input" MaxLength="100" autocomplete="address-level3" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtSuburb" CssClass="field-error" Display="Dynamic" ErrorMessage="Suburb is required." ValidationGroup="RegisterForm" />
                             </div>
                             <div class="login-field">
-                                <label for="txtCity">City</label>
+                                <label for="txtCity">City <button type="button" class="field-help" data-rules="Required.|Up to 50 characters.|We deliver within the Durban area only."></button></label>
                                 <asp:TextBox ID="txtCity" runat="server" ClientIDMode="Static" CssClass="login-input" MaxLength="100" autocomplete="address-level2" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtCity" CssClass="field-error" Display="Dynamic" ErrorMessage="City is required." ValidationGroup="RegisterForm" />
                             </div>
@@ -135,13 +135,13 @@
 
                         <div class="register-grid-2">
                             <div class="login-field">
-                                <label for="txtPostalCode">Postal code</label>
+                                <label for="txtPostalCode">Postal code <button type="button" class="field-help" data-rules="Required.|Exactly 4 digits, e.g. 4001."></button></label>
                                 <asp:TextBox ID="txtPostalCode" runat="server" ClientIDMode="Static" CssClass="login-input" MaxLength="4" autocomplete="postal-code" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtPostalCode" CssClass="field-error" Display="Dynamic" ErrorMessage="Postal code is required." ValidationGroup="RegisterForm" />
                                 <asp:RegularExpressionValidator runat="server" ControlToValidate="txtPostalCode" CssClass="field-error" Display="Dynamic" ErrorMessage="Postal code must be 4 digits." ValidationExpression="^\d{4}$" ValidationGroup="RegisterForm" />
                             </div>
                             <div class="login-field">
-                                <label for="ddlProvince">Province</label>
+                                <label for="ddlProvince">Province <button type="button" class="field-help" data-rules="Required.|Choose your province from the list."></button></label>
                                 <asp:DropDownList ID="ddlProvince" runat="server" ClientIDMode="Static" CssClass="login-input">
                                     <asp:ListItem Text="Select province" Value="" />
                                     <asp:ListItem Text="Eastern Cape" Value="Eastern Cape" />
@@ -165,7 +165,7 @@
                         <h3 class="register-section-title">Account Details</h3>
 
                         <div class="login-field">
-                            <label for="txtUsername">Username <span class="register-optional">(optional - we'll use your email if left blank)</span></label>
+                            <label for="txtUsername">Username <span class="register-optional">(optional - we'll use your email if left blank)</span> <button type="button" class="field-help" data-rules="Optional. If left blank, your email address becomes your username.|4 to 30 characters: letters, numbers and underscores (_) only. No spaces.|Must not already be taken.|If your email is longer than 50 characters, you must choose a username."></button></label>
                             <asp:TextBox ID="txtUsername" runat="server" CssClass="login-input" MaxLength="30" autocomplete="username" />
                             <asp:RegularExpressionValidator runat="server" ControlToValidate="txtUsername" CssClass="field-error" Display="Dynamic" ErrorMessage="Username must be 4-30 letters, numbers or underscores." ValidationExpression="^[a-zA-Z0-9_]{4,30}$" ValidationGroup="RegisterForm" />
                         </div>
@@ -173,7 +173,10 @@
                         <div class="register-grid-2">
 
                             <div class="login-field login-password-wrap">
-                                <label for="<%= txtPassword.ClientID %>">Password</label>
+                                <div class="password-label-row">
+                                    <label for="<%= txtPassword.ClientID %>">Password <button type="button" class="field-help" data-rules="Required.|8 to 50 characters.|At least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special character (e.g. ! @ # ?).|Tip: press &quot;Suggest password&quot; to generate a strong one."></button></label>
+                                    <button type="button" class="suggest-password-btn" onclick="suggestPassword()">Suggest password</button>
+                                </div>
 
                                 <div class="password-input-wrap">
                                     <asp:TextBox
@@ -196,6 +199,11 @@
                                             <circle cx="12" cy="12" r="2.5"></circle>
                                         </svg>
                                     </button>
+                                </div>
+
+                                <div id="suggestedPasswordNote" class="suggested-password-note" hidden>
+                                    <span>Suggested password filled in both fields. Save it somewhere safe.</span>
+                                    <button type="button" class="suggest-password-copy" onclick="copySuggestedPassword(this)">Copy</button>
                                 </div>
 
                                 <!-- Password strength -->
@@ -260,7 +268,7 @@
 
 
                             <div class="login-field login-password-wrap">
-                                <label for="<%= txtConfirmPassword.ClientID %>">Confirm password</label>
+                                <label for="<%= txtConfirmPassword.ClientID %>">Confirm password <button type="button" class="field-help" data-rules="Required.|Type the same password again. It must match exactly (capitals count)."></button></label>
 
                                 <div class="password-input-wrap">
                                     <asp:TextBox
@@ -312,7 +320,7 @@
                         <div class="login-field register-terms-field">
                             <label class="register-terms-label">
                                 <asp:CheckBox ID="chkTerms" runat="server" ClientIDMode="Static" />
-                                <span>I confirm I am 18 or older and agree to the Terms &amp; Conditions and Privacy Policy.</span>
+                                <span>I confirm I am 18 or older and agree to the Terms &amp; Conditions and Privacy Policy. <button type="button" class="field-help" data-rules="Required. Tick the box to continue.|You must be 18 or older to buy alcohol in South Africa."></button></span>
                             </label>
                             <asp:CustomValidator ID="cvTerms" runat="server" CssClass="field-error" Display="Dynamic" ErrorMessage="You must accept the Terms &amp; Conditions to continue." OnServerValidate="cvTerms_ServerValidate" ValidationGroup="RegisterForm" />
                         </div>
@@ -757,8 +765,163 @@
                         });
                     }
 
+                    // ---------- Suggest password ----------
+                    // No < > & characters: ASP.NET request validation rejects some combinations of them.
+                    var PW_SETS = {
+                        lower: 'abcdefghijkmnopqrstuvwxyz',
+                        upper: 'ABCDEFGHJKLMNPQRSTUVWXYZ',
+                        digit: '23456789',
+                        special: '!@#$%*?-_=+'
+                    };
+
+                    function randomIndex(max) {
+                        var buf = new Uint32Array(1);
+                        var limit = Math.floor(0x100000000 / max) * max;
+                        do { window.crypto.getRandomValues(buf); } while (buf[0] >= limit);
+                        return buf[0] % max;
+                    }
+
+                    function pick(chars) { return chars.charAt(randomIndex(chars.length)); }
+
+                    function generatePassword(length) {
+                        var all = PW_SETS.lower + PW_SETS.upper + PW_SETS.digit + PW_SETS.special;
+                        // One of each required type, the rest from everything.
+                        var chars = [pick(PW_SETS.lower), pick(PW_SETS.upper), pick(PW_SETS.digit), pick(PW_SETS.special)];
+                        while (chars.length < length) chars.push(pick(all));
+                        for (var i = chars.length - 1; i > 0; i--) {
+                            var j = randomIndex(i + 1);
+                            var t = chars[i]; chars[i] = chars[j]; chars[j] = t;
+                        }
+                        return chars.join('');
+                    }
+
+                    function suggestPassword() {
+                        var pw = idEl('<%= txtPassword.ClientID %>');
+                        var confirm = idEl('<%= txtConfirmPassword.ClientID %>');
+                        var value = generatePassword(16);
+
+                        [pw, confirm].forEach(function (el) {
+                            el.value = value;
+                            el.dispatchEvent(new Event('input', { bubbles: true }));
+                            el.dispatchEvent(new Event('change', { bubbles: true })); // re-runs the ASP.NET validators
+                        });
+
+                        // Show the password so the customer can see (and note) what was chosen.
+                        if (pw.type === 'password') {
+                            toggleFieldVisibility(pw.id, pw.parentNode.querySelector('.login-eye-btn'));
+                        }
+                        idEl('suggestedPasswordNote').hidden = false;
+                    }
+
+                    function copySuggestedPassword(btn) {
+                        var value = idEl('<%= txtPassword.ClientID %>').value;
+                        function done(ok) {
+                            btn.textContent = ok ? 'Copied' : 'Copy failed';
+                            setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
+                        }
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(value).then(function () { done(true); }, function () { done(false); });
+                        } else {
+                            done(false);
+                        }
+                    }
+
+                    // ---------- Field help "?" popovers ----------
+                    function initFieldHelp() {
+                        var buttons = document.querySelectorAll('.field-help[data-rules]');
+                        var openBtn = null;
+
+                        function position(btn) {
+                            var tip = btn._tip;
+                            var r = btn.getBoundingClientRect();
+                            tip.style.left = '0px';
+                            tip.style.top = '0px';
+                            var w = tip.offsetWidth, h = tip.offsetHeight;
+                            var left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+                            var top = r.bottom + 8;
+                            if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 8);
+                            tip.style.left = left + 'px';
+                            tip.style.top = top + 'px';
+                        }
+
+                        function show(btn) {
+                            if (openBtn && openBtn !== btn) hide(openBtn, true);
+                            btn._tip.classList.add('open');
+                            position(btn);
+                        }
+
+                        function hide(btn, force) {
+                            if (!force && btn._pinned) return;
+                            btn._pinned = false;
+                            btn._tip.classList.remove('open');
+                            btn.setAttribute('aria-expanded', 'false');
+                            if (openBtn === btn) openBtn = null;
+                        }
+
+                        Array.prototype.forEach.call(buttons, function (btn, i) {
+                            var label = btn.closest('label');
+                            var name = label && label.firstChild ? label.firstChild.textContent.trim() : 'this field';
+                            if (name.length > 40) name = 'this field';
+
+                            var tip = document.createElement('div');
+                            tip.className = 'field-help-tip';
+                            tip.id = 'fieldHelpTip' + i;
+                            tip.setAttribute('role', 'tooltip');
+                            var title = document.createElement('div');
+                            title.className = 'field-help-title';
+                            title.textContent = name;
+                            tip.appendChild(title);
+                            var list = document.createElement('ul');
+                            btn.getAttribute('data-rules').split('|').forEach(function (rule) {
+                                var li = document.createElement('li');
+                                li.textContent = rule;
+                                list.appendChild(li);
+                            });
+                            tip.appendChild(list);
+                            document.body.appendChild(tip);
+
+                            btn._tip = tip;
+                            btn.textContent = '?';
+                            btn.setAttribute('aria-label', 'Rules for ' + name);
+                            btn.setAttribute('aria-describedby', tip.id);
+                            btn.setAttribute('aria-expanded', 'false');
+
+                            btn.addEventListener('mouseenter', function () { show(btn); });
+                            btn.addEventListener('mouseleave', function () { hide(btn); });
+                            btn.addEventListener('focus', function () { show(btn); });
+                            btn.addEventListener('blur', function () { hide(btn, true); });
+                            btn.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (btn._pinned) { hide(btn, true); return; }
+                                show(btn);
+                                btn._pinned = true;
+                                btn.setAttribute('aria-expanded', 'true');
+                                openBtn = btn;
+                            });
+                        });
+
+                        document.addEventListener('click', function () { if (openBtn) hide(openBtn, true); });
+                        document.addEventListener('keydown', function (e) {
+                            if (e.key === 'Escape' && openBtn) hide(openBtn, true);
+                        });
+                        window.addEventListener('scroll', function () {
+                            document.querySelectorAll('.field-help-tip.open').forEach(function (t) { t.classList.remove('open'); });
+                            if (openBtn) hide(openBtn, true);
+                        }, { passive: true });
+                        window.addEventListener('resize', function () { if (openBtn) position(openBtn); });
+                    }
+
                     window.addEventListener('load', initAddressAutocomplete);
                     window.addEventListener('load', watchIdDetails);
+                    window.addEventListener('load', initFieldHelp);
+                    window.addEventListener('load', function () {
+                        var pw = idEl('<%= txtPassword.ClientID %>');
+                        if (!pw) return;
+                        pw.addEventListener('input', function (e) {
+                            if (e.isTrusted) idEl('suggestedPasswordNote').hidden = true; // typed by the customer
+                        });
+                    });
                 </script>
             </div>
         </div>
