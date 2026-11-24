@@ -44,7 +44,7 @@
                 <asp:TextBox runat="server" ID="txtQty" CssClass="special-qty-input" Text='<%# (int)Eval("MaxQty") > 0 ? "1" : "0" %>' MaxLength="2" Enabled='<%# (int)Eval("MaxQty") > 0 %>' autocomplete="off" inputmode="numeric" aria-label="Quantity" />
                 <button type="button" class="special-qty-btn" data-step="1" aria-label="Increase quantity">+</button>
               </div>
-              <asp:LinkButton runat="server" CommandName="AddToCart" CommandArgument='<%# Eval("Product_ID") %>' CssClass="btn-primary shop-add-cart-btn" OnClientClick="return specialsCheckQty(this);" Enabled='<%# (int)Eval("MaxQty") > 0 %>'><%# Eval("BtnText") %></asp:LinkButton>
+              <asp:LinkButton runat="server" Visible='<%# !IsStaff %>' CommandName="AddToCart" CommandArgument='<%# Eval("Product_ID") %>' CssClass="btn-primary shop-add-cart-btn" OnClientClick="return specialsCheckQty(this);" Enabled='<%# (int)Eval("MaxQty") > 0 %>'><%# Eval("BtnText") %></asp:LinkButton>
             </div>
           </div>
         </ItemTemplate>

@@ -509,7 +509,28 @@ namespace SamsLiquorShop.Manager
             e.Row.Attributes["onclick"] = "if (event.target.closest('a')) return; window.location.href = this.getAttribute('data-href');";
             e.Row.Attributes["onkeydown"] = "if (event.key === 'Enter') { window.location.href = this.getAttribute('data-href'); }";
         }
+        // Manage Discounts opens a discount (and its products) straight away when given ?view=<id>
+        protected string DiscountUrl(object discountId)
+        {
+            return ResolveUrl("~/Manager/Discounts.aspx?view=" + Convert.ToInt32(discountId));
+        }
 
+        // Makes each Active Discounts row clickable (and reachable with the keyboard)
+        protected void gvActiveDiscounts_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType != DataControlRowType.DataRow) return;
+
+            object id = DataBinder.Eval(e.Row.DataItem, "Discount_ID");
+            string url = DiscountUrl(id);
+
+            e.Row.CssClass = "dash-row-link";
+            e.Row.Attributes["data-href"] = url;
+            e.Row.Attributes["tabindex"] = "0";
+            e.Row.Attributes["role"] = "link";
+            e.Row.Attributes["aria-label"] = "Open this discount in Manage Discounts";
+            e.Row.Attributes["onclick"] = "if (event.target.closest('a')) return; window.location.href = this.getAttribute('data-href');";
+            e.Row.Attributes["onkeydown"] = "if (event.key === 'Enter') { window.location.href = this.getAttribute('data-href'); }";
+        }
         private void LoadTopCustomers(DateTime cutoff)
         {
             string query = @"
@@ -545,7 +566,7 @@ namespace SamsLiquorShop.Manager
         private void LoadActiveDiscounts()
         {
             string query = @"
-                SELECT Discount_Name, Discount_Type, Discount_Value, Discount_EndDate
+               SELECT Discount_ID, Discount_Name, Discount_Type, Discount_Value, Discount_EndDate
                 FROM Discount
                 WHERE LTRIM(RTRIM(Discount_Status)) = 'Active'
                   AND Discount_StartDate <= GETDATE()

@@ -160,11 +160,14 @@
                     </div>
 
                     <div class="mgr-table-card">
-                        <div class="dash-card-head"><h3>Active Discounts</h3></div>
+                        <div class="dash-card-head"><h3>Active Discounts</h3><span class="dash-card-meta">click a discount to open it</span></div>
                         <asp:GridView ID="gvActiveDiscounts" runat="server" AutoGenerateColumns="false" CssClass="dash-table" GridLines="None"
-                            EmptyDataText="No discounts are running right now." EmptyDataRowStyle-CssClass="dash-table-empty">
+                            EmptyDataText="No discounts are running right now." EmptyDataRowStyle-CssClass="dash-table-empty"
+                            OnRowDataBound="gvActiveDiscounts_RowDataBound">
                             <Columns>
-                                <asp:BoundField DataField="Discount_Name" HeaderText="Name" ItemStyle-CssClass="is-wrap" />
+                                <asp:TemplateField HeaderText="Name" ItemStyle-CssClass="is-wrap">
+                                    <ItemTemplate><a href="<%# DiscountUrl(Eval("Discount_ID")) %>"><%#: Eval("Discount_Name") %></a></ItemTemplate>
+                                </asp:TemplateField>
                                 <asp:TemplateField HeaderText="Value" ItemStyle-CssClass="is-num" HeaderStyle-CssClass="is-num">
                                     <ItemTemplate><%# DiscountValue(Eval("Discount_Type"), Eval("Discount_Value")) %></ItemTemplate>
                                 </asp:TemplateField>

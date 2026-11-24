@@ -63,6 +63,8 @@ namespace SamsLiquorShop.Helpers
         // Adds to the session wishlist and, for a logged-in customer, the database (e.g. "Move to wishlist" in the cart)
         public static void AddToWishlist(HttpSessionState session, int productId)
         {
+            if (CartHelper.IsStaff(session)) return;
+
             CartHelper.GetWishlist(session).Add(productId);
             if (IsCustomer(session)) Add(Convert.ToInt32(session["CustomerID"]), productId);
         }
