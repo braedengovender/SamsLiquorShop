@@ -65,6 +65,10 @@ namespace SamsLiquorShop.Customer
                         txtPhone.Text = Val(r, "Customer_PhoneNumber");
                         txtUsername.Text = Val(r, "Customer_Username");
                         txtEmail.Text = Val(r, "Customer_EmailAddress");
+
+                        // The saved values: the live availability check never reports these as taken
+                        txtUsername.Attributes["data-original"] = txtUsername.Text;
+                        txtEmail.Attributes["data-original"] = txtEmail.Text;
                         txtUnitNumber.Text = Val(r, "Customer_UnitNumber");
                         txtUnitName.Text = Val(r, "Customer_UnitName");
                         txtStreetNumber.Text = Val(r, "Customer_StreetNumber");
@@ -123,8 +127,8 @@ namespace SamsLiquorShop.Customer
             WebControl bad = null;
             string error = null;
 
-            if (first.Length == 0) { bad = txtFirstName; error = "First name is required."; }
-            else if (last.Length == 0) { bad = txtLastName; error = "Last name is required."; }
+            if ((error = AccountHelper.NameError(first, "First name")) != null) { bad = txtFirstName; }
+            else if ((error = AccountHelper.NameError(last, "Last name")) != null) { bad = txtLastName; }
             //else if ((error = ValidateSaId(idNumber)) != null) { bad = txtIdNumber; }
             else if (!Regex.IsMatch(phone, @"^(\+27|0)[1-9][0-9]{8}$")) { bad = txtPhone; error = "Phone number must look like 0821234567 or +27821234567."; }
             else if (!Regex.IsMatch(username, @"^[A-Za-z0-9_]{4,30}$")) { bad = txtUsername; error = "Username must be 4 to 30 characters: letters, numbers or underscores only."; }
@@ -135,10 +139,9 @@ namespace SamsLiquorShop.Customer
             else if (city.Length == 0) { bad = txtCity; error = "City is required."; }
             else if (!Regex.IsMatch(postalCode, @"^\d{4}$")) { bad = txtPostalCode; error = "Postal code must be 4 digits."; }
             else if (province.Length == 0) { bad = ddlProvince; error = "Please select a province."; }
-            else if (IsTaken("SELECT COUNT(*) FROM Customer WHERE Customer_Username = @V AND Customer_ID <> @Id", username)
-                  || IsTaken("SELECT COUNT(*) FROM Employee WHERE Employee_Username = @V", username)) { bad = txtUsername; error = "That username is already taken."; }
-            else if (IsTaken("SELECT COUNT(*) FROM Customer WHERE Customer_EmailAddress = @V AND Customer_ID <> @Id", email)
-                  || IsTaken("SELECT COUNT(*) FROM Employee WHERE Employee_EmailAddress = @V", email)) { bad = txtEmail; error = "That email address is already registered."; }
+            // Login accepts a username or an email, so neither may match any other customer's or employee's username or email
+            else if (AccountHelper.LoginNameTaken(username, CustomerId, null)) { bad = txtUsername; error = "That username is already taken."; }
+            else if (AccountHelper.LoginNameTaken(email, CustomerId, null)) { bad = txtEmail; error = "That email address is already in use by another account."; }
            // else if (IsTaken("SELECT COUNT(*) FROM Customer WHERE Customer_IDNumber = @V AND Customer_ID <> @Id", idNumber)) { bad = txtIdNumber; error = "That ID number is already registered to another account."; }
 
             if (error != null)
@@ -205,6 +208,7 @@ namespace SamsLiquorShop.Customer
 
             // Keep the greeting / header in sync with the new username
             Session["UserName"] = username;
+            Session.Remove("NavName");   // the nav bar re-reads the (possibly new) first name
 
             // Re-read from the database so the form shows exactly what was stored
             LoadDetails();
@@ -312,8 +316,7 @@ namespace SamsLiquorShop.Customer
             }
 
             // Someone may have registered the address in the last few minutes
-            if (IsTaken("SELECT COUNT(*) FROM Customer WHERE Customer_EmailAddress = @V AND Customer_ID <> @Id", newEmail)
-                || IsTaken("SELECT COUNT(*) FROM Employee WHERE Employee_EmailAddress = @V", newEmail))
+            if (AccountHelper.LoginNameTaken(newEmail, CustomerId, null))
             {
                 ClearEmailChange();
                 HideEmailVerify();

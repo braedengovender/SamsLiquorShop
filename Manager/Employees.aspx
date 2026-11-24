@@ -61,19 +61,21 @@
                             <div class="emp-form-grid">
                                 <div class="login-field">
                                     <label for="<%= txtFirstName.ClientID %>">First name</label>
-                                    <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" />
+                                    <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" data-letters="1" />
                                 </div>
                                 <div class="login-field">
                                     <label for="<%= txtLastName.ClientID %>">Last name</label>
-                                    <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" />
+                                    <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" data-letters="1" />
                                 </div>
                                 <div class="login-field">
                                     <label for="<%= txtUsername.ClientID %>">Username</label>
-                                    <asp:TextBox ID="txtUsername" runat="server" CssClass="login-input" MaxLength="30" />
+                                    <asp:TextBox ID="txtUsername" runat="server" CssClass="login-input" MaxLength="30" data-avail="username" data-avail-scope="employee" />
+                                    <span class="field-hint avail-hint" aria-live="polite"></span>
                                 </div>
                                 <div class="login-field">
                                     <label for="<%= txtEmail.ClientID %>">Email address</label>
-                                    <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" />
+                                    <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" data-avail="email" data-avail-scope="employee" />
+                                    <span class="field-hint avail-hint" aria-live="polite"></span>
                                 </div>
                                 <div class="login-field">
                                     <label for="<%= txtIdNumber.ClientID %>">ID number</label>
@@ -115,7 +117,7 @@
                             </div>
 
                             <div class="emp-form-actions">
-                                <asp:Button ID="btnSave" runat="server" Text="Save Employee" CssClass="btn-primary" OnClick="btnSave_Click" />
+                                <asp:Button ID="btnSave" runat="server" Text="Save Employee" CssClass="btn-primary" OnClick="btnSave_Click" OnClientClick="return availabilityOk();" />
                                 <asp:Button ID="btnCancel" runat="server" Text="Cancel" CssClass="btn-ghost" OnClick="btnCancel_Click" />
                             </div>
                         </div>

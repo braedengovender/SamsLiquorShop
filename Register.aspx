@@ -17,14 +17,16 @@
 
                         <div class="register-grid-2">
                             <div class="login-field">
-                                <label for="txtFirstName">First name <button type="button" class="field-help" data-rules="Required.|Use your first name exactly as it appears on your ID.|Up to 50 characters."></button></label>
-                                <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" />
+                                <label for="txtFirstName">First name <button type="button" class="field-help" data-rules="Required.|Use your first name exactly as it appears on your ID.|Letters, spaces, hyphens and apostrophes only.|Up to 50 characters."></button></label>
+                                <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" data-letters="1" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtFirstName" CssClass="field-error" Display="Dynamic" ErrorMessage="First name is required." ValidationGroup="RegisterForm" />
+                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txtFirstName" CssClass="field-error" Display="Dynamic" ErrorMessage="First name can only contain letters, spaces, hyphens and apostrophes." ValidationExpression="^\s*[A-Za-z]+([ '-][A-Za-z]+)*\s*$" ValidationGroup="RegisterForm" />
                             </div>
                             <div class="login-field">
-                                <label for="txtLastName">Last name <button type="button" class="field-help" data-rules="Required.|Use your surname exactly as it appears on your ID.|Up to 50 characters."></button></label>
-                                <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" />
+                                <label for="txtLastName">Last name <button type="button" class="field-help" data-rules="Required.|Use your surname exactly as it appears on your ID.|Letters, spaces, hyphens and apostrophes only.|Up to 50 characters."></button></label>
+                                <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" data-letters="1" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txtLastName" CssClass="field-error" Display="Dynamic" ErrorMessage="Last name is required." ValidationGroup="RegisterForm" />
+                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txtLastName" CssClass="field-error" Display="Dynamic" ErrorMessage="Last name can only contain letters, spaces, hyphens and apostrophes." ValidationExpression="^\s*[A-Za-z]+([ '-][A-Za-z]+)*\s*$" ValidationGroup="RegisterForm" />
                             </div>
                         </div>
 
@@ -45,8 +47,8 @@
                         </div>
 
                         <div class="login-field">
-                            <label for="fuIdPhoto">Photo of your ID <span class="register-optional">(JPG or PNG, max 5 MB)</span> <button type="button" class="field-help" data-rules="Required.|Fill in your first name, last name and ID number first.|JPG or PNG image, 5 MB or smaller.|At least 400 × 250 pixels. Make sure the whole ID is clear and readable.|Wait until it shows &quot;ID verified&quot; before you continue."></button></label>
-                            <asp:FileUpload ID="fuIdPhoto" runat="server" ClientIDMode="Static" CssClass="login-input" accept="image/jpeg,image/png" onchange="onIdPhotoChange(this)" />
+                            <label for="fuIdPhoto">Photo of your ID <span class="register-optional">(any image)</span> <button type="button" class="field-help" data-rules="Required.|Fill in your first name, last name and ID number first.|Any image file works (JPG, PNG, HEIC, WebP and so on).|Wait until it shows &quot;ID verified&quot; before you continue."></button></label>
+                            <asp:FileUpload ID="fuIdPhoto" runat="server" ClientIDMode="Static" CssClass="login-input" accept="image/*" onchange="onIdPhotoChange(this)" />
                             <asp:HiddenField ID="hdnIdPhotoOk" runat="server" ClientIDMode="Static" Value="0" />
 
                             <div id="idScan" class="id-scan" style="display:none;">
@@ -83,6 +85,7 @@
                         <div class="login-field">
                             <label for="txtEmail">Email address <button type="button" class="field-help" data-rules="Required.|A valid address, e.g. name@example.com. Up to 100 characters.|We send a 6-digit code here to verify your account, so use one you can open now.|Only one account per email address."></button></label>
                             <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" TextMode="Email" MaxLength="256" autocomplete="email" />
+                            <span id="emailAvailHint" class="field-hint avail-hint" aria-live="polite"></span>
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Email is required." ValidationGroup="RegisterForm" />
                             <asp:RegularExpressionValidator runat="server" ControlToValidate="txtEmail" CssClass="field-error" Display="Dynamic" ErrorMessage="Enter a valid email address." ValidationExpression="^[^\s@]+@[^\s@]+\.[^\s@]+$" ValidationGroup="RegisterForm" />
                         </div>
@@ -167,6 +170,7 @@
                         <div class="login-field">
                             <label for="txtUsername">Username <span class="register-optional">(optional - we'll use your email if left blank)</span> <button type="button" class="field-help" data-rules="Optional. If left blank, your email address becomes your username.|4 to 30 characters: letters, numbers and underscores (_) only. No spaces.|Must not already be taken.|If your email is longer than 50 characters, you must choose a username."></button></label>
                             <asp:TextBox ID="txtUsername" runat="server" CssClass="login-input" MaxLength="30" autocomplete="username" />
+                            <span id="usernameAvailHint" class="field-hint avail-hint" aria-live="polite"></span>
                             <asp:RegularExpressionValidator runat="server" ControlToValidate="txtUsername" CssClass="field-error" Display="Dynamic" ErrorMessage="Username must be 4-30 letters, numbers or underscores." ValidationExpression="^[a-zA-Z0-9_]{4,30}$" ValidationGroup="RegisterForm" />
                         </div>
 
@@ -318,10 +322,15 @@
 
                     <div class="register-section">
                         <div class="login-field register-terms-field">
-                            <label class="register-terms-label">
+                            <div class="register-terms-box">
                                 <asp:CheckBox ID="chkTerms" runat="server" ClientIDMode="Static" />
-                                <span>I confirm I am 18 or older and agree to the Terms &amp; Conditions and Privacy Policy. <button type="button" class="field-help" data-rules="Required. Tick the box to continue.|You must be 18 or older to buy alcohol in South Africa."></button></span>
-                            </label>
+                                <label for="chkTerms" class="register-terms-label">
+                                    I confirm I am 18 or older and agree to the
+                                    <a href="Legal.aspx#terms" target="_blank" rel="noopener">Terms &amp; Conditions</a>
+                                    and
+                                    <a href="Legal.aspx#privacy" target="_blank" rel="noopener">Privacy Policy</a>.
+                                </label>
+                            </div>
                             <asp:CustomValidator ID="cvTerms" runat="server" CssClass="field-error" Display="Dynamic" ErrorMessage="You must accept the Terms &amp; Conditions to continue." OnServerValidate="cvTerms_ServerValidate" ValidationGroup="RegisterForm" />
                         </div>
 
@@ -616,8 +625,7 @@
                     }
 
                     // ---------- Demo ID photo "AI" check ----------
-                    var ID_MAX_BYTES = 5 * 1024 * 1024;
-                    var ID_MIN_W = 400, ID_MIN_H = 250;
+                    var ID_MAX_BYTES = 25 * 1024 * 1024; // matches maxRequestLength in Web.config
                     var idScanTimer = null;
 
                     function idEl(id) { return document.getElementById(id); }
@@ -677,33 +685,27 @@
                             failIdScan('Enter your first name, last name and a valid ID number above, then choose your photo again.');
                             return;
                         }
-                        if (!/^image\/(jpeg|png)$/.test(file.type)) {
-                            failIdScan('Please upload a JPG or PNG image.');
+                        if (!isImageFile(file)) {
+                            failIdScan('Please choose an image file.');
                             return;
                         }
                         if (file.size > ID_MAX_BYTES) {
-                            failIdScan('That image is too large. Maximum size is 5 MB.');
+                            failIdScan('That image is too large. Maximum size is 25 MB.');
                             return;
                         }
 
+                        // Any image is accepted. If the browser can't preview it (e.g. HEIC), just skip the thumbnail.
+                        var thumb = idEl('idScanThumb');
                         var url = URL.createObjectURL(file);
-                        var img = new Image();
-                        img.onerror = function () {
-                            URL.revokeObjectURL(url);
-                            failIdScan("We couldn't read that image. Please try another photo.");
-                        };
-                        img.onload = function () {
-                            if (img.width < ID_MIN_W || img.height < ID_MIN_H) {
-                                URL.revokeObjectURL(url);
-                                failIdScan('That image is too small or low-resolution. Please upload a clearer photo of your ID.');
-                                return;
-                            }
-                            var thumb = idEl('idScanThumb');
-                            thumb.src = url;
-                            thumb.style.display = 'block';
-                            runIdScan(file, v);
-                        };
-                        img.src = url;
+                        thumb.onerror = function () { thumb.style.display = 'none'; URL.revokeObjectURL(url); };
+                        thumb.src = url;
+                        thumb.style.display = 'block';
+                        runIdScan(file, v);
+                    }
+
+                    function isImageFile(file) {
+                        if (/^image\//i.test(file.type)) return true;
+                        return /\.(jpe?g|jfif|png|gif|bmp|webp|heic|heif|tiff?|avif)$/i.test(file.name);
                     }
 
                     function runIdScan(file, v) {
@@ -769,6 +771,49 @@
                             });
                         });
                     }
+
+                    // ---------- Live username / email availability ----------
+                    // Asks CheckAvailability.ashx while the customer types (after a short pause).
+                    // Only a hint: the Create account button still re-checks on the server.
+                    function initAvailabilityCheck(inputId, hintId, type, pattern, idleText) {
+                        var input = idEl(inputId), hint = idEl(hintId);
+                        if (!input || !hint) return;
+                        var timer = null, latest = 0;
+
+                        function setHint(text, cls) {
+                            hint.textContent = text || '';
+                            hint.className = 'field-hint avail-hint' + (cls ? ' ' + cls : '');
+                        }
+
+                        function check() {
+                            var value = input.value.trim();
+                            clearTimeout(timer);
+                            if (!value) { setHint(idleText, ''); return; }
+                            if (!pattern.test(value)) { setHint('', ''); return; } // the format validator handles this
+                            setHint('Checking availability…', 'checking');
+
+                            timer = setTimeout(function () {
+                                var req = ++latest;
+                                fetch('CheckAvailability.ashx?type=' + type + '&value=' + encodeURIComponent(value), { credentials: 'same-origin' })
+                                    .then(function (r) { return r.json(); })
+                                    .then(function (d) {
+                                        if (req !== latest || input.value.trim() !== value) return; // a newer check is on its way
+                                        if (d.available === true) setHint('✓ ' + d.message, 'valid');
+                                        else if (d.available === false) setHint('✗ ' + d.message, 'invalid');
+                                        else setHint(d.message, '');
+                                    })
+                                    .catch(function () { if (req === latest) setHint('', ''); });
+                            }, 450);
+                        }
+
+                        input.addEventListener('input', check);
+                        if (input.value.trim()) check(); // e.g. after a postback
+                    }
+
+                    window.addEventListener('load', function () {
+                        initAvailabilityCheck('<%= txtEmail.ClientID %>', 'emailAvailHint', 'email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/, '');
+                        initAvailabilityCheck('<%= txtUsername.ClientID %>', 'usernameAvailHint', 'username', /^[a-zA-Z0-9_]{4,30}$/, '');
+                    });
 
                     // ---------- Suggest password ----------
                     // No < > & characters: ASP.NET request validation rejects some combinations of them.

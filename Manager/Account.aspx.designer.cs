@@ -41,5 +41,13 @@ namespace SamsLiquorShop.Manager
         protected global::System.Web.UI.WebControls.Button btnVerifyPassword;
         protected global::System.Web.UI.WebControls.Button btnResendPasswordCode;
         protected global::System.Web.UI.WebControls.Button btnCancelPasswordChange;
+        protected global::System.Web.UI.WebControls.Panel pnlEmailVerify;
+        protected global::System.Web.UI.WebControls.Label lblPendingEmail;
+        protected global::System.Web.UI.WebControls.Label lblEmailDemo;
+        protected global::System.Web.UI.WebControls.TextBox txtEmailCode;
+        protected global::System.Web.UI.WebControls.Label lblEmailCodeError;
+        protected global::System.Web.UI.WebControls.Button btnVerifyEmail;
+        protected global::System.Web.UI.WebControls.Button btnResendEmailCode;
+        protected global::System.Web.UI.WebControls.Button btnCancelEmailChange;
     }
 }

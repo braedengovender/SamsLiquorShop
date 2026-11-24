@@ -216,9 +216,9 @@ namespace SamsLiquorShop.Helpers
             r.Email = Clean(r.Email);
             r.Phone = Regex.Replace(Clean(r.Phone), @"[\s\-\(\)]", "");
 
-            if (r.FirstName.Length == 0 || r.FirstName.Length > 50 || !NameFormat.IsMatch(r.FirstName))
+            if (!AccountHelper.IsValidName(r.FirstName))
                 errors.Add("Please enter your first name (letters only, up to 50 characters).");
-            if (r.LastName.Length == 0 || r.LastName.Length > 50 || !NameFormat.IsMatch(r.LastName))
+            if (!AccountHelper.IsValidName(r.LastName))
                 errors.Add("Please enter your last name (letters only, up to 50 characters).");
             if (r.Email.Length == 0 || r.Email.Length > 100 || !EmailFormat.IsMatch(r.Email))
                 errors.Add("Please enter a valid email address.");
@@ -768,7 +768,8 @@ namespace SamsLiquorShop.Helpers
 
             // 10. Online order
             bool delivery = req.Method == MethodDelivery;
-            string collectionCode = delivery ? null : NewCollectionCode(conn, tx);
+            // Every order gets a code: collection orders show it at the store, delivery orders give it to the driver
+            string collectionCode = NewCollectionCode(conn, tx);
             int onlineOrderId;
             using (var cmd = Cmd(@"INSERT INTO OnlineOrder (Sale_ID, OnlineOrder_Method, OnlineOrder_FirstName, OnlineOrder_LastName,
                                        OnlineOrder_EmailAddress, OnlineOrder_PhoneNumber, OnlineOrder_UnitNumber, OnlineOrder_UnitName,

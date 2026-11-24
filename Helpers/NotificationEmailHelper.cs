@@ -94,42 +94,28 @@ namespace SamsLiquorShop.Helpers
 
         // ------------------------------------------------------------------ new online order (managers)
 
-        /// <summary>Emails every active manager that a new online order has come in. Call after the order is committed.</summary>
+        /// <summary>
+        /// Emails every active manager a staff-style summary of a new online order: what to pack, who it's for,
+        /// when it's due, how it was paid, and a link to Manage Online Orders. Call after the order is committed.
+        /// </summary>
         public static void NotifyManagersNewOrder(int onlineOrderId)
         {
             try
             {
-                string link = ManagerOrdersUrl();
+                string link = ManagerOrdersUrl();   // needs HttpContext, so read it before going to the background
 
-                string first = "", last = "", method = "";
-                decimal total = 0m;
-                int saleId = 0, items = 0;
-                DateTime? slot = null;
+                int saleId = 0;
                 var managers = new List<Tuple<string, string>>();
 
                 using (var conn = new SqlConnection(ConnStr))
                 {
                     conn.Open();
-                    using (var cmd = new SqlCommand(@"
-                        SELECT o.OnlineOrder_FirstName, o.OnlineOrder_LastName, o.OnlineOrder_Method,
-                               COALESCE(o.OnlineOrder_EstimatedDateTime, o.OnlineOrder_CollectionSlot),
-                               s.Sale_ID, s.Sale_TotalAmount,
-                               (SELECT ISNULL(SUM(SaleLine_Quantity), 0) FROM SaleLine WHERE Sale_ID = s.Sale_ID)
-                        FROM OnlineOrder o JOIN Sale s ON s.Sale_ID = o.Sale_ID
-                        WHERE o.OnlineOrder_ID = @Id", conn))
+                    using (var cmd = new SqlCommand("SELECT Sale_ID FROM OnlineOrder WHERE OnlineOrder_ID = @Id", conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", onlineOrderId);
-                        using (var r = cmd.ExecuteReader())
-                        {
-                            if (!r.Read()) return;
-                            first = Convert.ToString(r[0]).Trim();
-                            last = Convert.ToString(r[1]).Trim();
-                            method = Convert.ToString(r[2]).Trim();
-                            slot = r.IsDBNull(3) ? (DateTime?)null : Convert.ToDateTime(r[3]);
-                            saleId = Convert.ToInt32(r[4]);
-                            total = Convert.ToDecimal(r[5]);
-                            items = Convert.ToInt32(r[6]);
-                        }
+                        object v = cmd.ExecuteScalar();
+                        if (v == null || v == DBNull.Value) return;
+                        saleId = Convert.ToInt32(v);
                     }
 
                     using (var cmd = new SqlCommand(@"
@@ -144,20 +130,13 @@ namespace SamsLiquorShop.Helpers
                 }
                 if (managers.Count == 0) return;
 
-                string invoice = "INV-" + saleId.ToString("000000");
-                string when = !slot.HasValue ? "to be confirmed"
-                    : slot.Value.ToString("ddd d MMM yyyy, HH:mm", CultureInfo.InvariantCulture);
+                OnlineReceipt o = OnlineReceiptHelper.Load(saleId, null);
+                if (o == null) return;
 
-                string extra = Row("Invoice", invoice)
-                             + Row("Customer", (first + " " + last).Trim())
-                             + Row("Method", method)
-                             + Row(string.Equals(method, OrderHelper.MethodDelivery, StringComparison.OrdinalIgnoreCase) ? "Delivery slot" : "Collection slot", when)
-                             + Row("Items", items.ToString(CultureInfo.InvariantCulture))
-                             + Row("Total", "R" + total.ToString("N2", CultureInfo.InvariantCulture));
-                if (link != null)
-                    extra += "<p style=\"margin:14px 0 0;\"><a href=\"" + WebUtility.HtmlEncode(link) + "\" style=\"display:inline-block;background:#0057b8;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;\">Open online orders</a></p>";
-
-                string subject = "New online order " + invoice + " (" + method + ", R" + total.ToString("N2", CultureInfo.InvariantCulture) + ")";
+                string invoice = "INV-" + o.SaleId.ToString("000000");
+                string subject = "New online order " + invoice + " - " + (o.IsDelivery ? "Delivery" : "Collection")
+                               + ", R" + Money(o.Total) + " (" + (o.FirstName + " " + o.LastName).Trim() + ")";
+                string html = BuildStaffOrderHtml(o, invoice, link);
 
                 Task.Run(() =>
                 {
@@ -165,8 +144,6 @@ namespace SamsLiquorShop.Helpers
                     {
                         try
                         {
-                            string html = OrderEmailHelper.BuildHtml("New online order " + invoice, m.Item2,
-                                "A customer has just placed an online order. It is waiting to be packed.", extra, "New order");
                             if (!OtpHelper.SendEmail(m.Item1, m.Item2, subject, html))
                                 System.Diagnostics.Trace.TraceWarning("New-order email for " + invoice + " was not sent (demo mode or mail error).");
                         }
@@ -180,11 +157,104 @@ namespace SamsLiquorShop.Helpers
             }
         }
 
-        private static string Row(string label, string value)
+        private static string Money(decimal value)
         {
-            return "<div><span style=\"display:inline-block;min-width:120px;color:#6e6e73;\">" + WebUtility.HtmlEncode(label) + "</span>"
-                 + "<strong>" + WebUtility.HtmlEncode(value) + "</strong></div>";
+            return value.ToString("N2", CultureInfo.InvariantCulture);
         }
+
+        // Internal staff email: dark header, order facts up front, then a packing list. Inline styles only (email clients).
+        private static string BuildStaffOrderHtml(OnlineReceipt o, string invoice, string link)
+        {
+            Func<string, string> h = WebUtility.HtmlEncode;
+            const string label = "padding:6px 0;width:150px;vertical-align:top;font-size:13px;color:#6e6e73;";
+            const string value = "padding:6px 0;vertical-align:top;font-size:14px;color:#1d1d1f;";
+            const string th = "padding:8px 10px;background:#f2f4f7;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#6e6e73;text-align:left;";
+            const string td = "padding:8px 10px;border-bottom:1px solid #eef1f6;font-size:14px;color:#1d1d1f;";
+
+            // v is already HTML (encode anything user-supplied first)
+            Func<string, string, string> row = (l, v) =>
+                "<tr><td style=\"" + label + "\">" + h(l) + "</td><td style=\"" + value + "\">" + v + "</td></tr>";
+
+            string method = o.IsDelivery ? "Delivery" : "Collection";
+            string badgeColour = o.IsDelivery ? "#0057b8" : "#a67f2e";
+            int itemCount = o.Lines.Sum(l => l.Quantity);
+
+            var sb = new StringBuilder();
+            sb.Append("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\" /><title>New order ").Append(h(invoice)).Append("</title></head>");
+            sb.Append("<body style=\"margin:0;padding:0;background:#f2f4f7;font-family:Segoe UI,Helvetica,Arial,sans-serif;color:#1d1d1f;\">");
+            sb.Append("<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background:#f2f4f7;padding:24px 12px;\"><tr><td align=\"center\">");
+            sb.Append("<table role=\"presentation\" width=\"640\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;max-width:640px;background:#ffffff;border:1px solid #e1e5ec;border-radius:8px;overflow:hidden;\">");
+
+            // Header
+            sb.Append("<tr><td style=\"background:#1d2733;padding:18px 28px;\">")
+              .Append("<p style=\"margin:0;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#9fb0c4;\">Staff notification &middot; Sam&#39;s Liquor Shop</p>")
+              .Append("<p style=\"margin:6px 0 0;font-size:22px;font-weight:600;color:#ffffff;\">New online order ").Append(h(invoice)).Append("</p>")
+              .Append("</td></tr>");
+
+            // Summary: method badge, total, item count, what to do next
+            sb.Append("<tr><td style=\"padding:18px 28px 6px;\">")
+              .Append("<span style=\"display:inline-block;background:").Append(badgeColour).Append(";color:#ffffff;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px;\">").Append(method).Append("</span>")
+              .Append("<span style=\"font-size:22px;font-weight:700;vertical-align:middle;margin-left:10px;\">R").Append(Money(o.Total)).Append("</span>")
+              .Append("<span style=\"font-size:14px;color:#6e6e73;vertical-align:middle;margin-left:8px;\">").Append(itemCount).Append(itemCount == 1 ? " item" : " items").Append("</span>")
+              .Append("<p style=\"margin:12px 0 0;padding:10px 12px;background:#fff7e6;border-left:4px solid #c9a24b;font-size:14px;\"><strong>Action needed:</strong> pack this order and mark it ")
+              .Append(o.IsDelivery ? "&quot;Out for delivery&quot; before the delivery window." : "&quot;Ready for collection&quot; before the collection slot.")
+              .Append("</p></td></tr>");
+
+            // Order details
+            sb.Append("<tr><td style=\"padding:10px 28px;\"><table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.Append(row("Placed", h(o.PlacedAt.ToString("ddd d MMM yyyy, HH:mm", CultureInfo.InvariantCulture))));
+            sb.Append(row(o.IsDelivery ? "Delivery window" : "Collection slot", "<strong>" + h(OnlineReceiptHelper.SlotText(o)) + "</strong>"));
+            sb.Append(row("Customer", h((o.FirstName + " " + o.LastName).Trim()) + " <span style=\"color:#8a8f98;\">(#" + o.CustomerId + ")</span>"));
+            if (!string.IsNullOrWhiteSpace(o.Phone))
+                sb.Append(row("Phone", "<a href=\"tel:" + h(o.Phone.Trim()) + "\" style=\"color:#0057b8;\">" + h(o.Phone.Trim()) + "</a>"));
+            if (!string.IsNullOrWhiteSpace(o.Email))
+                sb.Append(row("Email", "<a href=\"mailto:" + h(o.Email.Trim()) + "\" style=\"color:#0057b8;\">" + h(o.Email.Trim()) + "</a>"));
+            if (o.IsDelivery && !string.IsNullOrWhiteSpace(o.AddressText))
+                sb.Append(row("Address", h(o.AddressText)));
+            if (!string.IsNullOrWhiteSpace(o.CollectionCode))
+                sb.Append(row("Collection code", "<strong style=\"font-family:Consolas,'Courier New',monospace;letter-spacing:2px;\">" + h(o.CollectionCode) + "</strong>"));
+            if (!string.IsNullOrWhiteSpace(o.Instructions))
+                sb.Append(row("Instructions", "<em>" + h(o.Instructions.Trim()) + "</em>"));
+            string payment = string.IsNullOrWhiteSpace(o.PaymentMethod) ? "Card" : o.PaymentMethod.Trim();
+            if (!string.IsNullOrWhiteSpace(o.CardLastFour)) payment += " ending " + o.CardLastFour;
+            sb.Append(row("Payment", h(payment) + " &middot; paid online"));
+            sb.Append(row("ID check", "Customer must show ID proving they are 18 or older on " + (o.IsDelivery ? "delivery." : "collection.")));
+            sb.Append("</table></td></tr>");
+
+            // Packing list
+            sb.Append("<tr><td style=\"padding:10px 28px 4px;\"><p style=\"margin:0 0 8px;font-size:15px;font-weight:600;\">Packing list</p>");
+            sb.Append("<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"border:1px solid #e1e5ec;border-collapse:collapse;\">");
+            sb.Append("<tr><th style=\"" + th + "width:56px;\">Qty</th><th style=\"" + th + "\">Product</th><th style=\"" + th + "text-align:right;\">Unit</th><th style=\"" + th + "text-align:right;\">Line</th></tr>");
+            foreach (var l in o.Lines)
+            {
+                sb.Append("<tr><td style=\"" + td + "font-weight:700;\">").Append(l.Quantity).Append(" &times;</td>")
+                  .Append("<td style=\"" + td + "\">").Append(h(l.Name)).Append("</td>")
+                  .Append("<td style=\"" + td + "text-align:right;\">R").Append(Money(l.UnitPrice)).Append("</td>")
+                  .Append("<td style=\"" + td + "text-align:right;\">R").Append(Money(l.LineTotal)).Append("</td></tr>");
+            }
+            sb.Append("</table></td></tr>");
+
+            // Totals
+            Func<string, string, bool, string> totalRow = (l, v, bold) =>
+                "<tr><td style=\"padding:3px 0;font-size:14px;" + (bold ? "font-weight:700;color:#1d1d1f;" : "color:#6e6e73;") + "\">" + h(l) + "</td>"
+                + "<td style=\"padding:3px 0;font-size:14px;text-align:right;" + (bold ? "font-weight:700;" : "") + "\">" + v + "</td></tr>";
+            sb.Append("<tr><td style=\"padding:8px 28px;\"><table role=\"presentation\" width=\"260\" align=\"right\" cellpadding=\"0\" cellspacing=\"0\">");
+            sb.Append(totalRow("Subtotal", "R" + Money(o.Subtotal), false));
+            if (o.Discount > 0) sb.Append(totalRow("Discount", "-R" + Money(o.Discount), false));
+            if (o.IsDelivery) sb.Append(totalRow("Delivery fee", o.DeliveryFee > 0 ? "R" + Money(o.DeliveryFee) : "Free", false));
+            if (o.PointsUsed > 0) sb.Append(totalRow("Loyalty points used", o.PointsUsed.ToString(CultureInfo.InvariantCulture), false));
+            sb.Append(totalRow("Total", "R" + Money(o.Total), true));
+            sb.Append("</table></td></tr>");
+
+            if (link != null)
+                sb.Append("<tr><td style=\"padding:14px 28px 22px;\"><a href=\"").Append(h(link))
+                  .Append("\" style=\"display:inline-block;background:#1d2733;color:#ffffff;text-decoration:none;padding:11px 20px;border-radius:6px;font-weight:600;font-size:14px;\">Open Manage Online Orders</a></td></tr>");
+
+            sb.Append("<tr><td style=\"background:#f7f8fa;padding:14px 28px;border-top:1px solid #e1e5ec;\"><p style=\"margin:0;font-size:12px;color:#8a8f98;\">Internal notification for active managers. Please don&#39;t forward to customers.</p></td></tr>");
+            sb.Append("</table></td></tr></table></body></html>");
+            return sb.ToString();
+        }
+
 
         // Absolute link to the manager's online orders page, or null outside a web request
         private static string ManagerOrdersUrl()

@@ -266,8 +266,9 @@ namespace SamsLiquorShop.Customer
                 }
 
                 string code = Convert.ToString(order["CollectionCode"]).Trim();
-                if (!delivery && live && code.Length > 0)
-                    sb.Append("<p class=\"ord-code\">Collection code: <strong>").Append(Server.HtmlEncode(code)).Append("</strong> &middot; bring it and your ID.</p>");
+                if (live && code.Length > 0)
+                    sb.Append("<p class=\"ord-code\">Collection code: <strong>").Append(Server.HtmlEncode(code)).Append("</strong> &middot; ")
+                      .Append(delivery ? "give it to the driver and show your ID." : "bring it and your ID.").Append("</p>");
 
                 sb.Append("<ul class=\"ord-history\">");
                 for (int i = rows.Count - 1; i >= 0; i--)

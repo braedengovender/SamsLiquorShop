@@ -29,9 +29,14 @@ namespace SamsLiquorShop
             string last = (context.Request.Form["lastName"] ?? "").Trim();
             string email = (context.Request.Form["email"] ?? "").Trim();
 
-            if (first.Length == 0 || first.Length > 50 || last.Length == 0 || last.Length > 50)
+            if (first.Length == 0 || last.Length == 0)
             {
                 Respond(context, false, "Please enter your first and last name.");
+                return;
+            }
+            if (!AccountHelper.IsValidName(first) || !AccountHelper.IsValidName(last))
+            {
+                Respond(context, false, "Names can only contain letters, spaces, hyphens and apostrophes.");
                 return;
             }
             if (email.Length > 150 || !EmailPattern.IsMatch(email))

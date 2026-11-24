@@ -105,6 +105,11 @@ namespace SamsLiquorShop
         protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkProfile;
 
         /// <summary>
+        /// litNavName control (logged-in first name next to the profile icon).
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litNavName;
+
+        /// <summary>
         /// btnLogout control.
         /// </summary>
         /// <remarks>

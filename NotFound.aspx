@@ -32,9 +32,11 @@
             <p class="login-subtext">The page you're looking for doesn't exist, has moved, or the link may be out of date. Let's get you back to something good.</p>
 
             <div class="nf-actions">
-                <a href="Default.aspx" class="btn-primary">Back to Home</a>
-                <a href="Shop.aspx" class="btn-ghost">Browse the Shop</a>
-                <a href="Contact.aspx" class="btn-ghost">Contact Us</a>
+                <%-- ~/ paths: plain relative links broke when the missing page was inside a folder (/Manager/xyz) --%>
+                <asp:HyperLink runat="server" NavigateUrl="~/Default.aspx" CssClass="btn-primary" Text="Back to Home" />
+                <asp:HyperLink ID="lnkDashboard" runat="server" CssClass="btn-ghost" Text="My Dashboard" Visible="false" />
+                <asp:HyperLink runat="server" NavigateUrl="~/Shop.aspx" CssClass="btn-ghost" Text="Browse the Shop" />
+                <asp:HyperLink runat="server" NavigateUrl="~/Contact.aspx" CssClass="btn-ghost" Text="Contact Us" />
             </div>
         </div>
     </section>

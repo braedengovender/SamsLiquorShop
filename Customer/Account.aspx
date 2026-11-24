@@ -56,11 +56,13 @@
                     <div class="emp-form-grid">
                         <div class="login-field">
                             <label for="<%= txtFirstName.ClientID %>">First name</label>
-                            <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" />
+                            <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" data-letters="1" />
+                            <span class="field-hint">Letters, spaces, hyphens and apostrophes only.</span>
                         </div>
                         <div class="login-field">
                             <label for="<%= txtLastName.ClientID %>">Last name</label>
-                            <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" />
+                            <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" data-letters="1" />
+                            <span class="field-hint">Letters, spaces, hyphens and apostrophes only.</span>
                         </div>
                         <div class="login-field">
                             <label for="<%= txtIdNumber.ClientID %>">SA ID number</label>
@@ -74,13 +76,15 @@
                         </div>
                         <div class="login-field">
                             <label for="<%= txtUsername.ClientID %>">Username</label>
-                            <asp:TextBox ID="txtUsername" runat="server" CssClass="login-input" MaxLength="30" autocomplete="username" />
+                            <asp:TextBox ID="txtUsername" runat="server" CssClass="login-input" MaxLength="30" autocomplete="username" data-avail="username" />
                             <span class="field-hint">4&ndash;30 letters, numbers or underscores.</span>
+                            <span class="field-hint avail-hint" aria-live="polite"></span>
                         </div>
                         <div class="login-field">
                             <label for="<%= txtEmail.ClientID %>">Email address</label>
-                            <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" autocomplete="email" />
+                            <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" autocomplete="email" data-avail="email" />
                             <span class="field-hint">If you change this, we'll email a code to the new address to confirm it.</span>
+                            <span class="field-hint avail-hint" aria-live="polite"></span>
                         </div>
                     </div>
                 </div>
@@ -137,7 +141,7 @@
                     <p class="register-static-field">Country: South Africa</p>
 
                     <div class="emp-form-actions">
-                        <asp:Button ID="btnSaveDetails" runat="server" Text="Save Changes" CssClass="btn-primary" OnClick="btnSaveDetails_Click" />
+                        <asp:Button ID="btnSaveDetails" runat="server" Text="Save Changes" CssClass="btn-primary" OnClick="btnSaveDetails_Click" OnClientClick="return availabilityOk();" />
                         <asp:Button ID="btnReset" runat="server" Text="Reset" CssClass="btn-ghost" OnClick="btnReset_Click" CausesValidation="false" />
                     </div>
                 </div>

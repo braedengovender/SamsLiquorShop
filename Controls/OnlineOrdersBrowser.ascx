@@ -54,7 +54,7 @@
                         <asp:Panel ID="pnlCode" runat="server" Visible="false" CssClass="login-field">
                             <label for="<%= txtCode.ClientID %>">Customer's collection code</label>
                             <asp:TextBox ID="txtCode" runat="server" CssClass="login-input" MaxLength="10" autocomplete="off" />
-                            <span class="field-hint">Ask for the code in their email and check it matches.</span>
+                            <span class="field-hint">Ask for the code in their email (at the counter or at the door on delivery) and check it matches.</span>
                         </asp:Panel>
                         <div class="login-field ob-note">
                             <label for="<%= txtNote.ClientID %>">Note <span class="register-optional">(optional, required when cancelling)</span></label>

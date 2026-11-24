@@ -47,6 +47,7 @@ namespace SamsLiquorShop
             public string reply;
             public List<Product> products = new List<Product>();
             public Link link;
+            public string redirect;   // set when the bot doesn't know: the browser sends the visitor here after a moment
         }
 
         public void ProcessRequest(HttpContext context)
@@ -99,10 +100,12 @@ namespace SamsLiquorShop
             Reply byProduct = ProductAnswer(text);
             if (byProduct != null) return byProduct;
 
+            // Not something the bot knows: send the visitor to the FAQ page instead
             return new Reply
             {
-                reply = "I couldn't find that one. Try asking about a product (\"do you have Savanna?\"), today's specials, or your order.",
-                link = new Link { text = "Browse the shop", url = "/Shop.aspx" }
+                reply = "I'm not sure about that one, so I'm taking you to our FAQ page, where you'll find answers to common questions.",
+                link = new Link { text = "Go to the FAQ", url = "/FAQ.aspx" },
+                redirect = "/FAQ.aspx"
             };
         }
 

@@ -115,11 +115,11 @@
                                 <div class="co-grid">
                                     <div class="co-field">
                                         <label for="<%= txtFirstName.ClientID %>">First name <button type="button" class="field-help" data-rules="Required.|Letters, spaces, hyphens and apostrophes only.|Up to 50 characters."></button></label>
-                                        <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" data-rule="name" />
+                                        <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" data-rule="name" data-letters="1" />
                                     </div>
                                     <div class="co-field">
                                         <label for="<%= txtLastName.ClientID %>">Last name <button type="button" class="field-help" data-rules="Required.|Letters, spaces, hyphens and apostrophes only.|Up to 50 characters."></button></label>
-                                        <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" data-rule="name" />
+                                        <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" data-rule="name" data-letters="1" />
                                     </div>
                                     <div class="co-field">
                                         <label for="<%= txtEmail.ClientID %>">Email address <button type="button" class="field-help" data-rules="Required.|A valid address, e.g. name@example.com. Up to 100 characters.|We send your receipt and order updates here."></button></label>
@@ -327,7 +327,7 @@
                 name: function (v, f) {
                     if (!v) return f ? BAD('Please enter this name.') : CLR();
                     if (v.length > 50) return BAD('At most 50 characters.');
-                    if (!NAME_RE.test(v)) return BAD('Letters, spaces, hyphens and apostrophes only.');
+                    if (!/^[A-Za-z]+([ '-][A-Za-z]+)*$/.test(v)) return BAD('Letters, spaces, hyphens and apostrophes only.');
                     return OK();
                 },
                 email: function (v, f) {

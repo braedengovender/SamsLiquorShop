@@ -13,5 +13,10 @@ namespace SamsLiquorShop
 
     public partial class NotFound
     {
+
+        /// <summary>
+        /// lnkDashboard control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.HyperLink lnkDashboard;
     }
 }

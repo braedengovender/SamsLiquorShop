@@ -460,6 +460,7 @@ namespace SamsLiquorShop
                 OnlineReceipt r = OnlineReceiptHelper.Load(saleId, customerId);
                 if (r == null || string.IsNullOrWhiteSpace(r.Email)) return;
 
+                // (Managers get their own staff email from OrderHelper.PlaceOrder -> NotificationEmailHelper.NotifyManagersNewOrder.)
                 string html = OnlineReceiptHelper.BuildHtml(r);
                 string to = r.Email;
                 string name = (r.FirstName + " " + r.LastName).Trim();

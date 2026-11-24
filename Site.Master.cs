@@ -134,6 +134,52 @@ namespace SamsLiquorShop
             imgCart.ImageUrl = cartCount > 0
                 ? "~/Images/icons/fullcart.png"
                 : "~/Images/icons/emptycart.png";
+
+            // Name next to the profile icon. Done in PreRender so a name just changed on My Account shows straight away.
+            if (Context.Session != null && Session["UserRole"] != null)
+            {
+                string name = GetNavName(Session["UserRole"].ToString());
+                litNavName.Text = Server.HtmlEncode(name);
+                lnkProfile.Attributes["aria-label"] = "My Dashboard (" + name + ")";
+                lnkProfile.Attributes["title"] = "Logged in as " + name;
+            }
+        }
+
+        // The logged-in person's first name, read once and kept in the session. The cache is tied to the
+        // account it was read for, and the My Account pages clear "NavName" when the name is changed.
+        private string GetNavName(string role)
+        {
+            bool customer = string.Equals(role, "Customer", StringComparison.OrdinalIgnoreCase);
+            string id = Convert.ToString(Session[customer ? "CustomerID" : "EmployeeID"]);
+            string key = role + ":" + id;
+
+            if (Session["NavName"] is string cached && Convert.ToString(Session["NavNameFor"]) == key)
+                return cached;
+
+            string name = null;
+            int numericId;
+            if (int.TryParse(id, out numericId))
+            {
+                try
+                {
+                    using (SqlConnection conn = new SqlConnection(ConnStr))
+                    using (SqlCommand cmd = new SqlCommand(customer
+                        ? "SELECT Customer_FirstName FROM Customer WHERE Customer_ID = @Id"
+                        : "SELECT Employee_FirstName FROM Employee WHERE Employee_ID = @Id", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", numericId);
+                        conn.Open();
+                        object o = cmd.ExecuteScalar();
+                        if (o != null && o != DBNull.Value) name = o.ToString().Trim();
+                    }
+                }
+                catch { /* the name is a nicety; fall back to the username below */ }
+            }
+
+            if (string.IsNullOrEmpty(name)) name = Convert.ToString(Session["UserName"]);
+            Session["NavName"] = name;
+            Session["NavNameFor"] = key;
+            return name;
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

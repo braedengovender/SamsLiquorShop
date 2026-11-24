@@ -36,7 +36,9 @@ namespace SamsLiquorShop
 
                 litReceipt.Text = OnlineReceiptHelper.BuildHtml(r, true);
                 litLead.Text = Server.HtmlEncode(r.IsDelivery
-                    ? "We'll deliver your order on " + OnlineReceiptHelper.SlotText(r) + ". A copy of this receipt has been emailed to " + r.Email + "."
+                    ? "We'll deliver your order on " + OnlineReceiptHelper.SlotText(r) + "."
+                      + (string.IsNullOrWhiteSpace(r.CollectionCode) ? "" : " Your collection code is " + r.CollectionCode + " - give it to the driver when they arrive.")
+                      + " A copy of this receipt has been emailed to " + r.Email + "."
                     : "Your order will be ready to collect on " + OnlineReceiptHelper.SlotText(r) + ". Your collection code is " + r.CollectionCode
                       + ". A copy of this receipt has been emailed to " + r.Email + ".");
 

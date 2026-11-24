@@ -399,6 +399,13 @@ namespace SamsLiquorShop.Manager
                     txtLastName.Text = Val(r, "Customer_LastName");
                     txtUsername.Text = Val(r, "Customer_Username");
                     txtEmail.Text = Val(r, "Customer_EmailAddress");
+
+                    // Live availability check: ignore this customer's own saved username / email
+                    foreach (TextBox t in new[] { txtUsername, txtEmail })
+                    {
+                        t.Attributes["data-original"] = t.Text;
+                        t.Attributes["data-avail-for"] = id.ToString();
+                    }
                     txtIdNumber.Text = Val(r, "Customer_IDNumber");
                     txtPhone.Text = Val(r, "Customer_PhoneNumber");
                     txtUnitNumber.Text = Val(r, "Customer_UnitNumber");
@@ -514,8 +521,9 @@ namespace SamsLiquorShop.Manager
             string phone = txtPhone.Text.Trim();
             string postalCode = txtPostalCode.Text.Trim();
 
-            if (first.Length == 0) { field = txtFirstName; return "First name is required."; }
-            if (last.Length == 0) { field = txtLastName; return "Last name is required."; }
+            string nameError;
+            if ((nameError = Helpers.AccountHelper.NameError(first, "First name")) != null) { field = txtFirstName; return nameError; }
+            if ((nameError = Helpers.AccountHelper.NameError(last, "Last name")) != null) { field = txtLastName; return nameError; }
 
             if (username.Length > 0 && !Regex.IsMatch(username, @"^[A-Za-z0-9_]{4,30}$"))
             {
@@ -548,19 +556,16 @@ namespace SamsLiquorShop.Manager
                 return "Postal code must be 4 digits.";
             }
 
-            if (username.Length > 0
-                && (Exists("SELECT COUNT(*) FROM Customer WHERE Customer_Username = @V AND Customer_ID <> @Id", username, id)
-                    || Exists("SELECT COUNT(*) FROM Employee WHERE Employee_Username = @V", username, id)))
+            // Login accepts a username or an email, so neither may match any other customer's or employee's username or email
+            if (username.Length > 0 && Helpers.AccountHelper.LoginNameTaken(username, id, null))
             {
                 field = txtUsername;
                 return "That username is already taken.";
             }
-            if (email.Length > 0
-                && (Exists("SELECT COUNT(*) FROM Customer WHERE Customer_EmailAddress = @V AND Customer_ID <> @Id", email, id)
-                    || Exists("SELECT COUNT(*) FROM Employee WHERE Employee_EmailAddress = @V", email, id)))
+            if (email.Length > 0 && Helpers.AccountHelper.LoginNameTaken(email, id, null))
             {
                 field = txtEmail;
-                return "That email address is already registered to another account.";
+                return "That email address is already in use by another account (customer or employee).";
             }
             if (idNumber.Length > 0
                 && Exists("SELECT COUNT(*) FROM Customer WHERE Customer_IDNumber = @V AND Customer_ID <> @Id", idNumber, id))

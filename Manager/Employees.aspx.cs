@@ -299,6 +299,13 @@ namespace SamsLiquorShop.Manager
                     txtLastName.Text = r["Employee_LastName"].ToString();
                     txtUsername.Text = r["Employee_Username"].ToString();
                     txtEmail.Text = r["Employee_EmailAddress"].ToString();
+
+                    // Live availability check: ignore this employee's own saved username / email
+                    foreach (TextBox t in new[] { txtUsername, txtEmail })
+                    {
+                        t.Attributes["data-original"] = t.Text;
+                        t.Attributes["data-avail-for"] = id.ToString();
+                    }
                     txtIdNumber.Text = r["Employee_IDNumber"].ToString().Trim();
                     txtPhone.Text = r["Employee_PhoneNumber"].ToString().Trim();
                     txtHireDate.Text = Convert.ToDateTime(r["Employee_HireDate"]).ToString("yyyy-MM-dd");
@@ -425,8 +432,9 @@ namespace SamsLiquorShop.Manager
             string phone = txtPhone.Text.Trim();
             string password = txtPassword.Text;
 
-            if (first.Length == 0) { field = txtFirstName; return "First name is required."; }
-            if (last.Length == 0) { field = txtLastName; return "Last name is required."; }
+            string nameError;
+            if ((nameError = Helpers.AccountHelper.NameError(first, "First name")) != null) { field = txtFirstName; return nameError; }
+            if ((nameError = Helpers.AccountHelper.NameError(last, "Last name")) != null) { field = txtLastName; return nameError; }
 
             if (!Regex.IsMatch(username, @"^[A-Za-z0-9_.]{3,30}$"))
             {
@@ -502,8 +510,8 @@ namespace SamsLiquorShop.Manager
 
             if (isNew || !SameText(origUser, username))
             {
-                if (Exists("SELECT COUNT(*) FROM Employee WHERE Employee_Username = @V AND Employee_ID <> @Id", username, id)
-                    || Exists("SELECT COUNT(*) FROM Customer WHERE Customer_Username = @V", username, id))
+                // Login accepts a username or an email, so it must not match any customer's or employee's username or email
+                if (Helpers.AccountHelper.LoginNameTaken(username, null, isNew ? (int?)null : id))
                 {
                     field = txtUsername;
                     return "That username is already taken. Please choose another.";
@@ -512,11 +520,11 @@ namespace SamsLiquorShop.Manager
 
             if (isNew || !SameText(origEmail, email))
             {
-                if (Exists("SELECT COUNT(*) FROM Employee WHERE Employee_EmailAddress = @V AND Employee_ID <> @Id", email, id)
-                    || Exists("SELECT COUNT(*) FROM Customer WHERE Customer_EmailAddress = @V", email, id))
+                // An employee's email may not be used by any customer (or another employee), and vice versa
+                if (Helpers.AccountHelper.LoginNameTaken(email, null, isNew ? (int?)null : id))
                 {
                     field = txtEmail;
-                    return "That email address is already registered to another account.";
+                    return "That email address is already in use by another account (customer or employee).";
                 }
             }
 
@@ -944,6 +952,11 @@ namespace SamsLiquorShop.Manager
             txtLastName.Text = "";
             txtUsername.Text = "";
             txtEmail.Text = "";
+            foreach (TextBox t in new[] { txtUsername, txtEmail })   // new employee: nothing to ignore in the live check
+            {
+                t.Attributes["data-original"] = "";
+                t.Attributes["data-avail-for"] = "";
+            }
             txtIdNumber.Text = "";
             txtPhone.Text = "";
             txtHireDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
@@ -984,10 +997,14 @@ namespace SamsLiquorShop.Manager
 
         // Scrolls below the sticky header, and focuses the box without letting the focus
         // jump cancel the smooth scroll.
+        // On an UpdatePanel postback, ASP.NET AJAX re-focuses the clicked link (e.g. "Edit" in the grid)
+        // after this script runs, which drags the page back down. So the scroll waits until the
+        // request has fully ended (endRequest), and then one more tick.
         private void ScrollToElement(string elementId, string focusClientId, string key)
         {
             string js =
                 "(function(){" +
+                "function go(){" +
                 "var f=document.getElementById('" + elementId + "'); if(!f) return;" +
                 "var hdr=document.querySelector('.site-header');" +
                 "var offset=(hdr?hdr.getBoundingClientRect().height:60)+32;" +
@@ -996,6 +1013,11 @@ namespace SamsLiquorShop.Manager
                 (string.IsNullOrEmpty(focusClientId) ? "" :
                     "var i=document.getElementById('" + focusClientId + "');" +
                     "if(i){setTimeout(function(){i.focus({preventScroll:true});},500);}") +
+                "}" +
+                "var prm=window.Sys&&Sys.WebForms&&Sys.WebForms.PageRequestManager?Sys.WebForms.PageRequestManager.getInstance():null;" +
+                "if(prm&&prm.get_isInAsyncPostBack()){" +
+                "var h=function(){prm.remove_endRequest(h);setTimeout(go,0);};prm.add_endRequest(h);" +
+                "}else{setTimeout(go,0);}" +
                 "})();";
             ScriptManager.RegisterStartupScript(this, GetType(), key, js, true);
         }

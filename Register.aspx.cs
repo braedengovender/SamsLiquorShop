@@ -80,33 +80,21 @@ namespace SamsLiquorShop
             args.IsValid = chkTerms.Checked;
         }
 
-        // DEMO ID photo check: real file checks only, no actual OCR / ID matching.
+        // DEMO ID photo check: any image is accepted (no size, resolution or OCR checks).
+        // The file is not stored anywhere.
         protected void cvIdPhoto_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            args.IsValid = false;
+            args.IsValid = fuIdPhoto.HasFile && IsImageFile(fuIdPhoto.PostedFile);
+        }
 
-            if (!fuIdPhoto.HasFile) return;
+        private static readonly string[] ImageExtensions =
+            { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".heic", ".heif", ".tif", ".tiff", ".avif", ".jfif" };
 
-            string ext = System.IO.Path.GetExtension(fuIdPhoto.FileName).ToLowerInvariant();
-            if (ext != ".jpg" && ext != ".jpeg" && ext != ".png") return;
-
-            if (fuIdPhoto.PostedFile.ContentLength > 5 * 1024 * 1024) return;
-
-            try
-            {
-                using (var img = System.Drawing.Image.FromStream(fuIdPhoto.PostedFile.InputStream))
-                {
-                    bool realFormat = img.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Jpeg)
-                                   || img.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Png);
-
-                    args.IsValid = realFormat && img.Width >= 400 && img.Height >= 250;
-                }
-            }
-            catch (ArgumentException)
-            {
-                // Not a valid image file (e.g. renamed .exe).
-                args.IsValid = false;
-            }
+        private static bool IsImageFile(HttpPostedFile file)
+        {
+            if ((file.ContentType ?? "").StartsWith("image/", StringComparison.OrdinalIgnoreCase)) return true;
+            string ext = System.IO.Path.GetExtension(file.FileName ?? "").ToLowerInvariant();
+            return Array.IndexOf(ImageExtensions, ext) >= 0;
         }
 
         // ---------- Create the account ----------
@@ -125,6 +113,14 @@ namespace SamsLiquorShop
             if (txtPassword.Text != txtConfirmPassword.Text)
             {
                 lblError.Text = "Passwords do not match.";
+                return;
+            }
+
+            string nameError = AccountHelper.NameError(txtFirstName.Text, "First name")
+                            ?? AccountHelper.NameError(txtLastName.Text, "Last name");
+            if (nameError != null)
+            {
+                lblError.Text = nameError;
                 return;
             }
 
@@ -406,21 +402,7 @@ namespace SamsLiquorShop
             return null;
         }
 
-        // Login accepts a username OR an email, so neither may collide with
-        // another customer's or employee's username or email.
-        private bool LoginNameTaken(string value)
-        {
-            using (SqlConnection conn = new SqlConnection(ConnStr))
-            using (SqlCommand cmd = new SqlCommand(@"
-                SELECT
-                    (SELECT COUNT(*) FROM Customer WHERE Customer_Username = @V OR Customer_EmailAddress = @V)
-                  + (SELECT COUNT(*) FROM Employee WHERE Employee_Username = @V OR Employee_EmailAddress = @V)", conn))
-            {
-                cmd.Parameters.AddWithValue("@V", value);
-                conn.Open();
-                return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
-            }
-        }
+        private static bool LoginNameTaken(string value) => AccountHelper.LoginNameTaken(value);
 
         private bool IdNumberTaken(string idNumber)
         {

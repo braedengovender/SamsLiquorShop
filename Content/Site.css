@@ -3293,13 +3293,61 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
     }
 }
 
-.register-terms-label {
+/* Terms & Conditions tick box on Register.aspx */
+.register-terms-box {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
-    font-size: 0.82rem;
-    color: var(--text-secondary);
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    background: rgba(127, 143, 166, 0.06);
+    transition: border-color .15s, background .15s;
+}
+
+    .register-terms-box:has(input:checked) {
+        border-color: var(--accent);
+        background: rgba(10, 132, 255, 0.06);
+    }
+
+    .register-terms-box input[type="checkbox"] {
+        flex: 0 0 auto;
+        width: 18px;
+        height: 18px;
+        margin: 1px 0 0;
+        accent-color: var(--accent);
+        cursor: pointer;
+    }
+
+.register-terms-box .register-terms-label {
+    margin: 0;
+    font-weight: 400;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text-primary);
     cursor: pointer;
+}
+
+    .register-terms-label a {
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+        .register-terms-label a:hover,
+        .register-terms-label a:focus-visible {
+            text-decoration-thickness: 2px;
+        }
+
+/* Live "username / email available" hint on Register.aspx and the My Account pages */
+.avail-hint:empty {
+    display: none;
+}
+
+.avail-hint.checking {
+    color: var(--text-secondary);
+    font-style: italic;
 }
 
 /* =========================
@@ -9483,4 +9531,110 @@ textarea.login-input {
     font-weight: 700;
     line-height: 1;
     vertical-align: middle;
+}
+
+/* =========================
+   NAV: LOGGED-IN NAME + TEXT SIZE (accessibility)
+   ========================= */
+
+.icon-btn.nav-profile {
+    width: auto;
+    gap: 6px;
+    padding: 0 10px 0 8px;
+    border-radius: 999px;
+}
+
+.nav-user-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.nav-user-name:empty {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .nav-user-name {
+        max-width: 70px;
+    }
+}
+
+.text-size-wrap {
+    position: relative;
+}
+
+.text-size-toggle span {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--text-primary);
+}
+
+.text-size-toggle small {
+    font-size: 0.7em;
+}
+
+.text-size-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 1200;
+    min-width: 160px;
+    padding: 8px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.text-size-menu[hidden] {
+    display: none;
+}
+
+.text-size-title {
+    margin: 2px 8px 6px;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.text-size-menu button {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    text-align: left;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.text-size-menu button[data-size="115"] { font-size: 1.1rem; }
+.text-size-menu button[data-size="130"] { font-size: 1.25rem; }
+.text-size-menu button[data-size="150"] { font-size: 1.4rem; }
+
+.text-size-menu button:hover,
+.text-size-menu button:focus-visible {
+    background: rgba(127, 143, 166, 0.15);
+}
+
+.text-size-menu button[aria-pressed="true"] {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* Scales everything (text, spacing, images) like browser zoom */
+html[data-text-size="115"] body { zoom: 1.15; }
+html[data-text-size="130"] body { zoom: 1.3; }
+html[data-text-size="150"] body { zoom: 1.5; }
+
+/* Cart and search icons: same colours in light and dark mode (no invert filter) */
+[data-theme="dark"] .nav-icon.nav-icon-keep {
+    filter: none;
 }

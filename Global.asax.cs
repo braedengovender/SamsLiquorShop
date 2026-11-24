@@ -18,6 +18,19 @@ namespace SamsLiquorShop
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
 
+        // A missing .aspx raises its 404 before session state is loaded. If customErrors drew NotFound.aspx inside
+        // that request, the header would always look logged out. Redirecting makes it a normal request with the session.
+        void Application_Error(object sender, EventArgs e)
+        {
+            var http = Server.GetLastError() as HttpException;
+            if (http == null || http.GetHttpCode() != 404) return;   // everything else still goes to Error.aspx
+            if (Request.Path.EndsWith("/NotFound.aspx", StringComparison.OrdinalIgnoreCase)) return;
+
+            Server.ClearError();
+            Response.Redirect("~/NotFound.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
+        }
+
         void Session_End(object sender, EventArgs e)
         {
             // Fires when a session times out (InProc session mode only)

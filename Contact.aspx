@@ -73,7 +73,7 @@
           <p class="contact-lead">We typically respond within one business day.</p>
 
           <div class="form-group">
-            <input type="text" id="contactName" placeholder="Your name" autocomplete="name" />
+            <input type="text" id="contactName" placeholder="Your name" autocomplete="name" maxlength="100" data-letters="1" />
             <span class="field-error" id="contactNameError"></span>
           </div>
 
@@ -99,8 +99,9 @@
             <span class="field-error" id="contactMessageError"></span>
           </div>
 
-          <button type="button" class="btn-primary" onclick="submitContactForm(event)">Send Message</button>
+          <button type="button" class="btn-primary" id="contactSendBtn" onclick="submitContactForm(event)">Send Message</button>
           <div class="form-success" id="contactFormSuccess">Thank you &mdash; your message has been sent. We will be in touch shortly.</div>
+          <span class="field-error" id="contactSendError"></span>
         </div>
 
       </div>
@@ -143,6 +144,10 @@
                 document.getElementById('contactNameError').textContent = 'Please enter your name.';
                 name.classList.add('invalid');
                 valid = false;
+            } else if (!isValidPersonName(name.value)) {
+                document.getElementById('contactNameError').textContent = 'Your name can only contain letters, spaces, hyphens and apostrophes.';
+                name.classList.add('invalid');
+                valid = false;
             }
             if (!emailPattern.test(email.value.trim())) {
                 document.getElementById('contactEmailError').textContent = 'Please enter a valid email address.';
@@ -165,14 +170,57 @@
                 return false;
             }
 
-            // NOTE: this only clears the form and shows a confirmation message.
-            // Nothing is emailed or saved yet — wiring this up to a real mail
-            // service or database is a later step, same as the newsletter forms.
-            name.value = '';
-            email.value = '';
-            subject.value = '';
-            message.value = '';
-            document.getElementById('contactFormSuccess').classList.add('is-visible');
+            var success = document.getElementById('contactFormSuccess');
+            var sendError = document.getElementById('contactSendError');
+            var btn = document.getElementById('contactSendBtn');
+            sendError.textContent = '';
+
+            function done() {
+                name.value = '';
+                email.value = '';
+                subject.value = '';
+                message.value = '';
+                success.classList.add('is-visible');
+            }
+
+            // Sent to Formspree, which emails it to the address on your Formspree account.
+            // The form ID comes from FormspreeFormId in Web.config; while that's blank this is demo-only.
+            var endpoint = '<%= FormspreeEndpoint %>';
+            if (!endpoint) {
+                // Say so plainly, so a missing form ID can't be mistaken for a working form
+                sendError.textContent = 'Demo mode: this message was NOT sent. Add your Formspree form ID to FormspreeFormId in Web.config to turn the form on.';
+                console.warn('Contact form: FormspreeFormId is blank in Web.config, so nothing was sent to Formspree.');
+                return false;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name.value.trim(),
+                    email: email.value.trim(),          // Formspree uses this as the reply-to address
+                    subject: subject.options[subject.selectedIndex].text,
+                    message: message.value.trim(),
+                    _subject: 'Website contact: ' + subject.options[subject.selectedIndex].text
+                })
+            })
+                .then(function (r) {
+                    return r.json().catch(function () { return {}; }).then(function (d) {
+                        if (r.ok) { done(); return; }
+                        var msg = d.errors && d.errors.length ? d.errors.map(function (x) { return x.message; }).join(' ') : '';
+                        sendError.textContent = msg || "Sorry, your message couldn't be sent. Please try again or email us directly.";
+                    });
+                })
+                .catch(function () {
+                    sendError.textContent = "Sorry, your message couldn't be sent. Please check your connection and try again.";
+                })
+                .then(function () {
+                    btn.disabled = false;
+                    btn.textContent = 'Send Message';
+                });
             return false;
         }
     </script>

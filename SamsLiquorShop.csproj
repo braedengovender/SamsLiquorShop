@@ -190,6 +190,7 @@
     <Content Include="Customer\Receipt.aspx" />
     <Content Include="Customer\Wishlist.aspx" />
     <Content Include="Default.aspx" />
+    <Content Include="Employee\Account.aspx" />
     <Content Include="Employee\CashierNav.ascx" />
     <Content Include="Employee\Dashboard.aspx" />
     <Content Include="Employee\OnlineOrders.aspx" />
@@ -562,6 +563,13 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Employee\Account.aspx.cs">
+      <DependentUpon>Account.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Employee\Account.aspx.designer.cs">
+      <DependentUpon>Account.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Employee\CashierNav.ascx.cs">
       <DependentUpon>CashierNav.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -602,6 +610,10 @@
     </Compile>
     <Compile Include="Helpers\RecentlyViewedHelper.cs" />
     <Compile Include="Helpers\AuthHelper.cs" />
+    <Compile Include="Helpers\AccountHelper.cs" />
+    <Compile Include="CheckAvailability.ashx.cs">
+      <DependentUpon>CheckAvailability.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ExportHelper.cs" />
     <Compile Include="Helpers\CartHelper.cs" />
     <Compile Include="Helpers\OnlineReceiptHelper.cs" />
@@ -884,6 +896,7 @@
     <Content Include="Scripts\jquery-3.7.0.min.map" />
     <Content Include="SearchSuggestions.ashx" />
     <Content Include="SessionBeacon.ashx" />
+    <Content Include="CheckAvailability.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

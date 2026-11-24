@@ -60,8 +60,11 @@ namespace SamsLiquorShop.Helpers
                         break;
                     case OrderHelper.StOut:
                         heading = "Your order is on its way";
-                        intro = "Order " + invoice + " is out for delivery. Please have your ID ready - the driver will check that you are 18 or older.";
+                        intro = "Order " + invoice + " is out for delivery. Please have your collection code and ID ready - the driver will ask for the code and check that you are 18 or older.";
                         extra = "Delivery window: <strong>" + WebUtility.HtmlEncode(when) + "</strong>";
+                        if (!string.IsNullOrWhiteSpace(code))
+                            extra = "Collection code: <strong style=\"font-family:Consolas,'Courier New',monospace;font-size:22px;letter-spacing:4px;color:#0057b8;\">"
+                                  + WebUtility.HtmlEncode(code) + "</strong><br/>" + extra;
                         break;
                     case OrderHelper.StReady:
                         heading = "Your order is ready for collection";

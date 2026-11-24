@@ -37,6 +37,40 @@
 
             <asp:Literal ID="litMessage" runat="server" />
 
+            <!-- CONFIRM A NEW EMAIL ADDRESS (shown after the email is changed and saved) -->
+            <asp:Panel ID="pnlEmailVerify" runat="server" Visible="false" DefaultButton="btnVerifyEmail">
+                <div class="mgr-table-card emp-form-card" id="change-email-code">
+                    <div class="dash-card-head"><h3>Confirm your new email address</h3></div>
+                    <p class="mgr-dash-subtext">
+                        We sent a 6-digit code to <strong><asp:Label ID="lblPendingEmail" runat="server" /></strong>.
+                        Enter it below to finish changing your email. The code expires in 10 minutes.
+                        Until then, your account keeps using your current email address.
+                    </p>
+
+                    <asp:Label ID="lblEmailDemo" runat="server" CssClass="field-hint invalid" Visible="false" />
+
+                    <div class="login-field" style="max-width: 320px;">
+                        <label for="<%= txtEmailCode.ClientID %>">Verification code <button type="button" class="field-help" data-rules="Required.|The 6-digit code we just emailed to your new address. Check your spam folder if you can't see it.|The code expires after 10 minutes. You have 5 tries."></button></label>
+                        <asp:TextBox ID="txtEmailCode" runat="server" CssClass="login-input" MaxLength="6"
+                            autocomplete="one-time-code" inputmode="numeric" data-digits="1" placeholder="000000"
+                            Style="text-align:center;font-size:1.4rem;letter-spacing:8px;" />
+                    </div>
+
+                    <asp:Label ID="lblEmailCodeError" runat="server" CssClass="field-error login-server-error" Visible="false" />
+
+                    <div class="emp-form-actions">
+                        <asp:Button ID="btnVerifyEmail" runat="server" Text="Verify and change email" CssClass="btn-primary login-submit" CausesValidation="false" OnClick="btnVerifyEmail_Click"
+                            OnClientClick="var c = this.closest('.emp-form-card').querySelector('input[autocomplete=one-time-code]'); if (!/^\d{6}$/.test(c.value.trim())) { c.classList.add('invalid'); c.focus(); return false; } if (this.getAttribute('aria-busy')) { return false; } this.setAttribute('aria-busy', 'true'); this.value = 'Verifying...'; this.classList.add('is-busy'); document.getElementById('emailOtpVerifying').hidden = false; return true;" />
+                        <asp:Button ID="btnResendEmailCode" runat="server" Text="Send a new code" CssClass="btn-ghost" CausesValidation="false" OnClick="btnResendEmailCode_Click" />
+                        <asp:Button ID="btnCancelEmailChange" runat="server" Text="Keep my current email" CssClass="btn-ghost" CausesValidation="false" OnClick="btnCancelEmailChange_Click" />
+                    </div>
+                    <div id="emailOtpVerifying" class="otp-verifying" role="status" aria-live="polite" style="justify-content:flex-start;" hidden>
+                        <span class="otp-spinner" aria-hidden="true"></span>
+                        <span>Verifying your code&hellip;</span>
+                    </div>
+                </div>
+            </asp:Panel>
+
             <!-- PERSONAL DETAILS -->
             <asp:Panel ID="pnlDetails" runat="server" DefaultButton="btnSaveDetails">
                 <div class="mgr-table-card emp-form-card">
@@ -45,11 +79,13 @@
                     <div class="emp-form-grid">
                         <div class="login-field">
                             <label for="<%= txtFirstName.ClientID %>">First name</label>
-                            <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" />
+                            <asp:TextBox ID="txtFirstName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="given-name" data-letters="1" />
+                            <span class="field-hint">Letters, spaces, hyphens and apostrophes only.</span>
                         </div>
                         <div class="login-field">
                             <label for="<%= txtLastName.ClientID %>">Last name</label>
-                            <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" />
+                            <asp:TextBox ID="txtLastName" runat="server" CssClass="login-input" MaxLength="50" autocomplete="family-name" data-letters="1" />
+                            <span class="field-hint">Letters, spaces, hyphens and apostrophes only.</span>
                         </div>
                         <div class="login-field">
                             <label for="<%= txtIdNumber.ClientID %>">SA ID number</label>
@@ -62,20 +98,20 @@
                         </div>
                         <div class="login-field">
                             <label for="<%= txtUsername.ClientID %>">Username</label>
-                            <asp:TextBox ID="txtUsername" runat="server" CssClass="login-input" MaxLength="30" autocomplete="username" />
+                            <asp:TextBox ID="txtUsername" runat="server" CssClass="login-input" MaxLength="30" autocomplete="username" data-avail="username" />
                             <span class="field-hint">3&ndash;30 letters, numbers, underscores or full stops.</span>
+                            <span id="usernameAvailHint" class="field-hint avail-hint" aria-live="polite"></span>
                         </div>
                         <div class="login-field">
                             <label for="<%= txtEmail.ClientID %>">Email address</label>
-                            <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" autocomplete="email" />
-                            <span class="field-hint">Your login codes are sent here.</span>
+                            <asp:TextBox ID="txtEmail" runat="server" CssClass="login-input" MaxLength="100" autocomplete="email" data-avail="email" />
+                            <span class="field-hint">Your login codes are sent here. If you change it, we'll email a code to the new address to confirm it.</span>
+                            <span id="emailAvailHint" class="field-hint avail-hint" aria-live="polite"></span>
                         </div>
                     </div>
 
-                    <p class="register-static-field">Your role, status and hire date can only be changed by another manager under Manage Employees.</p>
-
                     <div class="emp-form-actions">
-                        <asp:Button ID="btnSaveDetails" runat="server" Text="Save Changes" CssClass="btn-primary" OnClick="btnSaveDetails_Click" />
+                        <asp:Button ID="btnSaveDetails" runat="server" Text="Save Changes" CssClass="btn-primary" OnClick="btnSaveDetails_Click" OnClientClick="return availabilityOk();" />
                         <asp:Button ID="btnReset" runat="server" Text="Reset" CssClass="btn-ghost" OnClick="btnReset_Click" CausesValidation="false" />
                     </div>
                 </div>

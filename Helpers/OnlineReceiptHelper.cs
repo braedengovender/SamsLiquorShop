@@ -170,7 +170,16 @@ namespace SamsLiquorShop.Helpers
             {
                 info.Append("<strong>Delivery</strong><br/>" + h(r.AddressText) + "<br/>Delivery window: " + h(SlotText(r)));
                 if (!string.IsNullOrWhiteSpace(r.Instructions)) info.Append("<br/>Instructions: " + h(r.Instructions));
-                info.Append("<br/><span style=\"color:#6e6e73;\">Please have your ID ready - the driver will check that you are 18 or older.</span>");
+                if (!string.IsNullOrWhiteSpace(r.CollectionCode))
+                {
+                    info.Append("<br/>Collection code: <span style=\"font-family:Consolas,'Courier New',monospace;font-size:20px;font-weight:700;letter-spacing:4px;color:#0057b8;\">"
+                              + h(r.CollectionCode) + "</span>");
+                    info.Append("<br/><span style=\"color:#6e6e73;\">Give this code to the driver and have your ID ready - they will check that you are 18 or older.</span>");
+                }
+                else
+                {
+                    info.Append("<br/><span style=\"color:#6e6e73;\">Please have your ID ready - the driver will check that you are 18 or older.</span>");
+                }
             }
             else
             {

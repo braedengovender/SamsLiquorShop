@@ -433,6 +433,8 @@ namespace SamsLiquorShop.Controls
                 Row(d, "Window", enc(slotText));
                 string ins = Str(o, "OnlineOrder_AdditionalInstructions");
                 Row(d, "Instructions", ins.Length > 0 ? enc(ins) : "<span class=\"emp-sub\">None</span>");
+                string deliveryCode = Str(o, "OnlineOrder_CollectionCode");
+                if (deliveryCode.Length > 0) Row(d, "Code", "<strong class=\"disc-code\">" + enc(deliveryCode) + "</strong>");
                 d.Append("</dl></div>");
             }
             else
@@ -499,7 +501,9 @@ namespace SamsLiquorShop.Controls
             btnAdvance.Visible = next != null;
             btnAdvance.Text = AdvanceLabel(next);
             btnCancelOrder.Visible = canCancel;
-            pnlCode.Visible = next == OrderHelper.StCollected;
+            // Older delivery orders were placed before delivery codes existed, so only ask when there is one
+            pnlCode.Visible = next == OrderHelper.StCollected
+                || (next == OrderHelper.StDelivered && Str(o, "OnlineOrder_CollectionCode").Length > 0);
             pnlIdCheck.Visible = completing && !idDone;
             return true;
         }
@@ -553,7 +557,7 @@ namespace SamsLiquorShop.Controls
                 }
 
                 bool completing = next == OrderHelper.StDelivered || next == OrderHelper.StCollected;
-                if (next == OrderHelper.StCollected)
+                if (next == OrderHelper.StCollected || (next == OrderHelper.StDelivered && code.Length > 0))
                 {
                     string typed = Clean(txtCode.Text);
                     if (typed.Length == 0) { ShowMessage("Please enter the customer's collection code.", false); OpenDetail(id); return; }
