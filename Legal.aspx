@@ -117,7 +117,7 @@
           <%-- ============ 3. TERMS & CONDITIONS ============ --%>
           <article class="card-surface legal-section" id="terms">
             <h2>3. Terms &amp; Conditions</h2>
-            <p class="legal-updated">Last updated: 21 November 2026</p>
+            <p class="legal-updated">Last updated: 25 November 2026</p>
 
             <p>
               These terms apply to every order placed with Sam's Liquor Shop, online or in store. By placing an order you agree to them.
@@ -163,6 +163,21 @@
               We trade in line with the Liquor Act and our liquor licence. We may refuse a sale to anyone who appears intoxicated, and
               liquor cannot be sold outside the trading hours our licence allows.
             </p>
+
+            <h3>3.7 Protection of personal information (POPIA)</h3>
+            <p>
+              We process your personal information in line with the Protection of Personal Information Act 4 of 2013 (POPIA). By
+              creating an account or placing an order, you agree that we may process your personal information for the purposes below.
+              Full details are in our <a href="#privacy">Privacy Policy</a>.
+            </p>
+            <ul>
+              <li><strong>Why we need it:</strong> we use your name, South African ID number, contact details and delivery address to verify your age, process and deliver your order, and meet our legal and liquor licensing obligations. We cannot accept an order without this information.</li>
+              <li><strong>Sharing:</strong> we only share your information with the delivery partners, payment processor and email provider who help us fulfil your order, and only as much as they need. They must keep it confidential and secure.</li>
+              <li><strong>Security:</strong> we take reasonable technical and organisational measures to keep your information safe and to prevent loss, misuse or unauthorised access. If we believe your information has been accessed without authorisation, we will tell you and the Information Regulator as POPIA requires.</li>
+              <li><strong>Direct marketing:</strong> we only send you marketing messages if you have opted in, and you can opt out at any time using the unsubscribe link or by contacting us.</li>
+              <li><strong>Your responsibilities:</strong> you must give us information that is accurate and your own, and keep it up to date on your account. Do not register or order using someone else's ID number or details.</li>
+              <li><strong>Your rights:</strong> you may ask to access, correct or delete your personal information, or object to its processing, by emailing our Information Officer at <a href="mailto:info@samsliquorshop.co.za">info@samsliquorshop.co.za</a>. If you are unhappy with how we handle your request, you may complain to the Information Regulator (South Africa) at <a href="https://inforegulator.org.za" target="_blank" rel="noopener">inforegulator.org.za</a>.</li>
+            </ul>
 
             <a href="#top" class="legal-back-top">&uarr; Back to top</a>
           </article>
